@@ -1,8 +1,15 @@
-'use strict';
+import './services.js';
+import './directives.js';
+import './controllers.js';
+//import './notes-controller';
+import './filters.js';
+import './ng-csv.js';
+
+import '../styles/style.css';
 
 /* App Module */
 
-var eventCapture = angular.module('eventCapture',
+const eventCapture = angular.module('eventCapture',
                     ['ui.bootstrap',
                     'ngRoute',
                     'ngCookies',

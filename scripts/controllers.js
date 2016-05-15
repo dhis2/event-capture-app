@@ -1,7 +1,3 @@
-/* global angular */
-
-'use strict';
-
 /* Controllers */
 var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'])
 
@@ -72,6 +68,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     //notes
     $scope.note = {};
+    $scope.displayTextEffects = [];
     $scope.today = DateUtils.getToday();    
     
     var userProfile = SessionStorageService.get('USER_PROFILE');
@@ -522,6 +519,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.currentEvent = angular.copy($scope.newDhis2Event);        
         $scope.outerForm.submitted = false;
         $scope.note = {};
+        $scope.displayTextEffects = [];
         
         if($scope.selectedProgramStage.preGenerateUID){
             $scope.eventUID = dhis2.util.uid();
@@ -544,6 +542,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     $scope.showEditEventInFull = function(){       
         $scope.note = {};
+        $scope.displayTextEffects = [];
         $scope.displayCustomForm = $scope.customDataEntryForm ? true:false;
 
         $scope.currentEvent = ContextMenuSelectedItem.getSelectedItem();
@@ -691,6 +690,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $scope.fileNames['SINGLE_EVENT'] = [];
                                
                 $scope.note = {};
+                $scope.displayTextEffects = [];
                 $scope.outerForm.submitted = false;
                 $scope.outerForm.$setPristine();
                 $scope.disableSaveAndAddNew = false;
@@ -1302,6 +1302,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.hiddenSections = [];
         $scope.hiddenFields = [];
         $scope.assignedFields = [];
+        $scope.displayTextEffects = [];
         
         //console.log('args.event:  ', $rootScope.ruleeffects['SINGLE_EVENT'][0]);
         if($rootScope.ruleeffects[args.event]) {
@@ -1317,7 +1318,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
             angular.forEach($rootScope.ruleeffects[args.event], function(effect) {
                 
-                if(effect.dataElement && effect.ineffect) {
+                if(effect.ineffect) {
                     //in the data entry controller we only care about the "hidefield" actions
                     if(effect.action === "HIDEFIELD") {
                         if(effect.dataElement) {
@@ -1359,11 +1360,17 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     else if(effect.action === "SHOWWARNING"){
                         $scope.warningMessages.push(effect.content + (effect.data ? effect.data : ""));
                     }
-                    else if (effect.action === "ASSIGN") {
+                    else if(effect.action === "ASSIGN") {
                         
                         //For "ASSIGN" actions where we have a dataelement, we save the calculated value to the dataelement:
                         affectedEvent[effect.dataElement.id] = effect.data;
                         $scope.assignedFields[effect.dataElement.id] = true;
+                    }
+                    else if(effect.action === "DISPLAYKEYVALUEPAIR") {
+                        $scope.displayTextEffects.push({name:effect.content,text:effect.data});
+                    }
+                    else if(effect.action === "DISPLAYTEXT") {
+                        $scope.displayTextEffects.push({text:effect.data + effect.content});
                     }
                 }
             });
@@ -1379,6 +1386,15 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     $scope.formatNumberResult = function(val){        
         return dhis2.validation.isNumber(val) ? val : '';
+    };
+    
+    $scope.toTwoDecimals = function(val){        
+        //Round data to two decimals if it is a number:
+        if(dhis2.validation.isNumber(val)){
+            val = Math.round(val*100)/100;
+        }
+        
+        return val;
     };
     
     //check if field is hidden
@@ -1499,5 +1515,17 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $scope.fileNames[$scope.currentEvent.event][dataElement] = $scope.currentFileNames[dataElement];
             }
         }
+    };
+})
+    
+.controller('NotesController',
+function($scope,
+         $modalInstance,
+         dhis2Event){
+
+    $scope.dhis2Event = dhis2Event;
+
+    $scope.close = function () {
+        $modalInstance.close();
     };
 });

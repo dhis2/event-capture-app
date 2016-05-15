@@ -151,10 +151,9 @@
                         <div ng-include="'views/buttons-section.html'"></div>
                     </div>                    
                 </div>
-                <div class="col-sm-4" ng-if="warningMessages.length > 0 || 
-                    (allProgramRules.programIndicators.rules && allProgramRules.programIndicators.rules.length > 0)">
+                <div class="col-sm-4" ng-if="warningMessages.length > 0 || displayTextEffects.length > 0">
                     <div class="bordered-div">
-                        <div ng-if="allProgramRules.programIndicators.rules && allProgramRules.programIndicators.rules.length > 0" ng-include="'views/indicators.html'"></div>
+                        <div ng-if="displayTextEffects.length > 0" ng-include="'views/indicators.html'"></div>
                         <div ng-if="warningMessages.length > 0" ng-include="'views/warnings.html'"></div>
                     </div>                    
                 </div>

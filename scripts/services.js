@@ -1,9 +1,4 @@
-/* global angular, dhis2 */
-
-'use strict';
-
 /* Services */
-
 var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource'])
 
 .factory('ECStorageService', function(){
@@ -61,7 +56,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
 })
 
 /* Factory to fetch optionSets */
-.factory('OptionSetService', function() { 
+.factory('OptionSetService', function() {
     return {
         getCode: function(options, key){
             if(options){
@@ -87,7 +82,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
 })
 
 /* Factory to fetch programs */
-.factory('ProgramFactory', function($q, $rootScope, SessionStorageService, ECStorageService, CommonUtils) {  
+.factory('ProgramFactory', function($q, $rootScope, SessionStorageService, ECStorageService, CommonUtils) {
     
     return {
         getProgramsByOu: function(ou, selectedProgram){
@@ -137,7 +132,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
 })
 
 /* factory for handling program related meta-data */
-.factory('MetaDataFactory', function($q, $rootScope, ECStorageService) {  
+.factory('MetaDataFactory', function($q, $rootScope, ECStorageService) {
     
     return {        
         get: function(store, uid){
@@ -204,7 +199,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
 })
 
 /* factory for handling events */
-.factory('DHIS2EventFactory', function($http, $q, ECStorageService, $rootScope) {   
+.factory('DHIS2EventFactory', function($http, $q, ECStorageService, $rootScope) {
     var internalGetByFilters = function(orgUnit, attributeCategoryUrl, pager, paging, ordering, filterings, format) {
         var url;
            if (format === "csv") {

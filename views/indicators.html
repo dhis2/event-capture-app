@@ -4,12 +4,12 @@
     </div>
     <div class="panel-body">
         <table class="dhis2-list-table-striped">
-            <tr ng-repeat="pid in allProgramRules.programIndicators.rules">
+            <tr ng-repeat="displayText in displayTextEffects">
                 <td>
-                    {{pid.displayName}}
+                    {{displayText.name}}
                 </td>
                 <td>
-                    <input type="text" class="form-control" value={{formatNumberResult(ruleeffects[currentEvent.event][pid.id].data)}} ng-disabled="true">
+                    <input type="text" class="form-control" value={{toTwoDecimals(displayText.text)}} ng-disabled="true">
                 </td>
             </tr>
         </table>

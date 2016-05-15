@@ -273,7 +273,7 @@ input[type=date]::-webkit-inner-spin-button, input[type=date]::-webkit-outer-spi
 }
 
 #map-container {
-    width: 750%;
+    width: 100%;
     margin-bottom: -30px;
 }
 
