@@ -1517,7 +1517,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
     };
 })
-    
+
 .controller('NotesController',
 function($scope,
          $modalInstance,

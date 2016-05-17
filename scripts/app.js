@@ -1,7 +1,6 @@
 import './services.js';
 import './directives.js';
 import './controllers.js';
-//import './notes-controller';
 import './filters.js';
 import './ng-csv.js';
 

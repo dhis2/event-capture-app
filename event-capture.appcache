@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 2.23.1
+# 2.24
 
 NETWORK:
 *
@@ -56,7 +56,7 @@ CACHE:
 ../dhis-web-commons/javascripts/dhis2/dhis2.appcache.js
 ../dhis-web-commons/ouwt/ouwt.js
 ../dhis-web-commons/javascripts/dhis2/dhis2.tracker.metadata.js
-scripts/event-capture.js
+core/event-capture.js
 
 ../dhis-web-commons/javascripts/angular/plugins/angularLocalStorage.js
 ../dhis-web-commons/javascripts/angular/plugins/angular-translate.min.js
@@ -68,13 +68,7 @@ scripts/event-capture.js
 ../dhis-web-commons/javascripts/dhis2/dhis2.angular.validations.js
 ../dhis-web-commons/javascripts/dhis2/dhis2.angular.controllers.js
 
-scripts/app.js
-scripts/directives.js
-scripts/services.js
-scripts/controllers.js        
-scripts/notes-controller.js
-scripts/filters.js
-scripts/ng-csv.js
+app.js
 
 i18n/i18n_app.properties
 
