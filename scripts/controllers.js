@@ -1230,7 +1230,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
         }        
         if(!isChanged){
-            if($scope.currentEvent.eventDate !== $scope.currentEventOriginialValue.eventDate){
+            if(($scope.currentEvent.eventDate !== $scope.currentEventOriginialValue.eventDate) ||
+                $scope.currentEvent.status !== $scope.currentEventOriginialValue.status){
                 isChanged = true;
             }
         }
@@ -1412,11 +1413,16 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.saveDatavalue = function(){        
         $scope.executeRules();
     };
-    
+
     $scope.saveDatavalueRadio = function(prStDe, event, value){
         event[prStDe.id] = value;
         $scope.executeRules();
     };
+
+   $scope.saveCurrentEventStatus = function(status) {
+       $scope.currentEvent.status = status;
+
+   };
     
     $scope.getInputNotifcationClass = function(id, custom){
         if($scope.currentElement.id && $scope.currentElement.id === id){
