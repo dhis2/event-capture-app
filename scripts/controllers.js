@@ -568,6 +568,62 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.displayCustomForm = !$scope.displayCustomForm;
     };
     
+    
+    $scope.checkAndShowProgramRuleFeedback = function() {
+        //preparing a warnings section in case it is needed by one of the other dialogs.
+        var warningSection = false;
+        if($scope.warningMessagesOnComplete && $scope.warningMessagesOnComplete.length > 0) {
+            warningSection = {
+                bodyText:'be_aware_of_validation_warnings',
+                bodyList:$scope.warningMessagesOnComplete,
+                itemType:'warning'
+            };
+        }
+        
+        //Prepare an error section if any errors exist:
+        var errorSection = false;
+        if($scope.errorMessagesOnComplete && $scope.errorMessagesOnComplete.length > 0) {
+            errorSection = {
+                bodyList:$scope.errorMessagesOnComplete,
+                itemType:'danger'
+            };
+        }
+        
+        var def = $q.defer();
+            
+        if(errorSection) {
+            var sections = [errorSection];
+            if(warningSection) {
+                sections.push(warningSection);
+            }
+                
+            var dialogOptions = {
+                headerText: 'validation_error',
+                bodyText: 'please_fix_errors_before_saving',
+                sections: sections
+            };   
+            
+            DialogService.showDialog({}, dialogOptions).then(function(response) {
+                def.reject(response);
+            });
+        } else if(warningSection) {
+            var modalOptions = warningSection;
+            modalOptions.bodyText = 'save_despite_warnings';
+            modalOptions.headerText = 'validation_warnings';
+            
+            ModalService.showModal({}, modalOptions).then(function() {
+                def.resolve(true);
+            },
+            function() {
+                def.reject(false);
+            });
+        } else {
+            def.resolve(true);
+        }
+        
+        return def.promise;
+    }
+    
     $scope.addEvent = function(addingAnotherEvent){
         
         //check for form validity
@@ -577,130 +633,132 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
                 section.open = true;
             });
-            return;
+            return false;
         }
         
-        //the form is valid, get the values
-        //but there could be a case where all dataelements are non-mandatory and
-        //the event form comes empty, in this case enforce at least one value
-        var valueExists = false;
-        var dataValues = [];        
-        for(var dataElement in $scope.prStDes){            
-            var val = $scope.currentEvent[dataElement];
-            if(val){
-                valueExists = true;                
-                val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataElement].dataElement, $scope.optionSets, 'API');
+        $scope.checkAndShowProgramRuleFeedback().then(function() {
+            //the form is valid, get the values
+            //but there could be a case where all dataelements are non-mandatory and
+            //the event form comes empty, in this case enforce at least one value
+            var valueExists = false;
+            var dataValues = [];        
+            for(var dataElement in $scope.prStDes){            
+                var val = $scope.currentEvent[dataElement];
+                if(val){
+                    valueExists = true;                
+                    val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataElement].dataElement, $scope.optionSets, 'API');
+                }
+                dataValues.push({dataElement: dataElement, value: val});
             }
-            dataValues.push({dataElement: dataElement, value: val});
-        }
-        
-        if(!valueExists){
-            var dialogOptions = {
-                headerText: 'empty_form',
-                bodyText: 'please_fill_at_least_one_dataelement'
-            };
 
-            DialogService.showDialog({}, dialogOptions);
-            return;
-        }        
-        
-        if(addingAnotherEvent){
-            $scope.disableSaveAndAddNew = true;
-        }
-        
-        var newEvent = angular.copy($scope.currentEvent);        
-        
-        //prepare the event to be created
-        var dhis2Event = {
-                program: $scope.selectedProgram.id,
-                programStage: $scope.selectedProgramStage.id,
-                orgUnit: $scope.selectedOrgUnit.id,
-                status: $scope.currentEvent.status ? 'COMPLETED' : 'ACTIVE',
-                eventDate: DateUtils.formatFromUserToApi(newEvent.eventDate),
-                dataValues: dataValues
-        }; 
-        
-        if($scope.selectedProgramStage.preGenerateUID && !angular.isUndefined(newEvent['uid'])){
-            dhis2Event.event = newEvent['uid'];
-        }
-        
-        if(!angular.isUndefined($scope.note.value) && $scope.note.value !== ''){
-            dhis2Event.notes = [{value: $scope.note.value}];
-            
-            newEvent.notes = [{value: $scope.note.value, storedDate: $scope.today, storedBy: storedBy}];
-            
-            $scope.noteExists = true;
-        }
-        
-        if($scope.selectedProgramStage.captureCoordinates){
-            dhis2Event.coordinate = {latitude: $scope.currentEvent.coordinate.latitude ? $scope.currentEvent.coordinate.latitude : '',
-                                     longitude: $scope.currentEvent.coordinate.longitude ? $scope.currentEvent.coordinate.longitude : ''};             
-        }
-        
-        if(!$scope.selectedProgram.categoryCombo.isDefault){            
-            if($scope.selectedOptions.length !== $scope.selectedCategories.length){
+            if(!valueExists){
                 var dialogOptions = {
-                    headerText: 'error',
-                    bodyText: 'fill_all_category_options'
+                    headerText: 'empty_form',
+                    bodyText: 'please_fill_at_least_one_dataelement'
                 };
 
                 DialogService.showDialog({}, dialogOptions);
                 return;
-            }
-            
-            //dhis2Event.attributeCc = $scope.selectedProgram.categoryCombo.id;
-            dhis2Event.attributeCategoryOptions = $scope.selectedOptions.join(';');
-        }
-        
-        //send the new event to server        
-        DHIS2EventFactory.create(dhis2Event).then(function(data) {
-            if (data.response.importSummaries[0].status === 'ERROR') {
-                var dialogOptions = {
-                    headerText: 'event_registration_error',
-                    bodyText: data.message
-                };
+            }        
 
-                DialogService.showDialog({}, dialogOptions);
+            if(addingAnotherEvent){
+                $scope.disableSaveAndAddNew = true;
             }
-            else {
-                
-                //add the new event to the grid                
-                newEvent.event = data.response.importSummaries[0].reference; 
-                $scope.currentEvent.event = newEvent.event;
-                
-                $scope.updateFileNames();
-                
-                if( !$scope.dhis2Events ){
-                    $scope.dhis2Events = [];                   
-                }
-                newEvent['uid'] = newEvent.event;
-                newEvent['eventDate'] = newEvent.eventDate; 
-                $scope.dhis2Events.splice(0,0,newEvent);
-                
-                $scope.eventLength++;
-                
-                $scope.eventRegistration = false;
-                $scope.editingEventInFull = false;
-                $scope.editingEventInGrid = false;  
-                    
-                //reset form              
-                $scope.currentEvent = {};
-                $scope.currentEvent = angular.copy($scope.newDhis2Event); 
-                $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
-                $scope.fileNames['SINGLE_EVENT'] = [];
-                               
-                $scope.note = {};
-                $scope.displayTextEffects = [];
-                $scope.outerForm.submitted = false;
-                $scope.outerForm.$setPristine();
-                $scope.disableSaveAndAddNew = false;
-                
-                //decide whether to stay in the current screen or not.
-                if(addingAnotherEvent){
-                    $scope.showEventRegistration();
-                    $anchorScroll();
-                }
+
+            var newEvent = angular.copy($scope.currentEvent);        
+
+            //prepare the event to be created
+            var dhis2Event = {
+                    program: $scope.selectedProgram.id,
+                    programStage: $scope.selectedProgramStage.id,
+                    orgUnit: $scope.selectedOrgUnit.id,
+                    status: $scope.currentEvent.status ? 'COMPLETED' : 'ACTIVE',
+                    eventDate: DateUtils.formatFromUserToApi(newEvent.eventDate),
+                    dataValues: dataValues
+            }; 
+
+            if($scope.selectedProgramStage.preGenerateUID && !angular.isUndefined(newEvent['uid'])){
+                dhis2Event.event = newEvent['uid'];
             }
+
+            if(!angular.isUndefined($scope.note.value) && $scope.note.value !== ''){
+                dhis2Event.notes = [{value: $scope.note.value}];
+
+                newEvent.notes = [{value: $scope.note.value, storedDate: $scope.today, storedBy: storedBy}];
+
+                $scope.noteExists = true;
+            }
+
+            if($scope.selectedProgramStage.captureCoordinates){
+                dhis2Event.coordinate = {latitude: $scope.currentEvent.coordinate.latitude ? $scope.currentEvent.coordinate.latitude : '',
+                                         longitude: $scope.currentEvent.coordinate.longitude ? $scope.currentEvent.coordinate.longitude : ''};             
+            }
+
+            if(!$scope.selectedProgram.categoryCombo.isDefault){            
+                if($scope.selectedOptions.length !== $scope.selectedCategories.length){
+                    var dialogOptions = {
+                        headerText: 'error',
+                        bodyText: 'fill_all_category_options'
+                    };
+
+                    DialogService.showDialog({}, dialogOptions);
+                    return;
+                }
+
+                //dhis2Event.attributeCc = $scope.selectedProgram.categoryCombo.id;
+                dhis2Event.attributeCategoryOptions = $scope.selectedOptions.join(';');
+            }
+
+            //send the new event to server        
+            DHIS2EventFactory.create(dhis2Event).then(function(data) {
+                if (data.response.importSummaries[0].status === 'ERROR') {
+                    var dialogOptions = {
+                        headerText: 'event_registration_error',
+                        bodyText: data.message
+                    };
+
+                    DialogService.showDialog({}, dialogOptions);
+                }
+                else {
+
+                    //add the new event to the grid                
+                    newEvent.event = data.response.importSummaries[0].reference; 
+                    $scope.currentEvent.event = newEvent.event;
+
+                    $scope.updateFileNames();
+
+                    if( !$scope.dhis2Events ){
+                        $scope.dhis2Events = [];                   
+                    }
+                    newEvent['uid'] = newEvent.event;
+                    newEvent['eventDate'] = newEvent.eventDate; 
+                    $scope.dhis2Events.splice(0,0,newEvent);
+
+                    $scope.eventLength++;
+
+                    $scope.eventRegistration = false;
+                    $scope.editingEventInFull = false;
+                    $scope.editingEventInGrid = false;  
+
+                    //reset form              
+                    $scope.currentEvent = {};
+                    $scope.currentEvent = angular.copy($scope.newDhis2Event); 
+                    $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
+                    $scope.fileNames['SINGLE_EVENT'] = [];
+
+                    $scope.note = {};
+                    $scope.displayTextEffects = [];
+                    $scope.outerForm.submitted = false;
+                    $scope.outerForm.$setPristine();
+                    $scope.disableSaveAndAddNew = false;
+
+                    //decide whether to stay in the current screen or not.
+                    if(addingAnotherEvent){
+                        $scope.showEventRegistration();
+                        $anchorScroll();
+                    }
+                }
+            });
         });
     }; 
     
@@ -713,55 +771,57 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
                 section.open = true;
             });
-            return;
+            return false;
         }
         
-        //the form is valid, get the values
-        var dataValues = [];        
-        for(var dataElement in $scope.prStDes){
-            var val = $scope.currentEvent[dataElement];            
-            val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataElement].dataElement, $scope.optionSets, 'API');            
-            dataValues.push({dataElement: dataElement, value: val});
-        }
-        
-        var updatedEvent = {
-                            program: $scope.currentEvent.program,
-                            programStage: $scope.currentEvent.programStage,
-                            orgUnit: $scope.currentEvent.orgUnit,
-                            status: $scope.currentEvent.status ? 'COMPLETED' : 'ACTIVE',
-                            eventDate: DateUtils.formatFromUserToApi($scope.currentEvent.eventDate),
-                            event: $scope.currentEvent.event, 
-                            dataValues: dataValues
-                        };
-
-        if($scope.selectedProgramStage.captureCoordinates){
-            updatedEvent.coordinate = {latitude: $scope.currentEvent.coordinate.latitude ? $scope.currentEvent.coordinate.latitude : '',
-                                     longitude: $scope.currentEvent.coordinate.longitude ? $scope.currentEvent.coordinate.longitude : ''};             
-        }
-        
-        if(!angular.isUndefined($scope.note.value) && $scope.note.value !== ''){
-           
-            updatedEvent.notes = [{value: $scope.note.value}];
-            
-            if($scope.currentEvent.notes){
-                $scope.currentEvent.notes.splice(0,0,{value: $scope.note.value, storedDate: $scope.today, storedBy: storedBy});
+        $scope.checkAndShowProgramRuleFeedback().then(function() {
+            //the form is valid, get the values
+            var dataValues = [];        
+            for(var dataElement in $scope.prStDes){
+                var val = $scope.currentEvent[dataElement];            
+                val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataElement].dataElement, $scope.optionSets, 'API');            
+                dataValues.push({dataElement: dataElement, value: val});
             }
-            else{
-                $scope.currentEvent.notes = [{value: $scope.note.value, storedDate: $scope.today, storedBy: storedBy}];
-            }   
-            
-            $scope.noteExists = true;
-        }
 
-        DHIS2EventFactory.update(updatedEvent).then(function(data){            
-            //reflect the change in the gird            
-            $scope.dhis2Events = DHIS2EventService.refreshList($scope.dhis2Events, $scope.currentEvent);    
-            $scope.updateFileNames();
-            $scope.outerForm.submitted = false;            
-            $scope.editingEventInFull = false;
-            $scope.currentEvent = {};
-            $scope.currentEventOriginialValue = angular.copy($scope.currentEvent); 
-        });       
+            var updatedEvent = {
+                                program: $scope.currentEvent.program,
+                                programStage: $scope.currentEvent.programStage,
+                                orgUnit: $scope.currentEvent.orgUnit,
+                                status: $scope.currentEvent.status ? 'COMPLETED' : 'ACTIVE',
+                                eventDate: DateUtils.formatFromUserToApi($scope.currentEvent.eventDate),
+                                event: $scope.currentEvent.event, 
+                                dataValues: dataValues
+                            };
+
+            if($scope.selectedProgramStage.captureCoordinates){
+                updatedEvent.coordinate = {latitude: $scope.currentEvent.coordinate.latitude ? $scope.currentEvent.coordinate.latitude : '',
+                                         longitude: $scope.currentEvent.coordinate.longitude ? $scope.currentEvent.coordinate.longitude : ''};             
+            }
+
+            if(!angular.isUndefined($scope.note.value) && $scope.note.value !== ''){
+
+                updatedEvent.notes = [{value: $scope.note.value}];
+
+                if($scope.currentEvent.notes){
+                    $scope.currentEvent.notes.splice(0,0,{value: $scope.note.value, storedDate: $scope.today, storedBy: storedBy});
+                }
+                else{
+                    $scope.currentEvent.notes = [{value: $scope.note.value, storedDate: $scope.today, storedBy: storedBy}];
+                }   
+
+                $scope.noteExists = true;
+            }
+
+            DHIS2EventFactory.update(updatedEvent).then(function(data){            
+                //reflect the change in the gird            
+                $scope.dhis2Events = DHIS2EventService.refreshList($scope.dhis2Events, $scope.currentEvent);    
+                $scope.updateFileNames();
+                $scope.outerForm.submitted = false;            
+                $scope.editingEventInFull = false;
+                $scope.currentEvent = {};
+                $scope.currentEventOriginialValue = angular.copy($scope.currentEvent); 
+            });   
+        });
     };
     
     $scope.updateEventDate = function () {
@@ -1300,6 +1360,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     //listen for rule effect changes    
     $scope.$on('ruleeffectsupdated', function(event, args) {
         $scope.warningMessages = [];
+        $scope.warningMessagesOnComplete = [];
+        $scope.errorMessagesOnComplete = [];
         $scope.hiddenSections = [];
         $scope.hiddenFields = [];
         $scope.assignedFields = [];
@@ -1349,17 +1411,30 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                             $scope.hiddenSections[effect.programStageSection] = effect.programStageSection;
                         }
                     }
-                    else if(effect.action === "SHOWERROR" && effect.dataElement.id){
-                        var dialogOptions = {
-                            headerText: 'validation_error',
-                            bodyText: effect.content + (effect.data ? effect.data : "")
-                        };
-                        DialogService.showDialog({}, dialogOptions);
-            
-                        $scope.currentEvent[effect.dataElement.id] = $scope.currentEventOriginialValue[effect.dataElement.id];
+                    else if(effect.action === "SHOWERROR" 
+                            || effect.action === "ERRORONCOMPLETE" ){
+                        
+                        var message = effect.content + (effect.data ? effect.data : "");
+                        
+                        if(effect.dataElement && effect.dataElement.id && effect.action==="SHOWERROR") {
+                            message = $scope.prStDes[effect.dataElement.id].dataElement.displayFormName
+                            + ": " + message;
+                            $scope.currentEvent[effect.dataElement.id] = $scope.currentEventOriginialValue[effect.dataElement.id];
+                            var dialogOptions = {
+                                headerText: 'validation_error',
+                                bodyText: message
+                            };
+                            DialogService.showDialog({}, dialogOptions);
+                        }
+                        
+                        $scope.errorMessagesOnComplete.push(message);
                     }
-                    else if(effect.action === "SHOWWARNING"){
-                        $scope.warningMessages.push(effect.content + (effect.data ? effect.data : ""));
+                    else if(effect.action === "SHOWWARNING" 
+                            || effect.action === "WARNINGONCOMPLETE"){
+                        if(effect.action === "SHOWWARNING") {
+                            $scope.warningMessages.push(effect.content + (effect.data ? effect.data : ""));
+                        }
+                        $scope.warningMessagesOnComplete.push(effect.content + (effect.data ? effect.data : ""));
                     }
                     else if(effect.action === "ASSIGN") {
                         

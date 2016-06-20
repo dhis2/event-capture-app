@@ -15,7 +15,7 @@ try {
     console.warn('\nWARNING! Failed to load DHIS config:', e.message);
     console.info('Using default config');
     dhisConfig = {
-        baseUrl: 'http://localhost:9090/dhis',
+        baseUrl: 'http://localhost:8080/',
         authorization: 'Basic YWRtaW46ZGlzdHJpY3Q=' // admin:district
     };
 }
@@ -54,8 +54,8 @@ module.exports = {
         progress: true,
         colors: true,
         port: 8081,
-        inline: true,
-        compress: true,
+        inline: false,
+        compress: false,
         proxy: [
             { path: '/api/*', target: dhisConfig.baseUrl, bypass: bypass },
             { path: '/dhis-web-commons-ajax-json/*', target: dhisConfig.baseUrl, bypass: bypass },

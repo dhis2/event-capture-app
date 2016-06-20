@@ -2,7 +2,10 @@
   <h3>{{modalOptions.headerText | translate}}</h3>
 </div>
 <div class="modal-body">
-  <p>{{modalOptions.bodyText | translate}}</p>
+    <modal-body body="modalOptions"></modal-body>
+    <div ng-repeat="section in modalOptions.sections">
+        <modal-body body="section"></modal-body>
+    </div>
 </div>
 <div class="modal-footer">
   <button class="btn btn-default" type="button" data-ng-click="modalOptions.close()">{{modalOptions.closeButtonText | translate}}</button>
