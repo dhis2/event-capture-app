@@ -53,7 +53,7 @@ module.exports = {
         contentBase: '.',
         progress: true,
         colors: true,
-        port: 8081,
+        port: 8082,
         inline: true,
         compress: true,
         proxy: [

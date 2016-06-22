@@ -59,7 +59,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.displayCustomForm = false;
     $scope.currentElement = {id: '', update: false};
     $scope.optionSets = [];
-    $scope.dataElementTranslations = [];
     $scope.proceedSelection = true;
     $scope.formUnsaved = false;
     $scope.fileNames = [];
@@ -105,17 +104,11 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             
             if($scope.optionSets.length < 1){
                 $scope.optionSets = [];
-                $scope.dataElementTranslations = [];
                 MetaDataFactory.getAll('optionSets').then(function(optionSets){
                     angular.forEach(optionSets, function(optionSet){  
                         $scope.optionSets[optionSet.id] = optionSet;
                     });                    
-                    MetaDataFactory.getAll('dataElements').then(function(des){
-                        angular.forEach(des, function(de){  
-                            $scope.dataElementTranslations[de.id] = de;
-                        });
-                        $scope.loadPrograms();
-                    });
+                    $scope.loadPrograms();
                 });
             }            
             else{
@@ -197,9 +190,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $scope.filterText['eventDate']= {};
 
                 angular.forEach($scope.selectedProgramStage.programStageDataElements, function(prStDe){
-                    var tx = $scope.dataElementTranslations[prStDe.dataElement.id];                    
-                    prStDe.dataElement.displayFormName = tx.displayFormName && tx.displayFormName !== "" ? tx.displayFormName : tx.displayName;
-                    prStDe.dataElement.description = tx.description ? tx.description : prStDe.dataElement.description;
+                    
                     $scope.prStDes[prStDe.dataElement.id] = prStDe;
                     $scope.newDhis2Event[prStDe.dataElement.id] = '';
                     
