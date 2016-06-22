@@ -15,7 +15,7 @@ try {
     console.warn('\nWARNING! Failed to load DHIS config:', e.message);
     console.info('Using default config');
     dhisConfig = {
-        baseUrl: 'http://localhost:9090/dhis',
+        baseUrl: 'http://localhost:8080/',
         authorization: 'Basic YWRtaW46ZGlzdHJpY3Q=' // admin:district
     };
 }
@@ -57,13 +57,13 @@ module.exports = {
         inline: true,
         compress: true,
         proxy: [
-            { path: '/api/*', target: dhisConfig.baseUrl, bypass },
-            { path: '/dhis-web-commons-ajax-json/*', target: dhisConfig.baseUrl, bypass },
-            { path: '/dhis-web-commons-stream/*', target: dhisConfig.baseUrl, bypass },
-            { path: '/dhis-web-commons/*', target: dhisConfig.baseUrl, bypass },
-            { path: '/icons/*', target: dhisConfig.baseUrl, bypass },
-            { path: '/images/*', target: dhisConfig.baseUrl, bypass },
-            { path: '/main.js', target: dhisConfig.baseUrl, bypass }
+            { path: '/api/*', target: dhisConfig.baseUrl, bypass: bypass },
+            { path: '/dhis-web-commons-ajax-json/*', target: dhisConfig.baseUrl, bypass: bypass },
+            { path: '/dhis-web-commons-stream/*', target: dhisConfig.baseUrl, bypass: bypass },
+            { path: '/dhis-web-commons/*', target: dhisConfig.baseUrl, bypass: bypass },
+            { path: '/icons/*', target: dhisConfig.baseUrl, bypass: bypass },
+            { path: '/images/*', target: dhisConfig.baseUrl, bypass: bypass },
+            { path: '/main.js', target: dhisConfig.baseUrl, bypass: bypass }
         ]
     },
 };

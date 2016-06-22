@@ -1,0 +1,33 @@
+<div class="vertical-spacing section-label">
+    {{'status' | translate}}
+</div>
+<table class="dhis2-list-table-striped small-vertical-spacing">
+    <thead>
+        <tr>
+            <th>
+                {{'data_element'| translate}}
+            </th>
+            <th>
+                {{'value'| translate}}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                {{'event_completed'| translate}}
+            </td>
+            <td>
+                <div class="form-control">
+                    <d2-radio-button
+                        dh-value="currentEvent.status"
+                        dh-name="foo"
+                        dh-event="currentEvent.event"
+                        dh-click="saveCurrentEventStatus(value)"
+                        dh-id="'completetionStatus'">
+                    </d2-radio-button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
