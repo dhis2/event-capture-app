@@ -9,7 +9,7 @@
     </tr>
     <tr ng-if="!customForm.hasEventDate">
         <td>
-            {{selectedProgramStage.reportDateDescription ? selectedProgramStage.reportDateDescription : 'incident_date'| translate }}
+            {{selectedProgramStage.reportDateDescription ? selectedProgramStage.reportDateDescription : 'incident_date'| translate }}<span class="required">*</span>
         </td>
         <td>
             <input type="text"                                                   

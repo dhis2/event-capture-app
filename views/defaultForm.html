@@ -1,5 +1,6 @@
+<div ng-include="'views/event-details.html'"></div>
+
 <div  ng-if='!selectedProgramStage.programStageSections.length && currentEvent.eventDate'>
-    <div ng-include="'views/event-details.html'"></div>
     <table class="dhis2-list-table-striped table-with-fixed-layout">
         <thead>
             <tr>
@@ -270,8 +271,7 @@
     </table>
 </div>
 
-<div ng-if='selectedProgramStage.programStageSections.length'>
-    <div ng-include="'views/event-details.html'"></div>
+<div ng-if='selectedProgramStage.programStageSections.length && currentEvent.eventDate'>
     <div ng-if="currentEvent.eventDate">
         <div ng-repeat='section in selectedProgramStage.programStageSections' ng-if="section.id === selectedSection.id || selectedSection.id === 'ALL' && !hiddenSections[section.id] ">
             <div class="vertical-spacing section-label">
