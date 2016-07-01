@@ -9,15 +9,7 @@
                     {{'event_completed'| translate}}
                 </td>
                 <td>
-                    <div class="form-control">
-                        <d2-radio-button
-                            dh-value="currentEvent.status"
-                            dh-name="foo"
-                            dh-event="currentEvent.event"
-                            dh-click="saveCurrentEventStatus(value)"
-                            dh-id="'completetionStatus'">
-                        </d2-radio-button>
-                    </div>
+                    <input type="checkbox" ng-model="currentEvent.status"/>
                 </td>
             </tr>
         </tbody>
