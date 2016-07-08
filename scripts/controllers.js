@@ -30,7 +30,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 CommonUtils,
                 FileService,
                 AuthorityService,
-                TrackerRulesExecutionService) {
+                TrackerRulesExecutionService,
+                OptionSetService) {
     $scope.gridColumnsRestoredFromUserStore = false;
     GridColumnService.get("eventCaptureGridColumns").then(function(gridColumns) {
         if (gridColumns && gridColumns.status !== "ERROR") {
@@ -1492,9 +1493,16 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                             $scope.warningMessagesOnComplete.push(effect.content + (effect.data ? effect.data : ""));
                         }
                         else if (effect.action === "ASSIGN") {
-
+                            var processedValue = effect.data;
                             //For "ASSIGN" actions where we have a dataelement, we save the calculated value to the dataelement:
-                            affectedEvent[effect.dataElement.id] = effect.data;
+                            if($scope.prStDes[effect.dataElement.id].dataElement.optionSet) {
+                                processedValue = OptionSetService.getName(
+                                    $scope.optionSets[$scope.prStDes[effect.dataElement.id].dataElement.optionSet.id].options, processedValue);
+                            }  
+                            processedValue = processedValue === "true" ? true : processedValue;
+                            processedValue = processedValue === "false" ? false : processedValue;
+                    
+                            affectedEvent[effect.dataElement.id] = processedValue;
                             $scope.assignedFields[effect.dataElement.id] = true;
                         }
                         else if (effect.action === "DISPLAYKEYVALUEPAIR") {
