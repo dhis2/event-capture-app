@@ -31,12 +31,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 FileService,
                 AuthorityService,
                 TrackerRulesExecutionService) {
-    $scope.gridColumnsRestoredFromUserStore = false;
-    GridColumnService.get("eventCaptureGridColumns").then(function(gridColumns) {
-        if (gridColumns && gridColumns.status !== "ERROR") {
-        	$scope.eventGridColumns = gridColumns;
-            $scope.gridColumnsRestoredFromUserStore = true;
-        }
+    
     $scope.maxOptionSize = 30;
     //selected org unit
     $scope.selectedOrgUnit = '';
@@ -183,18 +178,14 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 });
 
                 $scope.prStDes = [];  
-                if(!$scope.gridColumnsRestoredFromUserStore) {
-                    $scope.eventGridColumns = [];
-                    $scope.eventGridColumns.push({displayName: 'event_uid', id: 'uid', valueType: 'TEXT', compulsory: false, filterWithRange: false, showFilter: false, show: false});
-                    $scope.eventGridColumns.push({displayName: $scope.selectedProgramStage.reportDateDescription ? $scope.selectedProgramStage.reportDateDescription : $translate.instant('incident_date'), id: 'eventDate', valueType: 'DATE', filterWithRange: true, compulsory: false, showFilter: false, show: true});
-                }
-                $scope.filterTypes = {};
+                $scope.eventGridColumns = [];
+                $scope.filterTypes = {};                               
                 $scope.newDhis2Event = {};
 
-
+                $scope.eventGridColumns.push({displayName: 'event_uid', id: 'uid', valueType: 'TEXT', compulsory: false, filterWithRange: false, showFilter: false, show: false});
                 $scope.filterTypes['uid'] = 'TEXT';                
 
-
+                $scope.eventGridColumns.push({displayName: $scope.selectedProgramStage.reportDateDescription ? $scope.selectedProgramStage.reportDateDescription : $translate.instant('incident_date'), id: 'eventDate', valueType: 'DATE', filterWithRange: true, compulsory: false, showFilter: false, show: true});
                 $scope.filterTypes['eventDate'] = 'DATE';
                 $scope.filterText['eventDate']= {};
 
@@ -206,20 +197,19 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     //generate grid headers using program stage data elements
                     //create a template for new event
                     //for date type dataelements, filtering is based on start and end dates
-                    if(!$scope.gridColumnsRestoredFromUserStore) {
-                        $scope.eventGridColumns.push({displayName: prStDe.dataElement.displayFormName,
-                                                  id: prStDe.dataElement.id,
-                                                  valueType: prStDe.dataElement.valueType,
-                                                  compulsory: prStDe.compulsory,
-                                                  filterWithRange: prStDe.dataElement.valueType === 'DATE' ||
-                                                                        prStDe.dataElement.valueType === 'NUMBER' ||
-                                                                        prStDe.dataElement.valueType === 'INTEGER' ||
-                                                                        prStDe.dataElement.valueType === 'INTEGER_POSITIVE' ||
-                                                                        prStDe.dataElement.valueType === 'INTEGER_NEGATIVE' ||
-                                                                        prStDe.dataElement.valueType === 'INTEGER_ZERO_OR_POSITIVE' ? true : false,
-                                                  showFilter: false,
+                    $scope.eventGridColumns.push({displayName: prStDe.dataElement.displayFormName,
+                                                  id: prStDe.dataElement.id, 
+                                                  valueType: prStDe.dataElement.valueType, 
+                                                  compulsory: prStDe.compulsory, 
+                                                  filterWithRange: prStDe.dataElement.valueType === 'DATE' || 
+                                                                        prStDe.dataElement.valueType === 'NUMBER' || 
+                                                                        prStDe.dataElement.valueType === 'INTEGER' || 
+                                                                        prStDe.dataElement.valueType === 'INTEGER_POSITIVE' || 
+                                                                        prStDe.dataElement.valueType === 'INTEGER_NEGATIVE' || 
+                                                                        prStDe.dataElement.valueType === 'INTEGER_ZERO_OR_POSITIVE' ? true : false,  
+                                                  showFilter: false, 
                                                   show: prStDe.displayInReports});
-                    }
+
                     $scope.filterTypes[prStDe.dataElement.id] = prStDe.dataElement.valueType;
 
                     if(prStDe.dataElement.valueType === 'DATE' ||
@@ -447,8 +437,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
         modalInstance.result.then(function (gridColumns) {
             $scope.eventGridColumns = gridColumns;
-            GridColumnService.set($scope.eventGridColumns, $scope.gridColumnsRestoredFromUserStore,
-                "eventCaptureGridColumns");
         }, function () {
         });
     };
@@ -1601,7 +1589,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
         }
     };
-    })
 })
 
 .controller('NotesController',
