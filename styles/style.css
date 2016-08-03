@@ -398,8 +398,9 @@ div#orgUnitTree {
 }
 
 .div-bottom {
-    position: absolute;
-    bottom: 0;
+    position: relative;
+    top: 61px;
+    margin-left: 5px;
 }
 
 .form-control-ui-select {
