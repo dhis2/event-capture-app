@@ -32,12 +32,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 AuthorityService,
                 TrackerRulesExecutionService,
                 OptionSetService) {
-    $scope.gridColumnsRestoredFromUserStore = false;
-    GridColumnService.get("eventCaptureGridColumns").then(function(gridColumns) {
-        if (gridColumns && gridColumns.status !== "ERROR") {
-        	$scope.eventGridColumns = gridColumns;
-            $scope.gridColumnsRestoredFromUserStore = true;
-        }
+        $scope.gridColumnsRestoredFromUserStore = false;
+
         $scope.maxOptionSize = 30;
         //selected org unit
         $scope.selectedOrgUnit = '';
@@ -100,26 +96,32 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
                 $scope.userAuthority = AuthorityService.getUserAuthorities(SessionStorageService.get('USER_ROLES'));
 
+                GridColumnService.get("eventCaptureGridColumns").then(function(gridColumns) {
+                    if (gridColumns && gridColumns.status !== "ERROR") {
+                        $scope.eventGridColumns = gridColumns;
+                        $scope.gridColumnsRestoredFromUserStore = true;
+                    }
                 //get ouLevels
-                ECStorageService.currentStore.open().done(function () {
-                    ECStorageService.currentStore.getAll('ouLevels').done(function (response) {
-                        var ouLevels = angular.isObject(response) ? orderByFilter(response, '-level').reverse() : [];
-                        CurrentSelection.setOuLevels(orderByFilter(ouLevels, '-level').reverse());
-                    });
-                });
-
-                if ($scope.optionSets.length < 1) {
-                    $scope.optionSets = [];
-                    MetaDataFactory.getAll('optionSets').then(function (optionSets) {
-                        angular.forEach(optionSets, function (optionSet) {
-                            $scope.optionSets[optionSet.id] = optionSet;
+                    ECStorageService.currentStore.open().done(function () {
+                        ECStorageService.currentStore.getAll('ouLevels').done(function (response) {
+                            var ouLevels = angular.isObject(response) ? orderByFilter(response, '-level').reverse() : [];
+                            CurrentSelection.setOuLevels(orderByFilter(ouLevels, '-level').reverse());
                         });
-                        $scope.loadPrograms();
                     });
-                }
-                else {
-                    $scope.loadPrograms();
-                }
+
+                    if ($scope.optionSets.length < 1) {
+                        $scope.optionSets = [];
+                        MetaDataFactory.getAll('optionSets').then(function (optionSets) {
+                            angular.forEach(optionSets, function (optionSet) {
+                                $scope.optionSets[optionSet.id] = optionSet;
+                            });
+                            $scope.loadPrograms();
+                        });
+                    }
+                    else {
+                        $scope.loadPrograms();
+                    }
+                })
             }
         });
 
@@ -1661,7 +1663,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
             }
         };
-    })
 })
 
 .controller('NotesController',
