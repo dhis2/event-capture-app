@@ -143,7 +143,7 @@
                                             <span ng-if="dhis2Event[eventGridColumn.id] == 'true'">{{yesLabel}}</span>
                                         </span>
                                         <span ng-switch-when="TRUE_ONLY">
-                                            <span ng-if="dhis2Event[eventGridColumn.id]"><i class="fa fa-check"></i></span>
+                                            <span ng-if="dhis2Event[eventGridColumn.id]">{{yesLabel}}</span>
                                         </span>
                                         <span ng-switch-when="FILE_RESOURCE">
                                             <a href ng-click="downloadFile(dhis2Event.event, eventGridColumn.id, $event)">{{fileNames[dhis2Event.event][eventGridColumn.id]}}</a>

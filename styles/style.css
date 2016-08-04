@@ -397,10 +397,13 @@ div#orgUnitTree {
     border-radius: 3px;
 }
 
-.div-bottom {
+.div-bottom-container {
     position: relative;
-    top: 61px;
-    margin-left: 5px;
+}
+
+.div-bottom {
+    position: absolute;
+    bottom: 0;
 }
 
 .form-control-ui-select {
