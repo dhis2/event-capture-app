@@ -34,8 +34,8 @@
         </h3>
         
         <!-- selection begins-->
-        <div class="col-sm-12 selectionGroup">
-            <div class="row col-sm-6 selectionArea">
+        <div class="row selectionGroup">
+            <div class="col-sm-6 selectionArea">
                 <div class="row">
                     <div class="col-sm-4">
                         {{registeringUnitLabel}}
@@ -89,22 +89,24 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 div-bottom" ng-if="selectedProgram.categoryCombo.isDefault || !selectedProgram.categoryCombo.isDefault && optionsReady">                
-                <button class="btn btn-success hideInPrint small-horizontal-spacing"
-                        type="button"
-                        ng-show="selectedProgramStage" 
-                        ng-click="showEventRegistration()" 
-                        ng-disabled="eventRegistration || editingEventInFull || editingEventInGrid">
-                    {{'register_event'| translate}}
-                </button>
-                <button class="btn btn-primary hideInPrint small-horizontal-spacing"
-                        type="button" 
-                        ng-if="dhis2Events.length > 0 || eventRegistration || editingEventInFull"
-                        onclick="javascript:window.print()">
-                    <span ng-if="!eventRegistration && !editingEventInFull">{{'print_list'| translate}}</span>
-                    <span ng-if="eventRegistration">{{'print_form'| translate}}</span>
-                    <span ng-if="editingEventInFull">{{'print_details'| translate}}</span>
-                </button>
+            <div class="col-sm-6 div-bottom-container" ng-if="selectedProgram.categoryCombo.isDefault || !selectedProgram.categoryCombo.isDefault && optionsReady">                
+                <div class="div-bottom">
+                    <button class="btn btn-success hideInPrint small-horizontal-spacing"
+                            type="button"
+                            ng-show="selectedProgramStage" 
+                            ng-click="showEventRegistration()" 
+                            ng-disabled="eventRegistration || editingEventInFull || editingEventInGrid">
+                        {{'register_event'| translate}}
+                    </button>
+                    <button class="btn btn-primary hideInPrint small-horizontal-spacing"
+                            type="button" 
+                            ng-if="dhis2Events.length > 0 || eventRegistration || editingEventInFull"
+                            onclick="javascript:window.print()">
+                        <span ng-if="!eventRegistration && !editingEventInFull">{{'print_list'| translate}}</span>
+                        <span ng-if="eventRegistration">{{'print_form'| translate}}</span>
+                        <span ng-if="editingEventInFull">{{'print_details'| translate}}</span>
+                    </button>
+                </div>
             </div>
         </div>        
         <!-- selection ends -->        
