@@ -214,7 +214,7 @@ function getOrgUnitLevels()
 
 function getMetaPrograms()
 {    
-    return dhis2.tracker.getTrackerObjects('programs', 'programs', '../api/programs.json', 'filter=programType:eq:WITHOUT_REGISTRATION&paging=false&fields=id,version,categoryCombo[id,isDefault,categories[id]],programStages[id,version,programStageSections[id],programStageDataElements[dataElement[id,optionSet[id,version]]]]', 'temp', dhis2.ec.store);    
+    return dhis2.tracker.getTrackerObjects('programs', 'programs', '../api/programs.json', 'filter=programType:eq:WITHOUT_REGISTRATION&paging=false&fields=id,version,categoryCombo[id,isDefault,categories[id]],programStages[id,programStageSections[id],programStageDataElements[dataElement[id,optionSet[id,version]]]]', 'temp', dhis2.ec.store);    
 }
 
 function filterMissingPrograms( programs )
@@ -417,7 +417,7 @@ function getMetaProgramIndicators( programs )
 
 function getProgramIndicators( programIndicators )
 {
-    return dhis2.tracker.checkAndGetTrackerObjects( programIndicators, 'programIndicators', '../api/programIndicators', 'fields=id,displayName,code,shortName,displayInForm,expression,displayDescription,rootDate,description,valueType,filter,program[id]', dhis2.ec.store);
+    return dhis2.tracker.checkAndGetTrackerObjects( programIndicators, 'programIndicators', '../api/programIndicators', 'fields=id,displayName,code,shortName,displayInForm,expression,displayDescription,description,filter,program[id]', dhis2.ec.store);
 }
 
 function getMetaProgramRules( programs )
