@@ -62,8 +62,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.optionSets = [];
     $scope.proceedSelection = true;
     $scope.formUnsaved = false;
-    $scope.fileNames = [];
-    $scope.currentFileNames = [];
+    $scope.fileNames = {};
+    $scope.currentFileNames = {};
     $scope.model = {exportFormats:["XML","JSON","CSV"]};
     
     //notes
@@ -132,8 +132,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.dhis2Events = [];
         $scope.currentEvent = {};
         $scope.currentEventOriginialValue = {};
-        $scope.fileNames = [];
-        $scope.currentFileNames = [];
+        $scope.fileNames = {};
+        $scope.currentFileNames = {};
 
         $scope.eventRegistration = false;
         $scope.editGridColumns = false;
@@ -230,6 +230,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
                 
                 $scope.newDhis2Event.eventDate = '';
+                $scope.newDhis2Event.event = 'SINGLE_EVENT';
                 
                 $scope.selectedCategories = [];
                 if($scope.selectedProgram.categoryCombo && 
@@ -335,7 +336,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                                     FileService.get(val).then(function(response){
                                         if(response && response.displayName){
                                             if(!$scope.fileNames[event.event]){
-                                                $scope.fileNames[event.event] = [];
+                                                $scope.fileNames[event.event] = {};
                                             } 
                                             $scope.fileNames[event.event][dataValue.dataElement] = response.displayName;
                                         }
@@ -498,7 +499,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.editingEventInGrid = false;
         $scope.currentElement.updated = false;        
         $scope.currentEvent = {};
-        $scope.fileNames['SINGLE_EVENT'] = [];
+        $scope.fileNames['SINGLE_EVENT'] = {};
         $scope.currentElement = {};
         $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
     };
@@ -506,7 +507,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.showEventRegistration = function(){        
         $scope.displayCustomForm = $scope.customDataEntryForm ? true : false;
         $scope.currentEvent = {};
-        $scope.fileNames['SINGLE_EVENT'] = [];
+        $scope.fileNames['SINGLE_EVENT'] = {};
+        $scope.currentFileNames = {};
         $scope.eventRegistration = !$scope.eventRegistration;          
         $scope.currentEvent = angular.copy($scope.newDhis2Event);        
         $scope.outerForm.submitted = false;
@@ -558,8 +560,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     $scope.switchDataEntryForm = function(){
         $scope.displayCustomForm = !$scope.displayCustomForm;
-    };
-    
+    };    
     
     $scope.checkAndShowProgramRuleFeedback = function() {
         //preparing a warnings section in case it is needed by one of the other dialogs.
@@ -614,7 +615,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
         
         return def.promise;
-    }
+    };
     
     $scope.addEvent = function(addingAnotherEvent){
         
@@ -736,7 +737,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     $scope.currentEvent = {};
                     $scope.currentEvent = angular.copy($scope.newDhis2Event); 
                     $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
-                    $scope.fileNames['SINGLE_EVENT'] = [];
+                    $scope.fileNames['SINGLE_EVENT'] = {};
 
                     $scope.note = {};
                     $scope.displayTextEffects = [];
@@ -934,7 +935,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             
             DHIS2EventFactory.delete(dhis2Event).then(function(data){
 
-                $scope.currentFileNames = [];
+                $scope.currentFileNames = {};
                 delete $scope.fileNames[$scope.currentEvent.event];
                 var continueLoop = true, index = -1;
                 for(var i=0; i< $scope.dhis2Events.length && continueLoop; i++){
@@ -946,7 +947,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
                 $scope.dhis2Events.splice(index,1);                
                 $scope.currentEvent = {}; 
-                $scope.fileNames['SINGLE_EVENT'] = [];
+                $scope.fileNames['SINGLE_EVENT'] = {};
             }, function(error){
 
                 //temporarily error message because of new audit functionality
@@ -972,7 +973,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         var rowXML;
         var eventsCSV = [];
         var eventsXML = '';
-        var anchor;
         var nameToIdMap = {};
         var emptyRow = [];
         if (!format || ($scope.model.exportFormats.indexOf(format) === -1)) {
@@ -1358,8 +1358,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.hiddenFields = [];
         $scope.assignedFields = [];
         $scope.displayTextEffects = [];
-        
-        //console.log('args.event:  ', $rootScope.ruleeffects['SINGLE_EVENT'][0]);
+
         if($rootScope.ruleeffects[args.event]) {
             //Establish which event was affected:
             var affectedEvent = $scope.currentEvent;
@@ -1582,7 +1581,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         };
 
         ModalService.showModal({}, modalOptions).then(function(result){            
-            $scope.fileNames[$scope.currentEvent.event][dataElement] = null;
+            delete [$scope.currentEvent.event][dataElement];
             $scope.currentEvent[dataElement] = null;
             $scope.updateEventDataValue($scope.currentEvent, dataElement);
         });
@@ -1592,7 +1591,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         for(var dataElement in $scope.currentFileNames){
             if($scope.currentFileNames[dataElement]){
                 if(!$scope.fileNames[$scope.currentEvent.event]){
-                    $scope.fileNames[$scope.currentEvent.event] = [];
+                    $scope.fileNames[$scope.currentEvent.event] = {};
                 }                 
                 $scope.fileNames[$scope.currentEvent.event][dataElement] = $scope.currentFileNames[dataElement];
             }
