@@ -1555,7 +1555,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             return;
         }
         
-        $window.open('../api/events/files?eventUid=' + eventUid +'&dataElementUid=' + dataElementUid, '_blank', '');
+        $window.open(DHIS2URL + '/events/files?eventUid=' + eventUid +'&dataElementUid=' + dataElementUid, '_blank', '');
         if(e){
             e.stopPropagation();
             e.preventDefault();
