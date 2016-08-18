@@ -94,28 +94,32 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             SessionStorageService.set('SELECTED_OU', $scope.selectedOrgUnit);
             
             $scope.userAuthority = AuthorityService.getUserAuthorities(SessionStorageService.get('USER_ROLES'));
-            
-            //get ouLevels
-            ECStorageService.currentStore.open().done(function(){
-                ECStorageService.currentStore.getAll('ouLevels').done(function(response){
-                    var ouLevels = angular.isObject(response) ? orderByFilter(response, '-level').reverse() : [];
-                    CurrentSelection.setOuLevels(orderByFilter(ouLevels, '-level').reverse());
+            GridColumnService.get("eventCaptureGridColumns").then(function (gridColumns) {
+                if (gridColumns && gridColumns.status !== "ERROR") {
+                    $scope.gridColumnsInUserStore = gridColumns;
+                }
+                //get ouLevels
+                ECStorageService.currentStore.open().done(function () {
+                    ECStorageService.currentStore.getAll('ouLevels').done(function (response) {
+                        var ouLevels = angular.isObject(response) ? orderByFilter(response, '-level').reverse() : [];
+                        CurrentSelection.setOuLevels(orderByFilter(ouLevels, '-level').reverse());
+                    });
                 });
-            });
-            
-            if($scope.optionSets.length < 1){
-                $scope.optionSets = [];
-                MetaDataFactory.getAll('optionSets').then(function(optionSets){
-                    angular.forEach(optionSets, function(optionSet){  
-                        $scope.optionSets[optionSet.id] = optionSet;
-                    });                    
+
+                if ($scope.optionSets.length < 1) {
+                    $scope.optionSets = [];
+                    MetaDataFactory.getAll('optionSets').then(function (optionSets) {
+                        angular.forEach(optionSets, function (optionSet) {
+                            $scope.optionSets[optionSet.id] = optionSet;
+                        });
+                        $scope.loadPrograms();
+                    });
+                }
+                else {
                     $scope.loadPrograms();
-                });
-            }            
-            else{
-                $scope.loadPrograms();
-            }
-        }        
+                }
+            })
+        }
     });
 
     $scope.completeEnrollment = function() {
@@ -149,11 +153,29 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $scope.selectedProgram = response.selectedProgram;
                 $scope.getProgramDetails();
             });
-        }    
+        }
     };
-    
-    $scope.getProgramDetails = function(){        
-        
+
+    /* If gridCoulumns for a program is stored in user data store then it is restored when
+     * the program is selected. If the grid columns are not stored then the grid columns are set
+     * as the default one for that program (in $scope.search() function)
+     * */
+    $scope.restoreGridColumnsFromUserStore = function() {
+        if($scope.gridColumnsInUserStore && $scope.selectedProgram && $scope.selectedProgram.id) {
+            if ($scope.gridColumnsInUserStore[$scope.selectedProgram.id]) {
+                $scope.eventGridColumns = angular.copy($scope.gridColumnsInUserStore[$scope.selectedProgram.id]);
+            }
+        }
+        if (!$scope.eventGridColumns) {
+            $scope.eventGridColumns = [];
+        } else {
+            $scope.eventGridColumnsRestored = true;
+        }
+    }
+
+    $scope.getProgramDetails = function(){
+
+        var eventGridColumnsRestored = false;
         $scope.selectedProgramStage = null;
         $scope.eventFetched = false;
         $scope.optionsReady = false;
@@ -162,6 +184,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.reverse = false;
         $scope.sortHeader = {};
         $scope.filterText = {};
+
         
         if( $scope.userAuthority && $scope.userAuthority.canAddOrUpdateEvent &&
                 $scope.selectedProgram && 
@@ -178,15 +201,35 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     section.open = true;
                 });
 
-                $scope.prStDes = [];  
-                $scope.eventGridColumns = [];
+                $scope.prStDes = [];
+                $scope.restoreGridColumnsFromUserStore();
+
                 $scope.filterTypes = {};                               
                 $scope.newDhis2Event = {};
+                if(!$scope.eventGridColumnsRestored) {
+                    $scope.eventGridColumns.push({
+                    displayName: 'event_uid',
+                    id: 'uid',
+                    valueType: 'TEXT',
+                    compulsory: false,
+                    filterWithRange: false,
+                    showFilter: false,
+                    show: false
+                    });
+                }
+                $scope.filterTypes['uid'] = 'TEXT';
 
-                $scope.eventGridColumns.push({displayName: 'event_uid', id: 'uid', valueType: 'TEXT', compulsory: false, filterWithRange: false, showFilter: false, show: false});
-                $scope.filterTypes['uid'] = 'TEXT';                
-
-                $scope.eventGridColumns.push({displayName: $scope.selectedProgramStage.reportDateDescription ? $scope.selectedProgramStage.reportDateDescription : $translate.instant('incident_date'), id: 'eventDate', valueType: 'DATE', filterWithRange: true, compulsory: false, showFilter: false, show: true});
+                if(!$scope.eventGridColumnsRestored) {
+                    $scope.eventGridColumns.push({
+                        displayName: $scope.selectedProgramStage.reportDateDescription ? $scope.selectedProgramStage.reportDateDescription : $translate.instant('incident_date'),
+                        id: 'eventDate',
+                        valueType: 'DATE',
+                        filterWithRange: true,
+                        compulsory: false,
+                        showFilter: false,
+                        show: true
+                    });
+                }
                 $scope.filterTypes['eventDate'] = 'DATE';
                 $scope.filterText['eventDate']= {};
 
@@ -194,11 +237,12 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     
                     $scope.prStDes[prStDe.dataElement.id] = prStDe;
                     $scope.newDhis2Event[prStDe.dataElement.id] = '';
-                    
-                    //generate grid headers using program stage data elements
-                    //create a template for new event
-                    //for date type dataelements, filtering is based on start and end dates
-                    $scope.eventGridColumns.push({displayName: prStDe.dataElement.displayFormName,
+                   
+                    if(!$scope.eventGridColumnsRestored) {
+                        //generate grid headers using program stage data elements
+                        //create a template for new event
+                        //for date type dataelements, filtering is based on start and end dates
+                        $scope.eventGridColumns.push({displayName: prStDe.dataElement.displayFormName,
                                                   id: prStDe.dataElement.id, 
                                                   valueType: prStDe.dataElement.valueType, 
                                                   compulsory: prStDe.compulsory, 
@@ -210,6 +254,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                                                                         prStDe.dataElement.valueType === 'INTEGER_ZERO_OR_POSITIVE' ? true : false,  
                                                   showFilter: false, 
                                                   show: prStDe.displayInReports});
+                    }
 
                     $scope.filterTypes[prStDe.dataElement.id] = prStDe.dataElement.valueType;
 
@@ -236,7 +281,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 if($scope.selectedProgram.categoryCombo && 
                         !$scope.selectedProgram.categoryCombo.isDefault &&
                         $scope.selectedProgram.categoryCombo.categories){
-                    $scope.selectedCategories = $scope.selectedProgram.categoryCombo.categories;                    
+                    $scope.selectedCategories = $scope.selectedProgram.categoryCombo.categories;
                 }
                 else{
                     $scope.optionsReady = true;
@@ -417,6 +462,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.showHideColumns = function(){
         
         $scope.hiddenGridColumns = 0;
+        var currentColumns = angular.copy($scope.eventGridColumns);
         
         angular.forEach($scope.eventGridColumns, function(eventGridColumn){
             if(!eventGridColumn.show){
@@ -438,9 +484,33 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         });
 
         modalInstance.result.then(function (gridColumns) {
+            var created = false;
+            if (!checkIfGridColumnsChanged(gridColumns)) {
+                return;
+            }
             $scope.eventGridColumns = gridColumns;
+            if ($scope.gridColumnsInUserStore) {
+                /*The grid column is stored in the userStore. It should be overwritten with the new grid.*/
+                created = true;
+            }
+            if (!$scope.gridColumnsInUserStore || ($scope.gridColumnsInUserStore && $scope.gridColumnsInUserStore.length===0)) {
+                $scope.gridColumnsInUserStore = {};
+            }
+            $scope.gridColumnsInUserStore[$scope.selectedProgram.id] = angular.copy($scope.eventGridColumns);
+            GridColumnService.set($scope.gridColumnsInUserStore, created, "eventCaptureGridColumns");
         }, function () {
         });
+
+        function checkIfGridColumnsChanged(gridColumns) {
+            var gridColumnsChanged = false;
+            var created = false;
+            for (var i = 0; i<gridColumns.length; i++) {
+                if (currentColumns[i].show !== gridColumns[i].show) {
+                    return true;
+                }
+            }
+            return false;
+        }
     };
     
     $scope.searchInGrid = function(gridColumn){
