@@ -331,4 +331,66 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
             return promise;
         }
     };    
+})
+
+/* Factory for fetching OrgUnit */
+.factory('OrgUnitFactory', function($http, DHIS2URL, $q, SessionStorageService) {
+    var orgUnit, orgUnitPromise, rootOrgUnitPromise,orgUnitTreePromise;
+    return {
+        getChildren: function(uid){
+            if( orgUnit !== uid ){
+                orgUnitPromise = $http.get( DHIS2URL + '/organisationUnits/'+ uid + '.json?fields=id,path,children[id,displayName,level,children[id]]&paging=false' ).then(function(response){
+                    orgUnit = uid;
+                    return response.data;
+                });
+            }
+            return orgUnitPromise;
+        },
+        get: function(uid){
+            if( orgUnit !== uid ){
+                orgUnitPromise = $http.get( DHIS2URL + '/organisationUnits/'+ uid + '.json?fields=id,displayName,level,path' ).then(function(response){
+                    orgUnit = uid;
+                    return response.data;
+                });
+            }
+            return orgUnitPromise;
+        },
+        getSearchTreeRoot: function(){
+            if(!rootOrgUnitPromise){
+                var url = DHIS2URL + '/me.json?fields=organisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]]&paging=false';
+                rootOrgUnitPromise = $http.get( url ).then(function(response){
+                    return response.data;
+                });
+            }
+            return rootOrgUnitPromise;
+        },
+        getOrgUnits: function(uid,fieldUrl){
+            var url = DHIS2URL + '/organisationUnits.json?filter=id:eq:'+uid+'&'+fieldUrl+'&paging=false';
+            orgUnitTreePromise = $http.get(url).then(function(response){
+                return response.data;
+            });
+            return orgUnitTreePromise;
+        },
+        getOrgUnit: function(uid) {
+            var def = $q.defer();
+            var selectedOrgUnit = SessionStorageService.get('SELECTED_OU');
+            if (selectedOrgUnit) {
+                def.resolve(selectedOrgUnit);
+            } else if (uid) {
+                this.get(uid).then(function (response) {
+                    if (response.organisationUnits && response.organisationUnits[0]) {
+                        def.resolve({
+                            displayName: response.organisationUnits[0].displayName,
+                            id: response.organisationUnits[0].id
+                        });
+                    } else {
+                        def.resolve(null);
+                    }
+                });
+            } else {
+                def.resolve(null);
+            }
+            return def.promise;
+        }
+    };
 });

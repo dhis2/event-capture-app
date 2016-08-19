@@ -27,7 +27,7 @@ const eventCapture = angular.module('eventCapture',
                     'pascalprecht.translate',
                     'd2HeaderBar'])
 
-.value('DHIS2URL', '..')
+.value('DHIS2URL', '../api')
 
 .config(function ($routeProvider, $translateProvider) {
 

@@ -538,6 +538,28 @@
                                             </span>
                                         </div>
                                     </div>
+                                    <div ng-switch-when="ORGANISATION_UNIT">
+                                        <div class="input-group">
+                                            <input type="text"
+                                                   name="foo"
+                                                   class="form-control"
+                                                   placeholder="{{'please_select' | translate}}"
+                                                   ng-model="currentEvent[de.dataElement.id]"
+                                                   ng-required={{prStDes[de.dataElement.id].compulsory}}
+                                                   ng-disabled="true"
+                                                   input-field-id={{de.dataElement.id}}
+                                                   ng-blur="saveDatavalue()"/>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-grp hideInPrint"
+                                                        type="button"
+                                                        title="{{'get_from_tree'| translate}}"
+                                                        ng-disabled="assignedFields[de.dataElement.id]"
+                                                        ng-click="showOrgUnitTree(de.dataElement.id)">
+                                                        <i class="fa fa-plus-square-o"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
                                     <div ng-switch-default>
                                         <input type="text"
                                                 ng-model="currentEvent[de.dataElement.id]"
