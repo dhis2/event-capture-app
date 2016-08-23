@@ -279,7 +279,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 
                 $scope.selectedCategories = [];
                 if($scope.selectedProgram.categoryCombo && !$scope.selectedProgram.categoryCombo.isDefault && $scope.selectedProgram.categoryCombo.categories){
-                    $scope.selectedCategories = angular.copy( $scope.selectedProgram.categoryCombo.categories );
+                    $scope.selectedCategories = $scope.selectedProgram.categoryCombo.categories;
+                    $scope.getCategoryOptions();
                 }
                 else{
                     $scope.optionsReady = true;
