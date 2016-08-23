@@ -161,15 +161,15 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
      * as the default one for that program (in $scope.search() function)
      * */
     $scope.restoreGridColumnsFromUserStore = function() {
+        $scope.eventGridColumnsRestored = false;
         if($scope.gridColumnsInUserStore && $scope.selectedProgram && $scope.selectedProgram.id) {
             if ($scope.gridColumnsInUserStore[$scope.selectedProgram.id]) {
                 $scope.eventGridColumns = angular.copy($scope.gridColumnsInUserStore[$scope.selectedProgram.id]);
+                $scope.eventGridColumnsRestored = true;
             }
         }
-        if (!$scope.eventGridColumns) {
-            $scope.eventGridColumns = [];
-        } else {
-            $scope.eventGridColumnsRestored = true;
+        if (!$scope.eventGridColumnsRestored) {
+            $scope.eventGridColumns = [];   
         }
     }
 
