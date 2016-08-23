@@ -387,6 +387,17 @@
                                                         </span>
                                                     </div>
                                                 </div>
+                                                <div ng-switch-when="ORGANISATION_UNIT">
+                                                    <d2-org-unit-tree
+                                                            selected-org-unit="selectedOrgUnit"
+                                                            id="{{eventGridColumn.id}}"
+                                                            d2-value="currentEvent[eventGridColumn.id]"
+                                                            d2-required="{{eventGridColumn.compulsory}}"
+                                                            d2-disabled="{{assignedFields[eventGridColumn.id]}}"
+                                                            current-event="currentEvent"
+                                                            d2-function="updateEventDataValue(dhis2Event, eventGridColumn.id)">
+                                                    </d2-org-unit-tree>
+                                                </div>
                                                 <div ng-switch-default>
                                                     <input type="text"
                                                             ng-model="currentEvent[eventGridColumn.id]" 

@@ -355,10 +355,23 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
             }
             return orgUnitPromise;
         },
+        getViewTreeRoot: function(){
+            if(!rootOrgUnitPromise){
+                var url = DHIS2URL + '/me.json?fields=organisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]],dataViewOrganisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]]&paging=false';
+                rootOrgUnitPromise = $http.get( url ).then(function(response){
+                    response.data.organisationUnits = response.data.dataViewOrganisationUnits && response.data.dataViewOrganisationUnits.length > 0 ? response.data.dataViewOrganisationUnits : response.data.organisationUnits;
+                    delete response.data.dataViewOrganisationUnits;
+                    return response.data;
+                });
+            }
+            return rootOrgUnitPromise;
+        },
         getSearchTreeRoot: function(){
             if(!rootOrgUnitPromise){
-                var url = DHIS2URL + '/me.json?fields=organisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]]&paging=false';
+                var url = DHIS2URL + '/me.json?fields=organisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]],teiSearchOrganisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]]&paging=false';
                 rootOrgUnitPromise = $http.get( url ).then(function(response){
+                    response.data.organisationUnits = response.data.teiSearchOrganisationUnits && response.data.teiSearchOrganisationUnits.length > 0 ? response.data.teiSearchOrganisationUnits : response.data.organisationUnits;
+                    delete response.data.teiSearchOrganisationUnits;
                     return response.data;
                 });
             }
