@@ -153,7 +153,7 @@ function downloadMetaData(){
     
     promise = promise.then( dhis2.ec.store.open );    
     promise = promise.then( getUserRoles );
-    promise = promise.then( getCalendarSetting );
+    promise = promise.then( getSystemSetting );
     promise = promise.then( getConstants );
     promise = promise.then( getOrgUnitLevels );    
     promise = promise.then( getMetaPrograms );
@@ -184,13 +184,13 @@ function getUserRoles()
     return dhis2.tracker.getTrackerObject(null, 'USER_ROLES', DHIS2URL + '/me.json', 'fields=id,displayName,userCredentials[userRoles[id,programs,authorities]]', 'sessionStorage', dhis2.ec.store);
 }
 
-function getCalendarSetting()
+function getSystemSetting()
 {   
-    if(localStorage['CALENDAR_SETTING']){
+    if(localStorage['SYSTEM_SETTING']){
        return; 
     }
     
-    return dhis2.tracker.getTrackerObject(null, 'CALENDAR_SETTING', DHIS2URL + '/systemSettings', 'key=keyCalendar&key=keyDateFormat', 'localStorage', dhis2.ec.store);
+    return dhis2.tracker.getTrackerObject(null, 'SYSTEM_SETTING', DHIS2URL + '/systemSettings', 'key=keyGoogleMapsApiKey&key=keyCalendar&key=keyDateFormat', 'localStorage', dhis2.ec.store);
 }
 
 function getConstants()
