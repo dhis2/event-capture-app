@@ -203,6 +203,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                             if (programStages[j].id === event.programStage) {
                                 $scope.formatEvent(event);
                                 $scope.currentEvent = angular.copy(event);
+                                $scope.editingEventInFull = false;
                                 $scope.showEditEventInFull();
                                 break;
                             }
