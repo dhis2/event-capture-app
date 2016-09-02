@@ -919,7 +919,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
 
     function resetUrl(){
-        if (orgUnitFromUrl) {
+        if ($location.search().ou) {
             window.history.pushState({}, null, "/#");
             orgUnitFromUrl = null;
             eventIdFromUrl = null;
