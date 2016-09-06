@@ -927,7 +927,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             selectedOptionsFromUrl = null;
             $location.search("ou",null);
             $location.search("event",null);
-            $location.search("options",null);
         }
     }
 
