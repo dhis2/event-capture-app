@@ -1,3 +1,9 @@
+import L from 'leaflet';
+import 'leaflet-geocoder-mapzen';
+import 'leaflet-contextmenu';
+
+L.Icon.Default.imagePath = '../dhis-web-commons/leaflet/images';
+
 import './services.js';
 import './directives.js';
 import './controllers.js';
@@ -25,11 +31,12 @@ const eventCapture = angular.module('eventCapture',
                     'ui.select',
                     'angularLocalStorage',
                     'pascalprecht.translate',
+                    'leaflet-directive',
                     'd2HeaderBar'])
 
 .value('DHIS2URL', '../api')
 
-.config(function ($routeProvider, $translateProvider) {
+.config(function ($routeProvider, $translateProvider, $logProvider) {
 
     $routeProvider.when('/', {
         templateUrl: 'views/home.html',
@@ -41,4 +48,6 @@ const eventCapture = angular.module('eventCapture',
     $translateProvider.preferredLanguage('en');
     $translateProvider.useSanitizeValueStrategy('escaped');
     $translateProvider.useLoader('i18nLoader');
+    
+    $logProvider.debugEnabled(false);
 });

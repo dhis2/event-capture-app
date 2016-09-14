@@ -267,10 +267,53 @@ input[type=date]::-webkit-inner-spin-button, input[type=date]::-webkit-outer-spi
 
 .modal-full-window .modal-dialog {
     width: 75%;
+    height: 100%;
 }
 
-.modal {
-    padding-top: 20px;
+.modal-map-window .modal-dialog {
+    width: 75%;
+    height: 100%;
+}
+
+.modal-map-window .modal-content {
+  width: 100%;
+  height: 100%;
+}
+
+.modal-map-window .modal-footer {
+    position: fixed;
+    left: 11px;
+    right: 11px;
+    bottom: 70px;
+    height: 50px;
+}
+
+.map-area {
+    height: 100%;
+    left: 11px;
+    right: 11px;
+    bottom: 0;    
+    position: relative;
+}
+
+.angular-leaflet-map {
+    padding: 10px;
+    width: 100%;
+    height: 75%;        
+}
+
+.empty-span {
+    width: 0px;
+}
+
+.no-right-radius {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.no-left-radius {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 #map-container {

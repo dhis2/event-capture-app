@@ -366,26 +366,14 @@
                                                     </div>
                                                 </div>
                                                 <div ng-switch-when="COORDINATE">
-                                                    <div class="input-group">                            
-                                                        <input type="text"
-                                                            name="foo" 
-                                                            placeholder="{{'latitude_longitude_format' | translate}}"
-                                                            ng-class="getInputNotifcationClass(eventGridColumn.id,false)"
-                                                            d2-custom-coordinate-validator 
-                                                            ng-model="currentEvent[eventGridColumn.id]"
-                                                            ng-required={{eventGridColumn.compulsory}}
-                                                            ng-disabled="assignedFields[eventGridColumn.id]"
-                                                            ng-blur="updateEventDataValue(dhis2Event, eventGridColumn.id)" />
-                                                        <span class="input-group-btn">
-                                                            <button class="btn btn-primary hideInPrint trim" 
-                                                                    type="button" 
-                                                                    title="{{'get_from_map'| translate}}"
-                                                                    ng-disabled="assignedFields[eventGridColumn.id]"
-                                                                    ng-click="showDataElementMap(currentEvent, eventGridColumn.id, 'UPDATE')">
-                                                                    <i class="fa fa-map-marker"></i>                             
-                                                            </button>
-                                                        </span>
-                                                    </div>
+                                                    <d2-map id="{{eventGridColumn.id}}"
+                                                            d2-lat-saved="currentElement.updated && currentElement.id === eventGridColumn.id"
+                                                            d2-lng-saved="currentElement.updated && currentElement.id === eventGridColumn.id"
+                                                            d2-object="currentEvent" 
+                                                            d2-function="updateEventDataValue(arg1)" 
+                                                            d2-coordinate-format="'TEXT'"
+                                                            d2-function-param-text="{{eventGridColumn.id}}">
+                                                    </d2-map>
                                                 </div>
                                                 <div ng-switch-when="ORGANISATION_UNIT">
                                                     <d2-org-unit-tree

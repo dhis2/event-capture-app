@@ -29,6 +29,14 @@
         </tr>
         <tr ng-if="selectedProgramStage.captureCoordinates">
             <td>
+                {{'coordinate' | translate}}
+            </td>
+            <td>
+                <d2-map d2-object="currentEvent" d2-coordinate-format="'COORDINATE'"></d2-map>
+            </td>            
+        </tr>
+        <!--<tr ng-if="selectedProgramStage.captureCoordinates">
+            <td>
                 {{'latitude'| translate}}
             </td>
             <td>
@@ -76,6 +84,6 @@
                 </span>
                 <div ng-messages="outerForm.longitude.$error" ng-if="interacted(outerForm.longitude)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html"></div>
             </td>                                            
-        </tr>        
+        </tr>-->
     </tbody>
 </table>

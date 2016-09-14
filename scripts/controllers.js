@@ -932,7 +932,9 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }        
     };
             
-    $scope.updateEventDataValue = function(currentEvent, dataElement){
+    $scope.updateEventDataValue = function(dataElement){
+        
+        console.log('dataelement:  ', dataElement);
 
         $scope.updateSuccess = false;
         
@@ -1329,7 +1331,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             if(angular.isObject(location)){
                 obj[id] = location.lng + ',' + location.lat;
                 if( mode && mode === "UPDATE"){
-                    $scope.updateEventDataValue(obj, id);
+                    $scope.updateEventDataValue(id);
                 }
             }
         }, function () {
@@ -1649,7 +1651,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         ModalService.showModal({}, modalOptions).then(function(result){            
             delete [$scope.currentEvent.event][dataElement];
             $scope.currentEvent[dataElement] = null;
-            $scope.updateEventDataValue($scope.currentEvent, dataElement);
+            $scope.updateEventDataValue(dataElement);
         });
     };
     

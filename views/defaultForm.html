@@ -229,7 +229,8 @@
                                 </div>
                             </div>
                             <div ng-switch-when="COORDINATE">
-                                <div class="input-group">                            
+                                <d2-map id="{{eventGridColumn.id}}" d2-object="currentEvent" d2-coordinate-format="'TEXT'"></d2-map>
+                                <!--<div class="input-group">                            
                                     <input type="text"
                                         name="foo" 
                                         placeholder="{{'latitude_longitude_format' | translate}}"
@@ -249,7 +250,7 @@
                                                 <i class="fa fa-map-marker"></i>                             
                                         </button>
                                     </span>
-                                </div>
+                                </div>-->
                             </div>
                             <div ng-switch-when="ORGANISATION_UNIT">
                                 <d2-org-unit-tree
@@ -527,27 +528,7 @@
                                         </div>
                                     </div>
                                     <div ng-switch-when="COORDINATE">
-                                        <div class="input-group">
-                                            <input type="text"
-                                                name="foo"
-                                                class="form-control"
-                                                d2-custom-coordinate-validator
-                                                placeholder="{{'latitude_longitude_format' | translate}}"
-                                                ng-model="currentEvent[de.dataElement.id]"
-                                                ng-required={{prStDes[de.dataElement.id].compulsory}}
-                                                ng-disabled="assignedFields[de.dataElement.id]"
-                                                input-field-id={{de.dataElement.id}}
-                                                ng-blur="saveDatavalue()"/>
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-grp hideInPrint"
-                                                        type="button"
-                                                        title="{{'get_from_map'| translate}}"
-                                                        ng-disabled="assignedFields[de.dataElement.id]"
-                                                        ng-click="showDataElementMap(currentEvent, de.dataElement.id)">
-                                                        <i class="fa fa-map-marker"></i>
-                                                </button>
-                                            </span>
-                                        </div>
+                                        <d2-map id="{{de.dataElement.id}}" d2-object="currentEvent" d2-coordinate-format="'TEXT'"></d2-map>                                        
                                     </div>
                                     <div ng-switch-when="ORGANISATION_UNIT">
                                         <d2-org-unit-tree
