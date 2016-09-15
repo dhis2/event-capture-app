@@ -28,53 +28,11 @@
     </tr>
     <tr ng-if="selectedProgramStage.captureCoordinates">
         <td>
-            {{'latitude'| translate}}
+            {{'coordinate' | translate}}
         </td>
         <td>
-            <span class="input-group">
-                <input type="number" 
-                    ng-model="currentEvent.coordinate.latitude" 
-                    placeholder="{{'latitude' | translate}}"
-                    name="latitude" 
-                    d2-coordinate-validator
-                    ng-required="false"
-                    class="form-control"/>
-                <span class="input-group-btn hideInPrint">
-                    <button class="btn btn-grp hideInPrint" 
-                            type="button" 
-                            title="{{'get_from_map'| translate}}"
-                            ng-click="showProgramStageMap(currentEvent)"> 
-                            <i class="fa fa-map-marker"></i>                             
-                    </button>
-                </span>
-            </span>
-            <div ng-messages="outerForm.latitude.$error" ng-if="interacted(outerForm.latitude)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html"></div>
-        </td>                                            
-    </tr>
-    <tr ng-if="selectedProgramStage.captureCoordinates">
-        <td>
-            {{'longitude'| translate}}
-        </td>
-        <td>
-            <span class="input-group">
-                <input type="number" 
-                    ng-model="currentEvent.coordinate.longitude" 
-                    placeholder="{{'longitude' | translate}}"
-                    name="longitude" 
-                    d2-coordinate-validator
-                    ng-required="false"
-                    class="form-control"/>
-                <span class="input-group-btn hideInPrint">
-                    <button class="btn btn-grp hideInPrint" 
-                            type="button" 
-                            title="{{'get_from_map'| translate}}"
-                            ng-click="showProgramStageMap(currentEvent)"> 
-                            <i class="fa fa-map-marker"></i>                             
-                    </button>
-                </span>
-            </span>
-            <div ng-messages="outerForm.longitude.$error" ng-if="interacted(outerForm.longitude)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html"></div>
-        </td>                                                                    
-    </tr>
+            <d2-map d2-object="currentEvent" d2-coordinate-format="'COORDINATE'"></d2-map>
+        </td>            
+    </tr>    
 </table>
 <div ng-include="'../dhis-web-commons/angular-forms/custom-dataentry-form.html'" ng-if="currentEvent.eventDate"></div>

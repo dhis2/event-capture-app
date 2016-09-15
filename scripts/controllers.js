@@ -13,8 +13,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $q,
                 $filter,
                 $location,
-                $timeout,
-                $interval,
                 orderByFilter,
                 SessionStorageService,
                 Paginator,
