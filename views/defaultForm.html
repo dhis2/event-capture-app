@@ -229,36 +229,20 @@
                                 </div>
                             </div>
                             <div ng-switch-when="COORDINATE">
-                                <d2-map id="{{eventGridColumn.id}}" d2-object="currentEvent" d2-coordinate-format="'TEXT'"></d2-map>
-                                <!--<div class="input-group">                            
-                                    <input type="text"
-                                        name="foo" 
-                                        placeholder="{{'latitude_longitude_format' | translate}}"
-                                        class="form-control"
-                                        d2-custom-coordinate-validator 
-                                        ng-model="currentEvent[eventGridColumn.id]"
-                                        ng-required={{eventGridColumn.compulsory}}
-                                        ng-disabled="assignedFields[eventGridColumn.id]"
-                                        input-field-id={{eventGridColumn.id}}
-                                        ng-blur="saveDatavalue()"/>
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-grp hideInPrint" 
-                                                type="button" 
-                                                title="{{'get_from_map'| translate}}"
-                                                ng-disabled="assignedFields[eventGridColumn.id]"
-                                                ng-click="showDataElementMap(currentEvent, eventGridColumn.id)">
-                                                <i class="fa fa-map-marker"></i>                             
-                                        </button>
-                                    </span>
-                                </div>-->
+                                <d2-map id="{{eventGridColumn.id}}" 
+                                        d2-object="currentEvent" 
+                                        d2-required="eventGridColumn.compulsory"
+                                        d2-disabled="assignedFields[eventGridColumn.id]"
+                                        d2-coordinate-format="'TEXT'">                                            
+                                </d2-map>
                             </div>
                             <div ng-switch-when="ORGANISATION_UNIT">
                                 <d2-org-unit-tree
                                         selected-org-unit="selectedOrgUnit"
                                         id="{{eventGridColumn.id}}"
                                         d2-value="currentEvent[eventGridColumn.id]"
-                                        d2-required={{eventGridColumn.compulsory}}
-                                        d2-disabled={{assignedFields[eventGridColumn.id]}}
+                                        d2-required="eventGridColumn.compulsory"
+                                        d2-disabled="assignedFields[eventGridColumn.id]"
                                         d2-object="currentEvent"
                                         d2-function="saveDataValue()">
                                 </d2-org-unit-tree>
@@ -528,15 +512,20 @@
                                         </div>
                                     </div>
                                     <div ng-switch-when="COORDINATE">
-                                        <d2-map id="{{de.dataElement.id}}" d2-object="currentEvent" d2-coordinate-format="'TEXT'"></d2-map>                                        
+                                        <d2-map id="{{de.dataElement.id}}" 
+                                                d2-object="currentEvent" 
+                                                d2-required="prStDes[de.dataElement.id].compulsory"
+                                                d2-disabled="assignedFields[de.dataElement.id]"
+                                                d2-coordinate-format="'TEXT'">                                                    
+                                        </d2-map>                                        
                                     </div>
                                     <div ng-switch-when="ORGANISATION_UNIT">
                                         <d2-org-unit-tree
                                                 selected-org-unit="selectedOrgUnit"
                                                 id="{{de.dataElement.id}}"
                                                 d2-value="currentEvent[de.dataElement.id]"
-                                                d2-required={{prStDes[de.dataElement.id].compulsory}}
-                                                d2-disabled={{assignedFields[de.dataElement.id]}}
+                                                d2-required="prStDes[de.dataElement.id].compulsory"
+                                                d2-disabled="assignedFields[de.dataElement.id]"
                                                 d2-object="currentEvent"
                                                 d2-function="saveDataValue()">
                                         </d2-org-unit-tree>

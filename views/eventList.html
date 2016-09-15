@@ -366,10 +366,13 @@
                                                     </div>
                                                 </div>
                                                 <div ng-switch-when="COORDINATE">
+                                                    val - {{currentEvent[eventGridColumn.id]}}
                                                     <d2-map id="{{eventGridColumn.id}}"
                                                             d2-lat-saved="currentElement.updated && currentElement.id === eventGridColumn.id"
                                                             d2-lng-saved="currentElement.updated && currentElement.id === eventGridColumn.id"
                                                             d2-object="currentEvent" 
+                                                            d2-required="eventGridColumn.compulsory"
+                                                            d2-disabled="assignedFields[eventGridColumn.id]"
                                                             d2-function="updateEventDataValue(arg1)" 
                                                             d2-coordinate-format="'TEXT'"
                                                             d2-function-param-text="eventGridColumn.id">
@@ -380,8 +383,8 @@
                                                             selected-org-unit="selectedOrgUnit"
                                                             id="{{eventGridColumn.id}}"
                                                             d2-value="currentEvent[eventGridColumn.id]"
-                                                            d2-required="{{eventGridColumn.compulsory}}"
-                                                            d2-disabled="{{assignedFields[eventGridColumn.id]}}"
+                                                            d2-required="eventGridColumn.compulsory"
+                                                            d2-disabled="assignedFields[eventGridColumn.id]"
                                                             d2-object="currentEvent"
                                                             d2-function="updateEventDataValue(dhis2Event, eventGridColumn.id)">
                                                     </d2-org-unit-tree>
