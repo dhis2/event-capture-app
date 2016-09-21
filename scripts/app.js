@@ -10,8 +10,6 @@ import './controllers.js';
 import './filters.js';
 import './ng-csv.js';
 
-import '../styles/style.css';
-
 /* App Module */
 
 const eventCapture = angular.module('eventCapture',

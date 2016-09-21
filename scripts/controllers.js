@@ -268,7 +268,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         if (!$scope.eventGridColumnsRestored) {
             $scope.eventGridColumns = [];   
         }
-    }
+    };
 
     $scope.getProgramDetails = function(){
 
@@ -281,7 +281,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.reverse = false;
         $scope.sortHeader = {};
         $scope.filterText = {};
-
+        $scope.filterParam = '';
         
         if( $scope.userAuthority && $scope.userAuthority.canAddOrUpdateEvent &&
                 $scope.selectedProgram && 
@@ -446,7 +446,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         if( $scope.selectedProgram && $scope.selectedProgramStage && $scope.selectedProgramStage.id){
             
             //Load events for the selected program stage and orgunit
-            DHIS2EventFactory.getByStage($scope.selectedOrgUnit.id, $scope.selectedProgramStage.id, $scope.attributeCategoryUrl, $scope.pager, true ).then(function(data){
+            DHIS2EventFactory.getByStage($scope.selectedOrgUnit.id, $scope.selectedProgramStage.id, $scope.attributeCategoryUrl, $scope.pager, true, null, $scope.filterParam ).then(function(data){
 
                 if(data.events){
                     $scope.eventLength = data.events.length;
@@ -571,8 +571,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         });
 
         function checkIfGridColumnsChanged(gridColumns) {
-            var gridColumnsChanged = false;
-            var created = false;
             for (var i = 0; i<gridColumns.length; i++) {
                 if (currentColumns[i].show !== gridColumns[i].show) {
                     return true;
@@ -582,12 +580,9 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
     };
     
-    $scope.searchInGrid = function(gridColumn){
-        
-        $scope.currentFilter = gridColumn;
-       
+    $scope.filterEvents = function(gridColumn, applyFilter){        
+        $scope.filterParam = '';       
         for(var i=0; i<$scope.eventGridColumns.length; i++){
-            
             //toggle the selected grid column's filter
             if($scope.eventGridColumns[i].id === gridColumn.id){
                 $scope.eventGridColumns[i].showFilter = !$scope.eventGridColumns[i].showFilter;
@@ -595,8 +590,31 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             else{
                 $scope.eventGridColumns[i].showFilter = false;
             }
+            
+            /*if( applyFilter ){
+                if( $scope.filterText[$scope.eventGridColumns[i].id] && $scope.filterText[$scope.eventGridColumns[i].id] !== ''){                
+                    if( angular.isObject( $scope.filterText[$scope.eventGridColumns[i].id] ) ) {                    
+                        if( $scope.filterText[$scope.eventGridColumns[i].id].start || $scope.filterText[$scope.eventGridColumns[i].id].end ){
+                            $scope.filterParam += '&filter=' + $scope.eventGridColumns[i].id;                     
+                            if( $scope.filterText[$scope.eventGridColumns[i].id].start ){
+                                $scope.filterParam += ':GT:' + $scope.filterText[$scope.eventGridColumns[i].id].start;
+                            }                    
+                            if( $scope.filterText[$scope.eventGridColumns[i].id].end ){
+                                $scope.filterParam += ':LT:' + $scope.filterText[$scope.eventGridColumns[i].id].end;
+                            }
+                        }                                        
+                    }
+                    else{                    
+                        $scope.filterParam += '&filter=' + $scope.eventGridColumns[i].id + ':like:' + $scope.filterText[$scope.eventGridColumns[i].id];
+                    }
+                }
+            }*/            
         }
-    };    
+        
+        /*if( applyFilter && $scope.filterParam !== '' ){
+            $scope.loadEvents();
+        }*/       
+    };
     
     $scope.removeStartFilterText = function(gridColumnId){
         $scope.filterText[gridColumnId].start = undefined;

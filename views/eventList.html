@@ -76,10 +76,10 @@
                                 <!-- filter icon begins -->
                                 <span class='pull-right hideInPrint'>
                                     <span ng-show="!eventGridColumn.filterWithRange">
-                                        <a href ng-click="searchInGrid(eventGridColumn)" title="{{searchLabel}}"><span ng-class="{true: 'filter-without-content', false: 'filter-with-content'} [filterText[eventGridColumn.id] == undefined || filterText[eventGridColumn.id] == '']"><i class="fa fa-search"></i></span></a>
+                                        <a href ng-click="filterEvents(eventGridColumn, !eventGridColumn.showFilter ? false:true)" title="{{searchLabel}}"><span ng-class="{true: 'filter-without-content', false: 'filter-with-content'} [filterText[eventGridColumn.id] == undefined || filterText[eventGridColumn.id] == '']"><i class="fa fa-search"></i></span></a>
                                     </span>
                                     <span ng-show="eventGridColumn.filterWithRange">                                            
-                                        <a href ng-click="searchInGrid(eventGridColumn)" title="{{searchLabel}}"><span ng-class="{true: 'filter-without-content', false: 'filter-with-content'} [(filterText[eventGridColumn.id].start == undefined || filterText[eventGridColumn.id].start == '') && (filterText[eventGridColumn.id].end == undefined || filterText[eventGridColumn.id].end == '')]"><i class="fa fa-search"></i></span></a>
+                                        <a href ng-click="filterEvents(eventGridColumn, !eventGridColumn.showFilter ? false:true)" title="{{searchLabel}}"><span ng-class="{true: 'filter-without-content', false: 'filter-with-content'} [(filterText[eventGridColumn.id].start == undefined || filterText[eventGridColumn.id].start == '') && (filterText[eventGridColumn.id].end == undefined || filterText[eventGridColumn.id].end == '')]"><i class="fa fa-search"></i></span></a>
                                     </span>                                                    
                                 </span>
                                 <!-- filter icon ends -->
@@ -88,24 +88,24 @@
                                 <span ng-show="eventGridColumn.showFilter">                                          
                                     <span ng-switch="eventGridColumn.valueType">                                            
                                         <span ng-switch-when="NUMBER">
-                                            <input style="width: 45%;" placeholder="{{'lower_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].start" ng-blur="searchInGrid(eventGridColumn)">
-                                            <input style="width: 45%;" placeholder="{{'upper_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].end" ng-blur="searchInGrid(eventGridColumn)">
+                                            <input style="width: 45%;" placeholder="{{'lower_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].start">
+                                            <input style="width: 45%;" placeholder="{{'upper_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].end">
                                         </span>
                                         <span ng-switch-when="INTEGER">
-                                            <input style="width: 45%;" placeholder="{{'lower_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].start" ng-blur="searchInGrid(eventGridColumn)">
-                                            <input style="width: 45%;" placeholder="{{'upper_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].end" ng-blur="searchInGrid(eventGridColumn)">
+                                            <input style="width: 45%;" placeholder="{{'lower_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].start">
+                                            <input style="width: 45%;" placeholder="{{'upper_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].end">
                                         </span>
                                         <span ng-switch-when="INTEGER_POSITIVE">
-                                            <input style="width: 45%;" placeholder="{{'lower_limit' | translate}}" type="number" min="1" ng-model="filterText[eventGridColumn.id].start" ng-blur="searchInGrid(eventGridColumn)">
-                                            <input style="width: 45%;" placeholder="{{'upper_limit' | translate}}" type="number" min="1" ng-model="filterText[eventGridColumn.id].end" ng-blur="searchInGrid(eventGridColumn)">
+                                            <input style="width: 45%;" placeholder="{{'lower_limit' | translate}}" type="number" min="1" ng-model="filterText[eventGridColumn.id].start">
+                                            <input style="width: 45%;" placeholder="{{'upper_limit' | translate}}" type="number" min="1" ng-model="filterText[eventGridColumn.id].end">
                                         </span>
                                         <span ng-switch-when="INTEGER_NEGATIVE">
-                                            <input style="width: 45%;" placeholder="{{'lower_limit' | translate}}" type="number" max="-1" ng-model="filterText[eventGridColumn.id].start" ng-blur="searchInGrid(eventGridColumn)">
-                                            <input style="width: 45%;" placeholder="{{'upper_limit' | translate}}" type="number" max="-1" ng-model="filterText[eventGridColumn.id].end" ng-blur="searchInGrid(eventGridColumn)">
+                                            <input style="width: 45%;" placeholder="{{'lower_limit' | translate}}" type="number" max="-1" ng-model="filterText[eventGridColumn.id].start">
+                                            <input style="width: 45%;" placeholder="{{'upper_limit' | translate}}" type="number" max="-1" ng-model="filterText[eventGridColumn.id].end">
                                         </span>
                                         <span ng-switch-when="INTEGER_ZERO_OR_POSITIVE">
-                                            <input style="width: 45%;" placeholder="{{'lower_limit' | translate}}" type="number" min="0" ng-model="filterText[eventGridColumn.id].start" ng-blur="searchInGrid(eventGridColumn)">
-                                            <input style="width: 45%;" placeholder="{{'upper_limit' | translate}}" type="number" min="0" ng-model="filterText[eventGridColumn.id].end" ng-blur="searchInGrid(eventGridColumn)">
+                                            <input style="width: 45%;" placeholder="{{'lower_limit' | translate}}" type="number" min="0" ng-model="filterText[eventGridColumn.id].start">
+                                            <input style="width: 45%;" placeholder="{{'upper_limit' | translate}}" type="number" min="0" ng-model="filterText[eventGridColumn.id].end">
                                         </span>
                                         <span ng-switch-when="DATE">
                                             <input style="width: 70%;" placeholder="{{'start_date' | translate}}" type="text" ng-model="filterText[eventGridColumn.id].start" d2-date readonly="readonly">
@@ -132,7 +132,7 @@
                         </tr>                        
                     </thead>
                     <tbody id="list">
-                        <tr title="{{'click_for_action' | translate}}" ng-repeat="dhis2Event in dhis2Events | orderBy:d2Sort:reverse | gridFilter:filterText:filterTypes">                           
+                        <tr title="{{'click_for_action' | translate}}" ng-repeat="dhis2Event in dhis2Events | orderBy:d2Sort:reverse | gridFilter:filterText:filterTypes">
                             <td ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}" ng-if="eventGridColumn.id !== 'comment'">
                                 
                                 <!-- Visible when event is not under editing -->                                

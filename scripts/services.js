@@ -200,7 +200,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
 
 /* factory for handling events */
 .factory('DHIS2EventFactory', function($http, $q, ECStorageService, $rootScope) {
-    var internalGetByFilters = function(orgUnit, attributeCategoryUrl, pager, paging, ordering, filterings, format) {
+    var internalGetByFilters = function(orgUnit, attributeCategoryUrl, pager, paging, ordering, filterings, format, filterParam) {
         var url;
            if (format === "csv") {
             	url = DHIS2URL + '/events.csv?' + 'orgUnit=' + orgUnit;
@@ -217,7 +217,11 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
             if(attributeCategoryUrl && !attributeCategoryUrl.default){
                 url = url + '&attributeCc=' + attributeCategoryUrl.cc + '&attributeCos=' + attributeCategoryUrl.cp;
             }
-                
+
+            if( filterParam ){
+                url += filterParam;
+            }
+            
             if(paging){
                 var pgSize = pager.pageSize ? pager.pageSize : 50;
                 var pg = pager.page ? pager.page : 1;
@@ -261,9 +265,9 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
     };
     
     return {
-        getByStage: function(orgUnit, programStage, attributeCategoryUrl, pager, paging, format){
+        getByStage: function(orgUnit, programStage, attributeCategoryUrl, pager, paging, format, filterParam){
             var filterings = [{field:'programStage',value:programStage}];
-            return internalGetByFilters(orgUnit, attributeCategoryUrl, pager, paging, null, filterings, format);
+            return internalGetByFilters(orgUnit, attributeCategoryUrl, pager, paging, null, filterings, format, filterParam);
         },  
         getByFilters: function(orgUnit, pager, paging, ordering, filterings){
             return internalGetByFilters(orgUnit, null, pager, paging, ordering, filterings);
