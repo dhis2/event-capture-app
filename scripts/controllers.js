@@ -849,6 +849,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     eventDate: DateUtils.formatFromUserToApi(newEvent.eventDate),
                     dataValues: dataValues
             }; 
+            
+            if( dhis2Event.status === 'COMPLETED' ){
+                dhis2Event.completedDate = $scope.today;
+            }
 
             if($scope.selectedProgramStage.preGenerateUID && !angular.isUndefined(newEvent['uid'])){
                 dhis2Event.event = newEvent['uid'];
@@ -949,7 +953,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         //check for form validity
         $scope.outerForm.submitted = true;        
         if( $scope.outerForm.$invalid ){
-            $scope.selectedSection.id = 'ALL';
+            $scope.selectedSection.id = 'ALL';f
             angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
                 section.open = true;
             });
@@ -992,6 +996,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }   
 
                 $scope.noteExists = true;
+            }
+            
+            if( updatedEvent.status === 'COMPLETED' && $scope.currentEventOriginialValue.status !== 'COMPLETED' ){
+                updatedEvent.completedDate = $scope.today;
             }
 
             DHIS2EventFactory.update(updatedEvent).then(function(data){            

@@ -388,14 +388,19 @@
                                                             d2-object="currentEvent"
                                                             d2-function="updateEventDataValue(dhis2Event, eventGridColumn.id)">
                                                     </d2-org-unit-tree>
-                                                </div>
-                                                <div ng-switch-default>
+                                                </div>                                                
+                                                <div ng-switch-when="TEXT">
                                                     <input type="text"
                                                             ng-model="currentEvent[eventGridColumn.id]" 
                                                             ng-required={{eventGridColumn.compulsory}}
                                                             ng-blur="updateEventDataValue(dhis2Event, eventGridColumn.id)" 
                                                             name="foo" 
                                                             ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>                                                    
+                                                </div>
+                                                <div ng-switch-default>
+                                                    <div class="alert alert-danger form-control">
+                                                        {{'unsupported_value_type' | translate}}:  {{eventGridColumn.valueType}}
+                                                    </div>                                          
                                                 </div>
                                                 <div ng-messages="innerFormGrid.foo.$error" ng-if="interacted(innerFormGrid.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">
                                                 </div>

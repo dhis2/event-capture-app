@@ -247,7 +247,7 @@
                                         d2-function="saveDataValue()">
                                 </d2-org-unit-tree>
                             </div>
-                            <div ng-switch-default>
+                            <div ng-switch-when="TEXT">
                                 <input type="text"
                                         ng-model="currentEvent[eventGridColumn.id]"
                                         ng-required={{eventGridColumn.compulsory}}
@@ -256,6 +256,11 @@
                                         input-field-id={{eventGridColumn.id}}
                                         ng-blur="saveDatavalue()"
                                         class="form-control">
+                            </div>
+                            <div ng-switch-default>
+                                <div class="alert alert-danger form-control">
+                                    {{'unsupported_value_type' | translate}}:  {{eventGridColumn.valueType}}
+                                </div>
                             </div>
                         </div>                        
                         <div ng-messages="innerForm.foo.$error" ng-if="interacted(innerForm.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">                                         
@@ -530,7 +535,7 @@
                                                 d2-function="saveDataValue()">
                                         </d2-org-unit-tree>
                                     </div>
-                                    <div ng-switch-default>
+                                    <div ng-switch-when="TEXT">
                                         <input type="text"
                                                 ng-model="currentEvent[de.dataElement.id]"
                                                 ng-required={{prStDes[de.dataElement.id].compulsory}}
@@ -539,6 +544,11 @@
                                                 input-field-id={{de.dataElement.id}}
                                                 ng-blur="saveDatavalue()"
                                                 class="form-control"/>
+                                    </div>
+                                    <div ng-switch-default>
+                                        <div class="alert alert-danger form-control">
+                                            {{'unsupported_value_type' | translate}}:  {{prStDes[de.dataElement.id].dataElement.valueType}}
+                                        </div>
                                     </div>
                                 </div>
                                 <div ng-messages="innerForm.foo.$error" ng-if="interacted(innerForm.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">
