@@ -1635,7 +1635,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
 
     $scope.saveDatavalueRadio = function(prStDe, event, value){
-        var id = prStDe.id ? prStDe.id : prStDe.dataElement.id;
+        var id = prStDe.dataElement ? prStDe.dataElement.id : prStDe.id;
         event[id] = value;
         $scope.executeRules();
     };
