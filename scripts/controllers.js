@@ -1726,8 +1726,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             bodyText: 'are_you_sure_to_remove'
         };
 
-        ModalService.showModal({}, modalOptions).then(function(result){            
-            delete [$scope.currentEvent.event][dataElement];
+        ModalService.showModal({}, modalOptions).then(function(result){
+            delete $scope.fileNames[$scope.currentEvent.event][dataElement];
             $scope.currentEvent[dataElement] = null;
             $scope.updateEventDataValue(dataElement);
         });
