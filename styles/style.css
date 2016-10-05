@@ -157,6 +157,10 @@ input[type=date]::-webkit-inner-spin-button, input[type=date]::-webkit-outer-spi
     margin: 0;
 }
 
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
 .max-column-width {
     max-width:200px !important; 
     word-wrap:break-word; 
