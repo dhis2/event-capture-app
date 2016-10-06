@@ -164,8 +164,8 @@
                                     </d2-radio-button>
                                 </div>
                                 <div class="not-for-screen">
-                                    <label class="radio-inline"><input type="radio" ng-checked="{{currentEvent[eventGridColumn.id] === 'true'}}">{{'yes' | translate}}</label>
-                                    <label class="radio-inline"><input type="radio" ng-checked="{{currentEvent[eventGridColumn.id] === 'false'}}">{{'no' | translate}}</label>
+                                    <label class="radio-inline"><input type="radio" value="true" ng-model="currentEvent[eventGridColumn.id]">{{'yes' | translate}}</label>
+                                    <label class="radio-inline"><input type="radio" value="false" ng-model="currentEvent[eventGridColumn.id]">{{'no' | translate}}</label>
                                 </div>                                
                             </div>
                             <div ng-switch-when="DATE">
@@ -460,8 +460,8 @@
                                             </d2-radio-button>
                                         </div>
                                         <div class="not-for-screen">
-                                            <label class="radio-inline"><input type="radio" ng-checked="{{currentEvent[de.dataElement.id] === 'true'}}">{{'yes' | translate}}</label>
-                                            <label class="radio-inline"><input type="radio" ng-checked="{{currentEvent[de.dataElement.id] === 'false'}}">{{'no' | translate}}</label>
+                                            <label class="radio-inline"><input type="radio" value="true" ng-model="currentEvent[de.dataElement.id]">{{'yes' | translate}}</label>
+                                            <label class="radio-inline"><input type="radio" value="false" ng-model="currentEvent[de.dataElement.id]">{{'no' | translate}}</label>
                                         </div>
                                     </div>
                                     <div ng-switch-when="DATE">
