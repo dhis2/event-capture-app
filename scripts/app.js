@@ -30,7 +30,7 @@ const eventCapture = angular.module('eventCapture',
                     'angularLocalStorage',
                     'pascalprecht.translate',
                     'leaflet-directive',
-                    'd2HeaderBar'])
+                    ])
 
 .value('DHIS2URL', '../api')
 
@@ -46,6 +46,6 @@ const eventCapture = angular.module('eventCapture',
     $translateProvider.preferredLanguage('en');
     $translateProvider.useSanitizeValueStrategy('escaped');
     $translateProvider.useLoader('i18nLoader');
-    
+
     $logProvider.debugEnabled(false);
 });
