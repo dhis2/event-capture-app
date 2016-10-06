@@ -1063,7 +1063,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }        
     };
             
-    $scope.updateEventDataValue = function(dhis2Event, dataElement){
+    $scope.updateEventDataValue = function(dataElement){
 
         $scope.updateSuccess = false;
         
