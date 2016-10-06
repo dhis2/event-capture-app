@@ -16,7 +16,7 @@
             <tr ng-repeat="eventGridColumn in eventGridColumns" ng-if="eventGridColumn.id !== 'comment' && eventGridColumn.id !== 'uid' && eventGridColumn.id !== 'eventDate' && !hiddenFields[eventGridColumn.id]">
                 <td>
                     <span d2-pop-over 
-                        class="popover-label"  
+                        class="popover-label hideInPrint"  
                         details="{{'details'| translate}}"
                         content="prStDes[eventGridColumn.id].dataElement"
                         template="dataelement-details.html"
@@ -24,6 +24,7 @@
                         placement="right">
                         <a href title="{{'details'| translate}}" tabindex="-1">{{eventGridColumn.displayName}}</a>
                     </span>
+                    <span class="not-for-screen">{{eventGridColumn.displayName}}</span>
                     <span ng-if="eventGridColumn.compulsory" class="required">*</span>                    
                 </td>                
                 <td>
@@ -150,16 +151,22 @@
                                         class="form-control">
                                     </textarea>
                             </div>
-                            <div ng-switch-when="BOOLEAN" class="form-control">
-                                <d2-radio-button
-                                    dh-required="eventGridColumn.compulsory"
-                                    dh-disabled="assignedFields[eventGridColumn.id]"
-                                    dh-value="currentEvent[eventGridColumn.id]"
-                                    dh-name="foo"
-                                    dh-event="currentEvent.event"
-                                    dh-click="saveDatavalueRadio(eventGridColumn, currentEvent, value)"
-                                    dh-id="eventGridColumn.id">
-                                </d2-radio-button>
+                            <div ng-switch-when="BOOLEAN">
+                                <div class="form-control hideInPrint">
+                                    <d2-radio-button
+                                        dh-required="eventGridColumn.compulsory"
+                                        dh-disabled="assignedFields[eventGridColumn.id]"
+                                        dh-value="currentEvent[eventGridColumn.id]"
+                                        dh-name="foo"
+                                        dh-event="currentEvent.event"
+                                        dh-click="saveDatavalueRadio(eventGridColumn, currentEvent, value)"
+                                        dh-id="eventGridColumn.id">
+                                    </d2-radio-button>
+                                </div>
+                                <div class="not-for-screen">
+                                    <label class="radio-inline"><input type="radio" ng-checked="{{currentEvent[eventGridColumn.id] === 'true'}}">{{'yes' | translate}}</label>
+                                    <label class="radio-inline"><input type="radio" ng-checked="{{currentEvent[eventGridColumn.id] === 'false'}}">{{'no' | translate}}</label>
+                                </div>                                
                             </div>
                             <div ng-switch-when="DATE">
                                 <input type="text"
@@ -197,7 +204,7 @@
                                        ng-change="saveDatavalue()" />
                             </div>
                             <div ng-switch-when="FILE_RESOURCE">                                
-                                <div class="input-group">
+                                <div class="input-group hideInPrint">
                                     <div class="form-control">
                                         <span ng-if="!currentEvent.event || currentEvent.event ==='SINGLE_EVENT'">{{fileNames[currentEvent.event][eventGridColumn.id]}}</span>
                                         <a ng-if="currentEvent.event && currentEvent.event !=='SINGLE_EVENT'" href ng-click="downloadFile(currentEvent.event, eventGridColumn.id)" title="{{fileNames[currentEvent.event][eventGridColumn.id]}}">{{fileNames[currentEvent.event][eventGridColumn.id].length > 20 ? fileNames[currentEvent.event][eventGridColumn.id].substr(0,20).contact('...') : fileNames[currentEvent.event][eventGridColumn.id]}}</a>                                        
@@ -226,6 +233,9 @@
                                             </span>                                                
                                         </span>
                                     </span>                
+                                </div>
+                                <div class="not-for-screen">
+                                    <input type="text" class="form-control" value="{{currentEvent[eventGridColumn.id] || currentEvent[eventGridColumn.id] !== '' ? fileNames[currentEvent.event][eventGridColumn.id] : 'file_not_chosen'| translate}}">
                                 </div>
                             </div>
                             <div ng-switch-when="COORDINATE">
@@ -297,7 +307,7 @@
                     <tr ng-repeat="de in section.programStageDataElements" ng-if="!hiddenFields[de.dataElement.id]">
                         <td>
                             <span d2-pop-over
-                                class="popover-label"
+                                class="popover-label hideInPrint"
                                 details="{{'details'| translate}}"
                                 content="prStDes[de.dataElement.id].dataElement"
                                 template="dataelement-details.html"
@@ -305,6 +315,7 @@
                                 placement="right">
                                 <a href title="{{'details'| translate}}" tabindex="-1">{{prStDes[de.dataElement.id].dataElement.displayFormName}}</a>
                             </span>
+                            <span class="not-for-screen">{{prStDes[de.dataElement.id].dataElement.displayFormName}}</span>
                             <span ng-if="prStDes[de.dataElement.id].compulsory" class="required">*</span>
                         </td>
                         <td>
@@ -436,16 +447,22 @@
                                                 class="form-control"/>
                                         </textarea>
                                     </div>
-                                    <div ng-switch-when="BOOLEAN" class="form-control">
-                                        <d2-radio-button
-                                            dh-required="prStDes[de.dataElement.id].compulsory"
-                                            dh-disabled="assignedFields[de.dataElement.id]"
-                                            dh-value="currentEvent[de.dataElement.id]"
-                                            dh-name="foo"
-                                            dh-event="currentEvent.event"
-                                            dh-click="saveDatavalueRadio(prStDes[de.dataElement.id], currentEvent, value)"
-                                            dh-id="de.dataElement.id">
-                                        </d2-radio-button>
+                                    <div ng-switch-when="BOOLEAN">
+                                        <div class="form-control hideInPrint">
+                                            <d2-radio-button
+                                                dh-required="prStDes[de.dataElement.id].compulsory"
+                                                dh-disabled="assignedFields[de.dataElement.id]"
+                                                dh-value="currentEvent[de.dataElement.id]"
+                                                dh-name="foo"
+                                                dh-event="currentEvent.event"
+                                                dh-click="saveDatavalueRadio(prStDes[de.dataElement.id], currentEvent, value)"
+                                                dh-id="de.dataElement.id">
+                                            </d2-radio-button>
+                                        </div>
+                                        <div class="not-for-screen">
+                                            <label class="radio-inline"><input type="radio" ng-checked="{{currentEvent[de.dataElement.id] === 'true'}}">{{'yes' | translate}}</label>
+                                            <label class="radio-inline"><input type="radio" ng-checked="{{currentEvent[de.dataElement.id] === 'false'}}">{{'no' | translate}}</label>
+                                        </div>
                                     </div>
                                     <div ng-switch-when="DATE">
                                         <input type="text"
@@ -485,7 +502,7 @@
                                                ng-change="saveDatavalue()" />
                                     </div>
                                     <div ng-switch-when="FILE_RESOURCE">
-                                        <div class="input-group">
+                                        <div class="input-group hideInPrint">
                                             <div class="form-control">
                                                 <span ng-if="!currentEvent.event || currentEvent.event ==='SINGLE_EVENT'">{{fileNames[currentEvent.event][de.dataElement.id]}}</span>
                                                 <a ng-if="currentEvent.event && currentEvent.event !=='SINGLE_EVENT'" href ng-click="downloadFile(currentEvent.event, de.dataElement.id)">{{fileNames[currentEvent.event][de.dataElement.id]}}</a>
@@ -514,6 +531,9 @@
                                                     </span>
                                                 </span>
                                             </span>
+                                        </div>
+                                        <div class="not-for-screen">
+                                            <input type="text" class="form-control" value="{{currentEvent[de.dataElement.id] || currentEvent[de.dataElement.id] !== '' ? fileNames[currentEvent.event][de.dataElement.id]: 'file_not_chosen'| translate}}">                                            
                                         </div>
                                     </div>
                                     <div ng-switch-when="COORDINATE">
