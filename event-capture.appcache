@@ -20,10 +20,10 @@ CACHE:
 ../dhis-web-commons/javascripts/jQuery/calendars/jquery.calendars.islamic.min.js
 ../dhis-web-commons/javascripts/jQuery/calendars/jquery.calendars.julian.min.js
 ../dhis-web-commons/javascripts/jQuery/calendars/jquery.calendars.nepali.min.js
-../dhis-web-commons/javascripts/jQuery/calendars/jquery.calendars.thai.min.js      
+../dhis-web-commons/javascripts/jQuery/calendars/jquery.calendars.thai.min.js
 
 ../dhis-web-commons/javascripts/jQuery/ui/css/redmond/jquery-ui.css
-../dhis-web-commons/javascripts/jQuery/calendars/css/ui-redmond.calendars.picker.css    
+../dhis-web-commons/javascripts/jQuery/calendars/css/ui-redmond.calendars.picker.css
 ../dhis-web-commons/javascripts/jQuery/calendars/css/ui.calendars.picker.css
 
 ../dhis-web-commons/bootstrap/js/bootstrap.min.js
@@ -34,8 +34,8 @@ CACHE:
 ../dhis-web-commons/javascripts/angular/angular-route.js
 ../dhis-web-commons/javascripts/angular/angular-cookies.js
 ../dhis-web-commons/javascripts/angular/angular-animate.js
-../dhis-web-commons/javascripts/angular/angular-sanitize.js   
-../dhis-web-commons/javascripts/angular/angular-messages.js        
+../dhis-web-commons/javascripts/angular/angular-sanitize.js
+../dhis-web-commons/javascripts/angular/angular-messages.js
 ../dhis-web-commons/javascripts/angular/ui-bootstrap.js
 
 ../dhis-web-commons/javascripts/moment/moment-with-langs.min.js
@@ -72,9 +72,8 @@ app.js
 
 i18n/i18n_app.properties
 
-../dhis-web-commons/javascripts/dhis2/dhis2.translate.js
-../dhis-web-commons/javascripts/dhis2/dhis2.menu.js
-../dhis-web-commons/javascripts/dhis2/dhis2.menu.ui.js
+../dhis-web-commons/javascripts/header-bar/babel-polyfill.js
+../dhis-web-commons/javascripts/header-bar/header-bar.js
 ../main.js
 
 ../api/files/script
