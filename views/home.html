@@ -91,14 +91,14 @@
             </div>
             <div class="col-sm-6 div-bottom-container" ng-if="selectedProgram.categoryCombo.isDefault || !selectedProgram.categoryCombo.isDefault && optionsReady">                
                 <div class="div-bottom">
-                    <button class="btn btn-success hideInPrint small-horizontal-spacing"
+                    <button class="btn btn-success hideInPrint small-horizontal-spacing small-vertical-spacing"
                             type="button"
                             ng-show="selectedProgramStage" 
                             ng-click="showEventRegistration()" 
                             ng-disabled="eventRegistration || editingEventInFull || editingEventInGrid">
                         {{'register_event'| translate}}
                     </button>
-                    <button class="btn btn-primary hideInPrint small-horizontal-spacing"
+                    <button class="btn btn-primary hideInPrint small-horizontal-spacing small-vertical-spacing"
                             type="button" 
                             ng-if="dhis2Events.length > 0 || eventRegistration || editingEventInFull"
                             onclick="javascript:window.print()">

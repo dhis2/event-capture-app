@@ -1,12 +1,12 @@
 <div style="clear: both;" class="small-vertical-spacing hideInPrint">    
     <span ng-if="editingEventInFull">
-        <button type="button" ng-click="updateEvent()" class="btn btn-primary">{{'update'| translate}}</button>
-        <button type="button" ng-click="cancel()" class="btn btn-default">{{'cancel'| translate}}</button>
+        <button type="button" ng-click="updateEvent()" class="btn btn-primary small-vertical-spacing">{{'update'| translate}}</button>
+        <button type="button" ng-click="cancel()" class="btn btn-default small-vertical-spacing">{{'cancel'| translate}}</button>
     </span>
     <span ng-if="eventRegistration">
-        <button type="button" ng-disabled="disableSaveAndAddNew" ng-click="addEvent(true)" ng-if="currentEvent.eventDate" class="btn btn-primary hideInPrint">{{'save_and_add_new'| translate}}</button>
-        <button type="button" ng-click="addEvent()" ng-if="currentEvent.eventDate" class="btn btn-success">{{'save_and_back'| translate}}</button>
-        <button type="button" ng-click="cancel()" class="btn btn-default">{{'cancel'| translate}}</button>
+        <button type="button" ng-disabled="disableSaveAndAddNew" ng-click="addEvent(true)" ng-if="currentEvent.eventDate" class="btn btn-primary small-vertical-spacing">{{'save_and_add_new'| translate}}</button>
+        <button type="button" ng-click="addEvent()" ng-if="currentEvent.eventDate" class="btn btn-success small-vertical-spacing">{{'save_and_back'| translate}}</button>
+        <button type="button" ng-click="cancel()" class="btn btn-default small-vertical-spacing">{{'cancel'| translate}}</button>
     </span>
     <br><span ng-if="isFormInvalid()" class="horizontal-spacing red">{{'form_invalid' | translate}}</span>
 </div>
