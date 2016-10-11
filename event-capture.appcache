@@ -62,7 +62,6 @@ core/event-capture.js
 ../dhis-web-commons/javascripts/angular/plugins/angular-translate.min.js
 ../dhis-web-commons/javascripts/angular/plugins/select.js
 ../dhis-web-commons/javascripts/dhis2/dhis2.angular.directives.js
-../dhis-web-commons/javascripts/dhis2/dhis2.angular.map.directive.js
 ../dhis-web-commons/javascripts/dhis2/dhis2.angular.services.js
 ../dhis-web-commons/javascripts/dhis2/dhis2.angular.filters.js
 ../dhis-web-commons/javascripts/dhis2/dhis2.angular.validations.js
@@ -112,6 +111,9 @@ styles/style.css
 ../dhis-web-commons/angular-forms/error-messages.html
 ../dhis-web-commons/angular-forms/audit-history.html
 ../dhis-web-commons/angular-forms/radio-button.html
+../dhis-web-commons/angular-forms/orgunit-input.html
+../dhis-web-commons/angular-forms/orgunit-tree.html
+../dhis-web-commons/angular-forms/coordinate-input.html
 
 
 views/column-modal.html
