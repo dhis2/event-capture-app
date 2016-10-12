@@ -41,8 +41,6 @@
 
         <script type="text/javascript" src="../dhis-web-commons/javascripts/moment/moment-with-langs.min.js"></script>
 
-        <script src="../dhis-web-core-resource/react-15/react-15.min.js"></script>
-
         <!-- leaflet -->
         <link type="text/css" rel="stylesheet" href="../dhis-web-commons/leaflet/leaflet.css" />
         <link type="text/css" rel="stylesheet" href="../dhis-web-commons/leaflet/leaflet-geocoder-mapzen.css">
@@ -81,6 +79,11 @@
 
         <script type="text/javascript" src="app.js"></script>
         <script type="text/javascript" src="../main.js"></script>
+        <!-- header-bar -->
+        <script type="text/javascript" src="../dhis-web-core-resource/react-15/react-15.min.js"></script>
+        <script type="text/javascript" src="../dhis-web-core-resource/rxjs/4.1.0/rx.lite.min.js"></script>
+        <script type="text/javascript" src="../dhis-web-core-resource/lodash/4.15.0/lodash.min.js"></script>
+        <script type="text/javascript" src="../dhis-web-core-resource/lodash/4.15.0/lodash.fp.min.js"></script>
         <script type="text/javascript" src="../dhis-web-commons/javascripts/header-bar/babel-polyfill.js"></script>
         <script type="text/javascript" src="../dhis-web-commons/javascripts/header-bar/header-bar.js"></script>
         <script>
@@ -89,6 +92,7 @@
                 Dhis2HeaderBar.initHeaderBar(document.querySelector('#header'), undefined, { noLoadingIndicator: true });
             });
         </script>
+        <!-- header-bar -->
 
         <link type="text/css" rel="stylesheet" href="../dhis-web-commons/font-awesome/css/font-awesome.min.css"/>
         <link type="text/css" rel="stylesheet" media="screen" href="../dhis-web-commons/css/widgets.css"/>
