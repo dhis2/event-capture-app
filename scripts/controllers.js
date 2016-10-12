@@ -553,20 +553,17 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         });
 
         modalInstance.result.then(function (gridColumns) {
-            var created = false;
+
             if (!checkIfGridColumnsChanged(gridColumns)) {
                 return;
             }
             $scope.eventGridColumns = gridColumns;
-            if ($scope.gridColumnsInUserStore) {
-                /*The grid column is stored in the userStore. It should be overwritten with the new grid.*/
-                created = true;
-            }
+
             if (!$scope.gridColumnsInUserStore || ($scope.gridColumnsInUserStore && $scope.gridColumnsInUserStore.length===0)) {
                 $scope.gridColumnsInUserStore = {};
             }
             $scope.gridColumnsInUserStore[$scope.selectedProgram.id] = angular.copy($scope.eventGridColumns);
-            GridColumnService.set($scope.gridColumnsInUserStore, created, "eventCaptureGridColumns");
+            GridColumnService.set($scope.gridColumnsInUserStore, "eventCaptureGridColumns");
         }, function () {
         });
 
