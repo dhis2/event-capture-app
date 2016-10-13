@@ -86,7 +86,7 @@ i18n/i18n_app.properties
 ../dhis-web-commons/javascripts/angular/plugins/select2.css
 ../dhis-web-commons/javascripts/angular/plugins/select2.png
 
-styles/style
+styles/style.css
 
 ../api/files/style
 
