@@ -34,6 +34,8 @@ const eventCapture = angular.module('eventCapture',
 
 .value('DHIS2URL', '../api')
 
+.value('DHIS2COORDINATESIZE', 6)
+
 .config(function ($routeProvider, $translateProvider, $logProvider) {
 
     $routeProvider.when('/', {
