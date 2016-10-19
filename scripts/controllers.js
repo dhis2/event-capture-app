@@ -67,7 +67,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.formUnsaved = false;
     $scope.fileNames = {};
     $scope.currentFileNames = {};
-    $scope.model = {exportFormats:["XML","JSON","CSV"]};
+    $scope.model = {exportFormats:["XML","JSON","CSV"], savingRegistration: false};
     
     //notes
     $scope.note = {};
@@ -836,9 +836,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 return;
             }        
 
-            if(addingAnotherEvent){
-                $scope.disableSaveAndAddNew = true;
-            }
+            $scope.model.savingRegistration = true;
 
             var newEvent = angular.copy($scope.currentEvent);        
 
@@ -929,14 +927,14 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     $scope.displayTextEffects = [];
                     $scope.outerForm.submitted = false;
                     $scope.outerForm.$setPristine();
-                    $scope.disableSaveAndAddNew = false;
-
+                    
                     //decide whether to stay in the current screen or not.
                     if(addingAnotherEvent){
                         $scope.showEventRegistration();
                         $anchorScroll();
                     }
                 }
+                $scope.model.savingRegistration = false;
             });
         });
     };
