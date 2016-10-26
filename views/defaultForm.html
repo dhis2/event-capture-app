@@ -257,16 +257,6 @@
                                         d2-function="saveDataValue()">
                                 </d2-org-unit-tree>
                             </div>
-                            <div ng-switch-when="TEXT">
-                                <input type="text"
-                                        ng-model="currentEvent[eventGridColumn.id]"
-                                        ng-required={{eventGridColumn.compulsory}}
-                                        ng-disabled="assignedFields[eventGridColumn.id]"
-                                        name="foo"
-                                        input-field-id={{eventGridColumn.id}}
-                                        ng-blur="saveDatavalue()"
-                                        class="form-control">
-                            </div>
                             <div ng-switch-default>
                                 <div class="alert alert-danger form-control">
                                     {{'unsupported_value_type' | translate}}:  {{eventGridColumn.valueType}}
