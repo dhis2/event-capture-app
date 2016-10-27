@@ -21,7 +21,8 @@
                     d2-date-validator
                     name="eventDate" 
                     input-field-id='eventDate' 
-                    class="form-control">
+                    class="form-control"
+                    ng-disabled="model.editingDisabled">
             <div ng-messages="outerForm.eventDate.$error" ng-if="interacted(outerForm.eventDate)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">                                         
             </div>
         </td>
@@ -31,7 +32,7 @@
             {{'coordinate' | translate}}
         </td>
         <td>
-            <d2-map d2-object="currentEvent" d2-coordinate-format="'COORDINATE'"></d2-map>
+            <d2-map d2-object="currentEvent" d2-coordinate-format="'COORDINATE'" d2-disabled="model.editingDisabled"></d2-map>
         </td>            
     </tr>    
 </table>

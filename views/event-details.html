@@ -13,7 +13,8 @@
                 {{selectedProgramStage.executionDateLabel ? selectedProgramStage.executionDateLabel : 'incident_date'| translate }}<span class="required">*</span>
             </td>
             <td>
-                <input type="text"                                                   
+                <input type="text"
+                       ng-disabled="model.editingDisabled"
                        placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
                        d2-date
                        max-date='0'
@@ -32,7 +33,7 @@
                 {{'coordinate' | translate}}
             </td>
             <td>
-                <d2-map d2-object="currentEvent" d2-coordinate-format="'COORDINATE'"></d2-map>
+                <d2-map d2-object="currentEvent" d2-disabled="model.editingDisabled" d2-coordinate-format="'COORDINATE'"></d2-map>
             </td>            
         </tr>
     </tbody>

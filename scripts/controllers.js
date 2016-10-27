@@ -92,8 +92,12 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         selectedOptionsFromUrl = selectedOptionsFromUrl.split(";");
     }
     var orgUnitRestoredFromUrl = false;
+    var orgUnitInitialized = false;
     //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
+        if (orgUnitInitialized) {
+            return;
+        }
         if (angular.isObject($scope.selectedOrgUnit)) {
             if (orgUnitFromUrl) {
                 if (!orgUnitRestoredFromUrl) {
@@ -106,6 +110,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     return;
                 }
             }
+            orgUnitInitialized = true;
+
             $scope.pleaseSelectLabel = $translate.instant('please_select');
             $scope.registeringUnitLabel = $translate.instant('registering_unit');
             $scope.eventCaptureLabel = $translate.instant('event_capture');
@@ -152,6 +158,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
     
     //load programs associated with the selected org unit.
+
     $scope.loadPrograms = function() {
         
         $scope.resetOu = false;
@@ -243,6 +250,9 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         event['uid'] = event.event;
         event.eventDate = DateUtils.formatFromApiToUser(event.eventDate);
         event['eventDate'] = event.eventDate;
+        if (event['completedDate']) {
+            event['completedDate'] = DateUtils.formatFromApiToUser(event['completedDate']);
+        }
         if(event.status === "ACTIVE") {
             event.status = false;
         } else if(event.status === "COMPLETED") {
@@ -650,6 +660,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         else{
             $scope.showEventList();
         }
+        $scope.model.editingDisabled = false;
     };
     
     $scope.showEventList = function(dhis2Event){        
@@ -692,6 +703,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.editingEventInGrid = !$scope.editingEventInGrid;
 
         $scope.outerForm.$valid = true;
+        checkEventEditingStatus();
     };
 
     var lastRoute = $route.current;
@@ -738,7 +750,22 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         if(!$location.search().options && $scope.optionsReady && $scope.selectedOptions.length>0){
             $location.search("options",$scope.selectedOptions.join(";"));
         }
+        checkEventEditingStatus();
     };
+
+    function checkEventEditingStatus() {
+        $scope.model.editingDisabled = DHIS2EventService.getEventExpiryStatus($scope.currentEvent,
+            $scope.selectedProgram, $scope.selectedOrgUnit.id);
+
+        if ($scope.model.editingDisabled) {
+            var dialogOptions = {
+                headerText: $translate.instant('event_expired'),
+                bodyText: $translate.instant('editing_disabled')
+            };
+            DialogService.showDialog({}, dialogOptions).then(function (response) {
+            });
+        }
+    }
     
     $scope.switchDataEntryForm = function(){
         $scope.displayCustomForm = !$scope.displayCustomForm;
@@ -851,7 +878,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }; 
             
             if( dhis2Event.status === 'COMPLETED' ){
-                dhis2Event.completedDate = $scope.today;
+                dhis2Event.completedDate = DateUtils.formatFromUserToApi($scope.today);
             }
 
             if($scope.selectedProgramStage.preGenerateUID && !angular.isUndefined(newEvent['uid'])){
@@ -999,7 +1026,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
             
             if( updatedEvent.status === 'COMPLETED' && $scope.currentEventOriginialValue.status !== 'COMPLETED' ){
-                updatedEvent.completedDate = $scope.today;
+                updatedEvent.completedDate = DateUtils.formatFromUserToApi($scope.today);
             }
 
             DHIS2EventFactory.update(updatedEvent).then(function(data){            
