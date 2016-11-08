@@ -18,11 +18,12 @@
                        placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
                        d2-date
                        max-date='0'
-                       ng-model="currentEvent.eventDate" 
+                       ng-model="currentEvent.eventDate"
                        ng-required="true"                            
                        d2-date-validator
-                       name="eventDate" 
-                       input-field-id='eventDate' 
+                       name="eventDate"
+                       ng-change="verifyExpiryDate()"
+                       input-field-id='eventDate'
                        class="form-control">
                 <div ng-messages="outerForm.eventDate.$error" ng-if="interacted(outerForm.eventDate)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">                                         
                 </div>

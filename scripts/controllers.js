@@ -34,7 +34,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 AuthorityService,
                 TrackerRulesExecutionService,
                 OrgUnitFactory,
-                OptionSetService) {
+                OptionSetService,
+                NotificationService) {
+
+
     
     $scope.maxOptionSize = 30;
     //selected org unit
@@ -152,6 +155,33 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             })
         }
     });
+
+    $scope.verifyExpiryDate = function() {
+        var eventPeriodEndDate, eventDate, eventPeriod;
+        var isValid = true;
+        var date = $scope.currentEvent.eventDate;
+        var expiryDays = $scope.selectedProgram.expiryDays;
+        var calendarSetting = CalendarService.getSetting();
+        var dateFormat = calendarSetting.momentFormat;
+        var generator = new dhis2.period.PeriodGenerator($.calendars.instance(calendarSetting.keyCalendar), dateFormat);
+        var today = moment();/*use today from dateutils*/
+        $scope.model.invalidDate = false;
+        if (!date) {
+            return;
+        }
+        eventDate = moment(date, dateFormat);
+        eventPeriod = generator.getPeriodForTheDate(eventDate.format("YYYY-MM-DD"), $scope.selectedProgram.expiryPeriodType, true);
+        if (eventPeriod && eventPeriod.endDate) {
+            eventPeriodEndDate = moment(eventPeriod.endDate, "YYYY-MM-DD").add(expiryDays, "day");
+            if (today.isAfter(eventPeriodEndDate)) {
+                NotificationService.showNotifcationDialog($translate.instant("error"), $translate.instant("event_date_out_of_range"));
+                $scope.model.invalidDate = true;
+                $scope.currentEvent.eventDate = null;
+                isValid = false;
+            }
+        }
+        return isValid;
+    };
 
     $scope.completeEnrollment = function() {
         $scope.currentEvent.status = !$scope.currentEvent.status;
@@ -292,7 +322,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.sortHeader = {};
         $scope.filterText = {};
         $scope.filterParam = '';
-        
+
         if( $scope.userAuthority && $scope.userAuthority.canAddOrUpdateEvent &&
                 $scope.selectedProgram && 
                 $scope.selectedProgram.programStages && 
@@ -300,10 +330,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $scope.selectedProgram.programStages[0].id){ 
                 
             //because this is single event, take the first program stage
-            
-            $scope.selectedProgramStage = $scope.selectedProgram.programStages[0];   
+
+            $scope.selectedProgramStage = $scope.selectedProgram.programStages[0];
             $scope.currentStage = $scope.selectedProgramStage;
-            
+
                 angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
                     section.open = true;
                 });
@@ -311,7 +341,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $scope.prStDes = [];
                 $scope.restoreGridColumnsFromUserStore();
 
-                $scope.filterTypes = {};                               
+                $scope.filterTypes = {};
                 $scope.newDhis2Event = {};
                 if(!$scope.eventGridColumnsRestored) {
                     $scope.eventGridColumns.push({
@@ -341,25 +371,25 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $scope.filterText['eventDate']= {};
 
                 angular.forEach($scope.selectedProgramStage.programStageDataElements, function(prStDe){
-                    
+
                     $scope.prStDes[prStDe.dataElement.id] = prStDe;
                     $scope.newDhis2Event[prStDe.dataElement.id] = '';
-                   
+
                     if(!$scope.eventGridColumnsRestored) {
                         //generate grid headers using program stage data elements
                         //create a template for new event
                         //for date type dataelements, filtering is based on start and end dates
                         $scope.eventGridColumns.push({displayName: prStDe.dataElement.displayFormName,
-                                                  id: prStDe.dataElement.id, 
-                                                  valueType: prStDe.dataElement.valueType, 
-                                                  compulsory: prStDe.compulsory, 
-                                                  filterWithRange: prStDe.dataElement.valueType === 'DATE' || 
-                                                                        prStDe.dataElement.valueType === 'NUMBER' || 
-                                                                        prStDe.dataElement.valueType === 'INTEGER' || 
-                                                                        prStDe.dataElement.valueType === 'INTEGER_POSITIVE' || 
-                                                                        prStDe.dataElement.valueType === 'INTEGER_NEGATIVE' || 
-                                                                        prStDe.dataElement.valueType === 'INTEGER_ZERO_OR_POSITIVE' ? true : false,  
-                                                  showFilter: false, 
+                                                  id: prStDe.dataElement.id,
+                                                  valueType: prStDe.dataElement.valueType,
+                                                  compulsory: prStDe.compulsory,
+                                                  filterWithRange: prStDe.dataElement.valueType === 'DATE' ||
+                                                                        prStDe.dataElement.valueType === 'NUMBER' ||
+                                                                        prStDe.dataElement.valueType === 'INTEGER' ||
+                                                                        prStDe.dataElement.valueType === 'INTEGER_POSITIVE' ||
+                                                                        prStDe.dataElement.valueType === 'INTEGER_NEGATIVE' ||
+                                                                        prStDe.dataElement.valueType === 'INTEGER_ZERO_OR_POSITIVE' ? true : false,
+                                                  showFilter: false,
                                                   show: prStDe.displayInReports});
                     }
 
@@ -374,16 +404,16 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                         $scope.filterText[prStDe.dataElement.id]= {};
                     }
                 });
-                
+
                 $scope.customDataEntryForm = CustomFormService.getForProgramStage($scope.selectedProgramStage, $scope.prStDes);
 
                 if($scope.selectedProgramStage.captureCoordinates){
                     $scope.newDhis2Event.coordinate = {};
                 }
-                
+
                 $scope.newDhis2Event.eventDate = '';
                 $scope.newDhis2Event.event = 'SINGLE_EVENT';
-                
+
                 $scope.selectedCategories = [];
                 if($scope.selectedProgram.categoryCombo && !$scope.selectedProgram.categoryCombo.isDefault && $scope.selectedProgram.categoryCombo.categories){
                     $scope.selectedCategories = $scope.selectedProgram.categoryCombo.categories;
@@ -392,7 +422,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 else{
                     $scope.optionsReady = true;
                     $scope.loadEvents();
-                }  
+                }
         }
     };
     
@@ -711,7 +741,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         /* prevents rerouting when eventId, orgunit and category options
          * are added to the url.*/
         if ($route && $route.current && $route.current.params) {
-            var newRouteParams = $route.current.params
+            var newRouteParams = $route.current.params;
             if (newRouteParams.event || newRouteParams.ou || newRouteParams.options) {
                 $route.current = lastRoute;
             }
@@ -978,9 +1008,9 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.updateEvent = function(){
        resetUrl();
         //check for form validity
-        $scope.outerForm.submitted = true;        
+        $scope.outerForm.submitted = true;
         if( $scope.outerForm.$invalid ){
-            $scope.selectedSection.id = 'ALL';f
+            $scope.selectedSection.id = 'ALL';
             angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
                 section.open = true;
             });
@@ -1089,7 +1119,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             });
         }        
     };
-            
+
     $scope.updateEventDataValue = function(dataElement){
 
         $scope.updateSuccess = false;
@@ -1469,6 +1499,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         if($scope.outerForm.submitted){
             return $scope.outerForm.$invalid;
         }
+
+        if($scope.model.invalidDate) {
+            return true;
+        }
         
         if(!$scope.outerForm.$dirty){
             return false;
@@ -1519,7 +1553,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         if(field){            
             status = $scope.outerForm.submitted || field.$dirty;
         }
-        return status;        
+        return status;
     };
 
     //listen for rule effect changes    
