@@ -545,16 +545,6 @@
                                                 d2-function="saveDataValue()">
                                         </d2-org-unit-tree>
                                     </div>
-                                    <div ng-switch-when="TEXT">
-                                        <input type="text"
-                                                ng-model="currentEvent[de.dataElement.id]"
-                                                ng-required={{prStDes[de.dataElement.id].compulsory}}
-                                                ng-disabled="assignedFields[de.dataElement.id] || model.editingDisabled"
-                                                name="foo"
-                                                input-field-id={{de.dataElement.id}}
-                                                ng-blur="saveDatavalue()"
-                                                class="form-control"/>
-                                    </div>
                                     <div ng-switch-default>
                                         <div class="alert alert-danger form-control">
                                             {{'unsupported_value_type' | translate}}:  {{prStDes[de.dataElement.id].dataElement.valueType}}
