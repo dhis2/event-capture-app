@@ -6,7 +6,7 @@
 
   <groupId>org.hisp.dhis</groupId>
   <artifactId>dhis-app-event-capture</artifactId>
-  <version>2.25-SNAPSHOT</version>
+  <version>2.25</version>
   <packaging>jar</packaging>
   <name>Event capture</name>
   <description>DHIS 2 event capture app</description>
