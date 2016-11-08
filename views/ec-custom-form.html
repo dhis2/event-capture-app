@@ -12,18 +12,19 @@
             {{selectedProgramStage.executionDateLabel ? selectedProgramStage.executionDateLabel : 'incident_date'| translate }}<span class="required">*</span>
         </td>
         <td>
-            <input type="text"                                                   
+            <input type="text"
                     placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
                     d2-date
                     max-date='0'
-                    ng-model="currentEvent.eventDate"  
+                    ng-model="currentEvent.eventDate"
                     ng-required="true"                     
                     d2-date-validator
                     name="eventDate" 
-                    input-field-id='eventDate' 
+                    input-field-id='eventDate'
                     class="form-control"
+                    ng-change="verifyExpiryDate()"
                     ng-disabled="model.editingDisabled">
-            <div ng-messages="outerForm.eventDate.$error" ng-if="interacted(outerForm.eventDate)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">                                         
+            <div ng-messages="outerForm.eventDate.$error" ng-if="interacted(outerForm.eventDate)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">
             </div>
         </td>
     </tr>
