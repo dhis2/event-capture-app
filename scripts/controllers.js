@@ -157,30 +157,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     });
 
     $scope.verifyExpiryDate = function() {
-        var eventPeriodEndDate, eventDate, eventPeriod;
-        var isValid = true;
-        var date = $scope.currentEvent.eventDate;
-        var expiryDays = $scope.selectedProgram.expiryDays;
-        var calendarSetting = CalendarService.getSetting();
-        var dateFormat = calendarSetting.momentFormat;
-        var generator = new dhis2.period.PeriodGenerator($.calendars.instance(calendarSetting.keyCalendar), dateFormat);
-        var today = moment();/*use today from dateutils*/
-        $scope.model.invalidDate = false;
-        if (!date) {
-            return;
+        if (!DateUtils.verifyExpiryDate($scope.currentEvent.eventDate, $scope.selectedProgram.expiryPeriodType,
+                $scope.selectedProgram.expiryDays)) {
+            $scope.currentEvent.eventDate = null;
         }
-        eventDate = moment(date, dateFormat);
-        eventPeriod = generator.getPeriodForTheDate(eventDate.format("YYYY-MM-DD"), $scope.selectedProgram.expiryPeriodType, true);
-        if (eventPeriod && eventPeriod.endDate) {
-            eventPeriodEndDate = moment(eventPeriod.endDate, "YYYY-MM-DD").add(expiryDays, "day");
-            if (today.isAfter(eventPeriodEndDate)) {
-                NotificationService.showNotifcationDialog($translate.instant("error"), $translate.instant("event_date_out_of_range"));
-                $scope.model.invalidDate = true;
-                $scope.currentEvent.eventDate = null;
-                isValid = false;
-            }
-        }
-        return isValid;
     };
 
     $scope.completeEnrollment = function() {
