@@ -103,6 +103,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     selection.select(orgUnitFromUrl.id);
                     subtree.reloadTree();
                     orgUnitRestoredFromUrl = true;
+                    $location.search("ou", null);
                     return;
                 }
             }
@@ -967,6 +968,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             eventIdFromUrl = null;
             selectedOptionsFromUrl = null;
             $location.search("event",null);
+            $location.search("ou", null);
         }
     }
 
@@ -975,7 +977,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         //check for form validity
         $scope.outerForm.submitted = true;        
         if( $scope.outerForm.$invalid ){
-            $scope.selectedSection.id = 'ALL';f
+            $scope.selectedSection.id = 'ALL';
             angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
                 section.open = true;
             });
