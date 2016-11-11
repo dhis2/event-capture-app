@@ -92,12 +92,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         selectedOptionsFromUrl = selectedOptionsFromUrl.split(";");
     }
     var orgUnitRestoredFromUrl = false;
-    var orgUnitInitialized = false;
     //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
-        if (orgUnitInitialized) {
-            return;
-        }
         if (angular.isObject($scope.selectedOrgUnit)) {
             if (orgUnitFromUrl) {
                 if (!orgUnitRestoredFromUrl) {
@@ -110,7 +106,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     return;
                 }
             }
-            orgUnitInitialized = true;
 
             $scope.pleaseSelectLabel = $translate.instant('please_select');
             $scope.registeringUnitLabel = $translate.instant('registering_unit');
