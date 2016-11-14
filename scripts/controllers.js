@@ -160,7 +160,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.verifyExpiryDate = function() {
         if($scope.model.ouDates) {
             if (!DateUtils.verifyOrgUnitPeriodDate($scope.currentEvent.eventDate, $scope.model.ouDates.startDate, $scope.model.ouDates.endDate)) {
-                dateSetter($scope, null);
+                $scope.currentEvent.eventDate = null;
                 return;
             }
         }
