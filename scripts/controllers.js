@@ -13,6 +13,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $q,
                 $filter,
                 $location,
+                $timeout,
                 orderByFilter,
                 SessionStorageService,
                 Paginator,
@@ -113,6 +114,15 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             OrgUnitFactory.getOrgUnitFromStore($scope.selectedOrgUnit.id).then(function (orgUnitFromStore) {
                 if(orgUnitFromStore) {
                     $scope.model.ouDates = {startDate: orgUnitFromStore.odate, endDate: orgUnitFromStore.cdate };
+                }
+            });
+            OrgUnitFactory.getOrgUnitClosedStatus($scope.selectedOrgUnit.id).then(function (closedStatus) {
+                $scope.model.editingDisabled =  closedStatus;
+                hideHeaderMessage();
+                if ($scope.model.editingDisabled) {
+                    $timeout (function() {
+                        setHeaderMessage($translate.instant("orgunit_closed"));
+                    }, 500)
                 }
             });
 
@@ -680,7 +690,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         else{
             $scope.showEventList();
         }
-        $scope.model.editingDisabled = false;
+       // $scope.model.editingDisabled = false;
     };
     
     $scope.showEventList = function(dhis2Event){        
@@ -774,16 +784,18 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
 
     function checkEventEditingStatus() {
-        $scope.model.editingDisabled = DHIS2EventService.getEventExpiryStatus($scope.currentEvent,
-            $scope.selectedProgram, $scope.selectedOrgUnit.id);
+        if (!$scope.model.editingDisabled) {
+            $scope.model.editingDisabled = DHIS2EventService.getEventExpiryStatus($scope.currentEvent,
+                $scope.selectedProgram, $scope.selectedOrgUnit.id);
 
-        if ($scope.model.editingDisabled) {
-            var dialogOptions = {
-                headerText: $translate.instant('event_expired'),
-                bodyText: $translate.instant('editing_disabled')
-            };
-            DialogService.showDialog({}, dialogOptions).then(function (response) {
-            });
+            if ($scope.model.editingDisabled) {
+                var dialogOptions = {
+                    headerText: $translate.instant('event_expired'),
+                    bodyText: $translate.instant('editing_disabled')
+                };
+                DialogService.showDialog({}, dialogOptions).then(function (response) {
+                });
+            }
         }
     }
     
