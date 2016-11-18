@@ -130,6 +130,16 @@
                                        ng-blur="saveDatavalue()" 
                                        class="form-control"/>
                             </div>
+                            <div ng-switch-when="PHONE_NUMBER">
+                                <input type="text"
+                                        ng-model="currentEvent[eventGridColumn.id]"                                        
+                                        ng-required={{eventGridColumn.compulsory}}
+                                        ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
+                                        name="foo" 
+                                        input-field-id={{eventGridColumn.id}} 
+                                        ng-blur="saveDatavalue()" 
+                                        class="form-control"/>
+                            </div>
                             <div ng-switch-when="TEXT">
                                 <input type="text"
                                         ng-model="currentEvent[eventGridColumn.id]"                                        
@@ -415,6 +425,16 @@
                                                input-field-id={{de.dataElement.id}}
                                                ng-blur="saveDatavalue()"
                                                class="form-control"/>
+                                    </div>
+                                    <div ng-switch-when="PHONE_NUMBER">
+                                        <input type="text"
+                                                ng-model="currentEvent[de.dataElement.id]"
+                                                ng-required={{prStDes[de.dataElement.id].compulsory}}
+                                                ng-disabled="assignedFields[de.dataElement.id] || model.editingDisabled"
+                                                name="foo"
+                                                input-field-id={{de.dataElement.id}}
+                                                ng-blur="saveDatavalue()"
+                                                class="form-control"/>
                                     </div>
                                     <div ng-switch-when="TEXT">
                                         <input type="text"
