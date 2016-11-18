@@ -118,12 +118,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             });
             OrgUnitFactory.getOrgUnitClosedStatus($scope.selectedOrgUnit.id).then(function (closedStatus) {
                 $scope.model.editingDisabled =  closedStatus;
-                hideHeaderMessage();
-                if ($scope.model.editingDisabled) {
-                    $timeout (function() {
-                        setHeaderMessage($translate.instant("orgunit_closed"));
-                    }, 500)
-                }
             });
 
             $scope.pleaseSelectLabel = $translate.instant('please_select');
