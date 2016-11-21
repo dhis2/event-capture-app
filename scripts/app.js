@@ -40,7 +40,8 @@ const eventCapture = angular.module('eventCapture',
 
     $routeProvider.when('/', {
         templateUrl: 'views/home.html',
-        controller: 'MainController'
+        controller: 'MainController',
+        reloadOnSearch: false
     }).otherwise({
         redirectTo: '/'
     });

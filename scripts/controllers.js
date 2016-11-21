@@ -85,27 +85,21 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
     var selectedOptionsFromUrl = ($location.search()).options;
 
-    if (orgUnitFromUrl) {
-        orgUnitFromUrl = {id: orgUnitFromUrl};
-    }
     if (selectedOptionsFromUrl) {
         selectedOptionsFromUrl = selectedOptionsFromUrl.split(";");
     }
-    var orgUnitRestoredFromUrl = false;
     //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
         if (angular.isObject($scope.selectedOrgUnit)) {
             if (orgUnitFromUrl) {
-                if (!orgUnitRestoredFromUrl) {
-                    OrgUnitFactory.get(orgUnitFromUrl.id).then(function (orgUnit) {
-                        $scope.selectedOrgUnit = orgUnit;
-                    });
-                    selection.select(orgUnitFromUrl.id);
-                    subtree.reloadTree();
-                    orgUnitRestoredFromUrl = true;
-                    $location.search("ou", null);
-                    return;
-                }
+                OrgUnitFactory.get(orgUnitFromUrl).then(function (orgUnit) {
+                    $scope.selectedOrgUnit = orgUnit;
+                });
+                selection.select(orgUnitFromUrl);
+                subtree.reloadTree();
+                orgUnitFromUrl = null;
+                $location.search("ou", null);
+                return;
             }
 
             $scope.pleaseSelectLabel = $translate.instant('please_select');
