@@ -169,13 +169,13 @@
                                             <div ng-if="eventGridColumn.id !== 'uid'">
                                                 <div ng-if="prStDes[eventGridColumn.id].dataElement.optionSetValue">
                                                     <span ng-if="!selectedProgram.dataEntryMethod || optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options.length > 7">
-                                                        <ui-select ng-model="currentEvent[eventGridColumn.id]" 
+                                                        <ui-select ng-model="currentEvent[eventGridColumn.id]"
                                                                    theme="select2" 
                                                                    ng-required={{eventGridColumn.compulsory}}
                                                                    ng-disabled="model.editingDisabled"
                                                                    name="foo" 
                                                                    d2-option-validator
-                                                                   on-select="updateEventDataValue(dhis2Event,eventGridColumn.id)" 
+                                                                   on-select="updateEventDataValue(eventGridColumn.id)"
                                                                    on-remove="validateOptionOnRemove(eventGridColumn.compulsory)"
                                                                    input-field-id={{eventGridColumn.id}}                                                               
                                                                    style="width:100%;">
