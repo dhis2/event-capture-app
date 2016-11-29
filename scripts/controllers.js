@@ -647,46 +647,87 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.filterEvents = function(gridColumn, applyFilter){
         $scope.filterParam = '';
         
-        for(var i=0; i<$scope.eventGridColumns.length; i++){            
-            if($scope.eventGridColumns[i].id === gridColumn.id){
-                $scope.eventGridColumns[i].showFilter = !$scope.eventGridColumns[i].showFilter;
-            }            
+        angular.forEach($filter('filter')($scope.eventGridColumns, {group: 'FIXED'}), function(col){            
+            if( col.id === gridColumn.id ){
+                col.showFilter = !col.showFilter;
+            }
             else{
-                $scope.eventGridColumns[i].showFilter = false;
-            }            
+                col.showFilter = false;
+            }
+            
+            if( applyFilter && $scope.filterText[col.id]){
+                
+                switch ( col.id ){
+                    case "eventDate":
+                        if( $scope.filterText[col.id].start || $scope.filterText[col.id].end ){                            
+                            if( $scope.filterText[col.id].start ){
+                                $scope.filterParam += '&startDate=' + $scope.filterText[col.id].start;
+                            }                    
+                            if( $scope.filterText[col.id].end ){
+                                $scope.filterParam += '&endDate=' + $scope.filterText[col.id].end;
+                            }
+                        }
+                        break;
+                    case "lastUpdated":
+                        if( $scope.filterText[col.id].start || $scope.filterText[col.id].end ){                            
+                            if( $scope.filterText[col.id].start ){
+                                $scope.filterParam += '&lastUpdatedStartDate=' + $scope.filterText[col.id].start;
+                            }                    
+                            if( $scope.filterText[col.id].end ){
+                                $scope.filterParam += '&lastUpdatedEndDate=' + $scope.filterText[col.id].end;
+                            }
+                        }
+                        break;
+                    case "status":
+                        $scope.filterParam += '&status=' + $scope.filterText[col.id];
+                        break;
+                }
+            }
+        });
+        
+        /*angular.forEach($filter('filter')($scope.eventGridColumns, {group: 'DYNAMIC'}), function(col){
+            
+            if( col.id === gridColumn.id ){
+                col.showFilter = !col.showFilter;
+            }
+            else{
+                col.showFilter = false;
+            }
+            
             if( applyFilter ){
-                if( $scope.prStDes[$scope.eventGridColumns[i].id] && 
-                        $scope.prStDes[$scope.eventGridColumns[i].id].dataElement && 
-                        $scope.prStDes[$scope.eventGridColumns[i].id].dataElement.optionSetValue &&
-                        $scope.filterText[$scope.eventGridColumns[i].id] &&
-                        $scope.filterText[$scope.eventGridColumns[i].id].length > 0 ){                    
-                    var filters = $scope.filterText[$scope.eventGridColumns[i].id].map(function(filt) {return filt.code;});
-                    
+                
+                if( $scope.prStDes[col.id] && 
+                        $scope.prStDes[col.id].dataElement && 
+                        $scope.prStDes[col.id].dataElement.optionSetValue &&
+                        $scope.filterText[col.id] &&
+                        $scope.filterText[col.id].length > 0 ){                    
+                    var filters = $scope.filterText[col.id].map(function(filt) {return filt.code;});
+
                     if( filters.length > 0 ){                        
-                        $scope.filterParam += '&filter=' + $scope.eventGridColumns[i].id + ':IN:' + filters.join(';');
+                        $scope.filterParam += '&filter=' + col.id + ':IN:' + filters.join(';');
                     }
                 }
                 else{
-                    if( $scope.filterText[$scope.eventGridColumns[i].id] && $scope.filterText[$scope.eventGridColumns[i].id] !== ''){                
-                        if( angular.isObject( $scope.filterText[$scope.eventGridColumns[i].id] ) ) {                    
-                            if( $scope.filterText[$scope.eventGridColumns[i].id].start || $scope.filterText[$scope.eventGridColumns[i].id].end ){
-                                $scope.filterParam += '&filter=' + $scope.eventGridColumns[i].id;                     
-                                if( $scope.filterText[$scope.eventGridColumns[i].id].start ){
-                                    $scope.filterParam += ':GT:' + $scope.filterText[$scope.eventGridColumns[i].id].start;
+                    if( $scope.filterText[col.id] && $scope.filterText[col.id] !== ''){                
+                        if( angular.isObject( $scope.filterText[col.id] ) ) {                    
+                            if( $scope.filterText[col.id].start || $scope.filterText[col.id].end ){
+                                $scope.filterParam += '&filter=' + col.id;                     
+                                if( $scope.filterText[col.id].start ){
+                                    $scope.filterParam += ':GT:' + $scope.filterText[col.id].start;
                                 }                    
-                                if( $scope.filterText[$scope.eventGridColumns[i].id].end ){
-                                    $scope.filterParam += ':LT:' + $scope.filterText[$scope.eventGridColumns[i].id].end;
+                                if( $scope.filterText[col.id].end ){
+                                    $scope.filterParam += ':LT:' + $scope.filterText[col.id].end;
                                 }
                             }                                        
                         }
                         else{
-                            $scope.filterParam += '&filter=' + $scope.eventGridColumns[i].id + ':like:' + $scope.filterText[$scope.eventGridColumns[i].id];
+                            $scope.filterParam += '&filter=' + col.id + ':like:' + $scope.filterText[col.id];
                         }
                     }
-                }
-            }            
-        }
-        
+                }                
+            }
+        });*/
+                
         if( applyFilter && $scope.filterParam !== '' ){
             $scope.loadEvents();
         }       
