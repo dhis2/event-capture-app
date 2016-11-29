@@ -326,17 +326,24 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
             });            
             return promise;            
         },
-        get: function(eventUid){            
-            var promise = $http.get(DHIS2URL + '/events/' + eventUid + '.json').then(function(response){               
-                return response.data;                
-            }, function(){
-                var p = dhis2.ec.store.get('events', eventUid).then(function(ev){
-                    ev.event = eventUid;
-                    return ev;
-                });
-                return p;
-            });            
-            return promise;
+        get: function(eventUid, event){
+            if( event && event.state && event.state === 'FULL' ){                
+                var def = $q.defer();
+                def.resolve( event );
+                return def.promise;
+            }
+            else{
+                var promise = $http.get(DHIS2URL + '/events/' + eventUid + '.json').then(function(response){               
+                    return response.data;                
+                }, function(){
+                    var p = dhis2.ec.store.get('events', eventUid).then(function(ev){
+                        ev.event = eventUid;
+                        return ev;
+                    });
+                    return p;
+                });            
+                return promise;
+            }            
         },        
         create: function(dhis2Event){
             var promise = $http.post(DHIS2URL + '/events.json', dhis2Event).then(function(response){
