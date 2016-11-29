@@ -200,12 +200,12 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
 
 /* factory for handling events */
 .factory('DHIS2EventFactory', function($http, $q, ECStorageService, $rootScope) {
-    var internalGetByFilters = function(orgUnit, attributeCategoryUrl, pager, paging, ordering, filterings, format, filterParam) {
+    var internalGetByFilters = function(orgUnit, attributeCategoryUrl, pager, paging, ordering, filterings, format, filterParam, sortParam) {
         var url;
            if (format === "csv") {
             	url = DHIS2URL + '/events.csv?' + 'orgUnit=' + orgUnit;
         	} else {
-            	url = DHIS2URL + '/events.json?' + 'orgUnit=' + orgUnit;
+            	url = DHIS2URL + '/events/query.json?' + 'orgUnit=' + orgUnit;
         	}
             
             if(filterings) {
@@ -220,6 +220,10 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
 
             if( filterParam ){
                 url += filterParam;
+            }
+            
+            if( sortParam && sortParam.id && sortParam.direction){
+                url += '&order=' + sortParam.id + ':' + sortParam.direction;
             }
             
             if(paging){
@@ -260,18 +264,68 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
                 });            
                 return def.promise;
             });            
-            
             return promise;
     };
     
     return {
-        getByStage: function(orgUnit, programStage, attributeCategoryUrl, pager, paging, format, filterParam){
-            var filterings = [{field:'programStage',value:programStage}];
-            return internalGetByFilters(orgUnit, attributeCategoryUrl, pager, paging, null, filterings, format, filterParam);
-        },  
-        getByFilters: function(orgUnit, pager, paging, ordering, filterings){
-            return internalGetByFilters(orgUnit, null, pager, paging, ordering, filterings);
-        },  
+        getByStage: function(orgUnit, programStage, attributeCategoryUrl, pager, paging, format, filterUrl, sortParam){
+            var url;
+            if (format === "csv") {
+            	url = DHIS2URL + '/events.csv?' + 'orgUnit=' + orgUnit;
+            } 
+            else {
+            	url = DHIS2URL + '/events/query.json?' + 'orgUnit=' + orgUnit;
+            }
+            
+            if( programStage ) {                
+                url += '&programStage=' + programStage;
+            }
+            
+            if( attributeCategoryUrl && !attributeCategoryUrl.default ){
+                url = url + '&attributeCc=' + attributeCategoryUrl.cc + '&attributeCos=' + attributeCategoryUrl.cp;
+            }
+
+            if( filterUrl ){
+                url += filterUrl;
+            }
+            
+            if( sortParam && sortParam.id && sortParam.direction){
+                url += '&order=' + sortParam.id + ':' + sortParam.direction;
+            }
+            
+            if(paging){
+                var pgSize = pager.pageSize ? pager.pageSize : 50;
+                var pg = pager.page ? pager.page : 1;
+                pgSize = pgSize > 1 ? pgSize  : 1;
+                pg = pg > 1 ? pg : 1; 
+                url = url  + '&pageSize=' + pgSize + '&page=' + pg + '&totalPages=true';
+            }
+            else{
+                url = url  + '&skipPaging=true';
+            }
+            
+            var promise = $http.get( url ).then(function(response){                    
+                return response.data;        
+            }, function(){     
+                var def = $q.defer();
+                ECStorageService.currentStore.open().done(function(){
+                    ECStorageService.currentStore.getAll('events').done(function(evs){
+                        var result = {events: [], pager: {pageSize: '', page: 1, toolBarDisplay: 5, pageCount: 1}};
+                        angular.forEach(evs, function(ev){                            
+                            if(ev.programStage === programStage && ev.orgUnit === orgUnit){
+                                ev.event = ev.id;
+                                result.events.push(ev);
+                            }
+                        }); 
+                        $rootScope.$apply(function(){
+                            def.resolve( result );
+                        });                    
+                    });
+                });            
+                return def.promise;
+            });            
+            return promise;            
+        },
         get: function(eventUid){            
             var promise = $http.get(DHIS2URL + '/events/' + eventUid + '.json').then(function(response){               
                 return response.data;                

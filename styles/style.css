@@ -744,6 +744,10 @@ ul.tree ul li:last-child:before {
     color: #FF8000;
 }
 
+.ui-select-search {
+    width: 100% !important;
+}
+
 /* From Bootstrap 3.3.x */
 .list-group-item-success {
   color: #3c763d;

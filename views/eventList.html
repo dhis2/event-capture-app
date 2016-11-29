@@ -59,7 +59,7 @@
                     <table class="listTable dhis2-table-striped-border dhis2-table-hover">
                         <thead>                        
                             <tr>
-                                <th ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}" ng-if="eventGridColumn.id !== 'comment'">                                    
+                                <th ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}" ng-if="eventGridColumn.id !== 'comment'">
                                     <!-- sort icon begins -->                                
                                     <span ng-hide="eventGridColumn.showFilter" class="bold" ng-click="sortEventGrid(eventGridColumn)">
                                         <span class="fa-stack">
@@ -83,7 +83,7 @@
                                     <!-- filter icon ends -->
 
                                     <!-- filter input field begins -->
-                                    <span ng-show="eventGridColumn.showFilter">                                          
+                                    <span ng-show="eventGridColumn.showFilter">
                                         <span ng-switch="eventGridColumn.valueType">                                            
                                             <span ng-switch-when="NUMBER">
                                                 <input style="width: 45%;" placeholder="{{'lower_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].start">
@@ -115,6 +115,24 @@
                                                     <a href ng-click='removeEndFilterText(eventGridColumn.id)'><span class='black'><i class="fa fa-trash-o"></i></span></a>                                                        
                                                 </span> 
                                             </span>
+                                            <span ng-switch-when="TEXT">
+                                                <span ng-if="prStDes[eventGridColumn.id] && prStDes[eventGridColumn.id].dataElement && prStDes[eventGridColumn.id].dataElement.optionSetValue">
+                                                    
+                                                    <ui-select multiple
+                                                                ng-model="filterText[eventGridColumn.id]"
+                                                                theme="bootstrap" style="width:90%;">
+                                                        <ui-select-match allow-clear="true" placeholder="{{'select_or_search'| translate}}">{{$item.displayName}}</ui-select-match>
+                                                        <ui-select-choices repeat="option in optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options | filter: $select.search | limitTo:maxOptionSize">
+                                                            <span ng-bind-html="option.displayName | highlight: $select.search"></span>
+                                                        </ui-select-choices>
+                                                    </ui-select>
+                                                    
+                                                </span>
+                                                
+                                                <span ng-if="!prStDes[eventGridColumn.id] || !prStDes[eventGridColumn.id].dataElement.optionSetValue">                                                
+                                                    <input type="text" style="width: 90%;" ng-model="filterText[eventGridColumn.id]" ng-blur="searchInGrid(eventGridColumn)">
+                                                </span>                                                
+                                            </span>
                                             <span ng-switch-default>
                                                 <input type="text" style="width: 90%;" ng-model="filterText[eventGridColumn.id]" ng-blur="searchInGrid(eventGridColumn)">
                                             </span> 
@@ -130,11 +148,11 @@
                             </tr>                        
                         </thead>
                         <tbody id="list">
-                            <tr title="{{'click_for_action' | translate}}" ng-repeat="dhis2Event in dhis2Events | orderBy:d2Sort:reverse | gridFilter:filterText:filterTypes">
+                            <tr title="{{'click_for_action' | translate}}" ng-repeat="dhis2Event in dhis2Events">
                                 <td ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}" ng-if="eventGridColumn.id !== 'comment'">
 
                                     <!-- Visible when event is not under editing -->                                
-                                    <div d2-context-menu ng-click="showEventList(dhis2Event)" ng-show="currentEvent.event !== dhis2Event.event">
+                                    <div d2-context-menu ng-click="showEventList(dhis2Event)" ng-show="currentEvent.event !== dhis2Event.event">                                        
                                         <span ng-switch="eventGridColumn.valueType">
                                             <span ng-switch-when="BOOLEAN">
                                                 <span ng-if="dhis2Event[eventGridColumn.id] == 'false'">{{noLabel}}</span>
@@ -175,7 +193,7 @@
                                                                    ng-disabled="model.editingDisabled"
                                                                    name="foo" 
                                                                    d2-option-validator
-                                                                   on-select="updateEventDataValue(dhis2Event,eventGridColumn.id)" 
+                                                                   on-select="updateEventDataValue(eventGridColumn.id)" 
                                                                    on-remove="validateOptionOnRemove(eventGridColumn.compulsory)"
                                                                    input-field-id={{eventGridColumn.id}}                                                               
                                                                    style="width:100%;">
