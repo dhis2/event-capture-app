@@ -684,49 +684,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
             }
         });
-        
-        /*angular.forEach($filter('filter')($scope.eventGridColumns, {group: 'DYNAMIC'}), function(col){
-            
-            if( col.id === gridColumn.id ){
-                col.showFilter = !col.showFilter;
-            }
-            else{
-                col.showFilter = false;
-            }
-            
-            if( applyFilter ){
-                
-                if( $scope.prStDes[col.id] && 
-                        $scope.prStDes[col.id].dataElement && 
-                        $scope.prStDes[col.id].dataElement.optionSetValue &&
-                        $scope.filterText[col.id] &&
-                        $scope.filterText[col.id].length > 0 ){                    
-                    var filters = $scope.filterText[col.id].map(function(filt) {return filt.code;});
-
-                    if( filters.length > 0 ){                        
-                        $scope.filterParam += '&filter=' + col.id + ':IN:' + filters.join(';');
-                    }
-                }
-                else{
-                    if( $scope.filterText[col.id] && $scope.filterText[col.id] !== ''){                
-                        if( angular.isObject( $scope.filterText[col.id] ) ) {                    
-                            if( $scope.filterText[col.id].start || $scope.filterText[col.id].end ){
-                                $scope.filterParam += '&filter=' + col.id;                     
-                                if( $scope.filterText[col.id].start ){
-                                    $scope.filterParam += ':GT:' + $scope.filterText[col.id].start;
-                                }                    
-                                if( $scope.filterText[col.id].end ){
-                                    $scope.filterParam += ':LT:' + $scope.filterText[col.id].end;
-                                }
-                            }                                        
-                        }
-                        else{
-                            $scope.filterParam += '&filter=' + col.id + ':like:' + $scope.filterText[col.id];
-                        }
-                    }
-                }                
-            }
-        });*/
                 
         if( applyFilter && $scope.filterParam !== '' ){
             $scope.loadEvents();
