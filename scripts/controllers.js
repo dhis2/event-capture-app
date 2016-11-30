@@ -87,8 +87,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     if (selectedOptionsFromUrl) {
         selectedOptionsFromUrl = selectedOptionsFromUrl.split(";");
     }
-    
-            
+   
     //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
         if (angular.isObject($scope.selectedOrgUnit)) {
@@ -102,7 +101,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $location.search("ou", null);
                 return;
             }
-            OrgUnitFactory.getOrgUnitFromStore($scope.selectedOrgUnit.id).then(function (orgUnitFromStore) {
+            OrgUnitFactory.getFromStoreOrServer($scope.selectedOrgUnit.id).then(function (orgUnitFromStore) {
                 if(orgUnitFromStore) {
                     $scope.model.ouDates = {startDate: orgUnitFromStore.odate, endDate: orgUnitFromStore.cdate };
                 }
@@ -282,17 +281,23 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         angular.forEach($scope.selectedProgramStage.programStageDataElements, function(prStDe){            
             var de = prStDe.dataElement;            
             if( event[de.id] ){
-                event[de.id] = CommonUtils.formatDataValue(null, event[de.id], de, $scope.optionSets, 'USER');            
-                if(de.valueType === 'FILE_RESOURCE'){
-                    FileService.get(event[de.id]).then(function(response){
-                        if(response && response.displayName){
-                            if(!$scope.fileNames[event.event]){
-                                $scope.fileNames[event.event] = {};
+                event[de.id] = CommonUtils.formatDataValue(null, event[de.id], de, $scope.optionSets, 'USER');
+                
+                switch ( de.valueType ){
+                    case "FILE_RESOURCE":
+                        FileService.get(event[de.id]).then(function(response){
+                            if(response && response.displayName){
+                                if(!$scope.fileNames[event.event]){
+                                    $scope.fileNames[event.event] = {};
+                                }
+                                $scope.fileNames[event.event][de.id] = response.displayName;
                             }
-                            $scope.fileNames[event.event][de.id] = response.displayName;
-                        }
-                    });
-                }
+                        });
+                        break;
+                    case "ORGANISATION_UNIT":
+                        
+                        break;
+                }                
             }
         });
         
