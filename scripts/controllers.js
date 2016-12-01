@@ -652,7 +652,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.filterEvents = function(gridColumn, applyFilter){
         $scope.filterParam = '';
         
-        angular.forEach($filter('filter')($scope.eventGridColumns, {group: 'FIXED'}), function(col){            
+        angular.forEach($scope.eventGridColumns, function(col){            
             if( col.id === gridColumn.id ){
                 col.showFilter = !col.showFilter;
             }
@@ -660,37 +660,68 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 col.showFilter = false;
             }
             
-            if( applyFilter && $scope.filterText[col.id]){
-                
-                switch ( col.id ){
-                    case "eventDate":
-                        if( $scope.filterText[col.id].start || $scope.filterText[col.id].end ){                            
-                            if( $scope.filterText[col.id].start ){
-                                $scope.filterParam += '&startDate=' + $scope.filterText[col.id].start;
-                            }                    
-                            if( $scope.filterText[col.id].end ){
-                                $scope.filterParam += '&endDate=' + $scope.filterText[col.id].end;
+            if( applyFilter && $scope.filterText[col.id] ){
+                if( col.group === "STATIC" ){
+                    switch ( col.id ){
+                        case "eventDate":
+                            if( $scope.filterText[col.id].start || $scope.filterText[col.id].end ){                            
+                                if( $scope.filterText[col.id].start ){
+                                    $scope.filterParam += '&startDate=' + $scope.filterText[col.id].start;
+                                }                    
+                                if( $scope.filterText[col.id].end ){
+                                    $scope.filterParam += '&endDate=' + $scope.filterText[col.id].end;
+                                }
+                            }
+                            break;
+                        case "lastUpdated":
+                            if( $scope.filterText[col.id].start || $scope.filterText[col.id].end ){                            
+                                if( $scope.filterText[col.id].start ){
+                                    $scope.filterParam += '&lastUpdatedStartDate=' + $scope.filterText[col.id].start;
+                                }                    
+                                if( $scope.filterText[col.id].end ){
+                                    $scope.filterParam += '&lastUpdatedEndDate=' + $scope.filterText[col.id].end;
+                                }
+                            }
+                            break;
+                        case "status":
+                            $scope.filterParam += '&status=' + $scope.filterText[col.id];
+                            break;
+                    }                
+                }
+                else{                    
+                    if( $scope.prStDes[col.id] && 
+                            $scope.prStDes[col.id].dataElement && 
+                            $scope.prStDes[col.id].dataElement.optionSetValue ){
+                        
+                        if( $scope.filterText[col.id].length > 0  ){
+                            var filters = $scope.filterText[col.id].map(function(filt) {return filt.code;});
+                            if( filters.length > 0 ){
+                                $scope.filterParam += '&filter=' + col.id + ':IN:' + filters.join(';');
                             }
                         }
-                        break;
-                    case "lastUpdated":
-                        if( $scope.filterText[col.id].start || $scope.filterText[col.id].end ){                            
-                            if( $scope.filterText[col.id].start ){
-                                $scope.filterParam += '&lastUpdatedStartDate=' + $scope.filterText[col.id].start;
-                            }                    
-                            if( $scope.filterText[col.id].end ){
-                                $scope.filterParam += '&lastUpdatedEndDate=' + $scope.filterText[col.id].end;
+                    }
+                    else{
+                        if( col.filterWithRange ){
+                            if($scope.filterText[col.id].start && $scope.filterText[col.id].start !== "" || $scope.filterText[col.id].end && $scope.filterText[col.id].end !== ""){
+                                $scope.filterParam += '&filter=' + col.id;
+                                if( $scope.filterText[col.id].start ){
+                                    $scope.filterParam += ':GT:' + $scope.filterText[col.id].start;
+                                }                    
+                                if( $scope.filterText[col.id].end ){
+                                    $scope.filterParam += ':LT:' + $scope.filterText[col.id].end;
+                                }
                             }
                         }
-                        break;
-                    case "status":
-                        $scope.filterParam += '&status=' + $scope.filterText[col.id];
-                        break;
+                        else{                            
+                            $scope.filterParam += '&filter=' + col.id + ':like:' + $scope.filterText[col.id];
+                        }
+                        
+                    }
                 }
             }
         });
                 
-        if( applyFilter && $scope.filterParam !== '' ){
+        if( applyFilter ){
             $scope.loadEvents();
         }       
     };

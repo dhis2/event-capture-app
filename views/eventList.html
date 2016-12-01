@@ -72,12 +72,12 @@
                                     <!-- sort icon ends -->
 
                                     <!-- filter icon begins -->
-                                    <span class='pull-right hideInPrint'>
-                                        <span ng-show="!eventGridColumn.filterWithRange">
-                                            <a href ng-click="filterEvents(eventGridColumn, !eventGridColumn.showFilter ? false:true)" title="{{searchLabel}}"><span ng-class="{true: 'filter-without-content', false: 'filter-with-content'} [filterText[eventGridColumn.id] == undefined || filterText[eventGridColumn.id] == '']"><i class="fa fa-search"></i></span></a>
+                                    <span class='pull-right hideInPrint' title="{{searchLabel}}" ng-click="filterEvents(eventGridColumn, !eventGridColumn.showFilter ? false:true)">
+                                        <span ng-if="!eventGridColumn.filterWithRange" >
+                                            <span ng-class="{true: 'filter-without-content', false: 'filter-with-content'} [filterText[eventGridColumn.id] == undefined || filterText[eventGridColumn.id] == '']"><i class="fa fa-search"></i></span>
                                         </span>
-                                        <span ng-show="eventGridColumn.filterWithRange">                                            
-                                            <a href ng-click="filterEvents(eventGridColumn, !eventGridColumn.showFilter ? false:true)" title="{{searchLabel}}"><span ng-class="{true: 'filter-without-content', false: 'filter-with-content'} [(filterText[eventGridColumn.id].start == undefined || filterText[eventGridColumn.id].start == '') && (filterText[eventGridColumn.id].end == undefined || filterText[eventGridColumn.id].end == '')]"><i class="fa fa-search"></i></span></a>
+                                        <span ng-if="eventGridColumn.filterWithRange">                                            
+                                            <span ng-class="{true: 'filter-without-content', false: 'filter-with-content'} [(filterText[eventGridColumn.id].start == undefined || filterText[eventGridColumn.id].start == '') && (filterText[eventGridColumn.id].end == undefined || filterText[eventGridColumn.id].end == '')]"><i class="fa fa-search"></i></span>
                                         </span>                                                    
                                     </span>
                                     <!-- filter icon ends -->
