@@ -285,7 +285,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                         checkAndSetFileName(event, dataValue.value, dataValue.dataElement);
                         break;
                     case "ORGANISATION_UNIT":
-                        checkAndSetOrgUnitName( event[dataValue.value] );
+                        checkAndSetOrgUnitName( dataValue.value );
                         break;
                 }
             }
@@ -1094,7 +1094,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     }
 
     $scope.updateEvent = function(){
-       resetUrl();
+        resetUrl();
         //check for form validity
         $scope.outerForm.submitted = true;
         if( $scope.outerForm.$invalid ){
@@ -1146,7 +1146,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             if( updatedEvent.status === 'COMPLETED' && $scope.currentEventOriginialValue.status !== 'COMPLETED' ){
                 updatedEvent.completedDate = DateUtils.formatFromUserToApi($scope.today);
             }
-
+            
             DHIS2EventFactory.update(updatedEvent).then(function(data){            
                 //reflect the change in the gird            
                 $scope.dhis2Events = DHIS2EventService.refreshList($scope.dhis2Events, $scope.currentEvent);    
@@ -1155,7 +1155,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $scope.editingEventInFull = false;
                 $scope.currentEvent = {};
                 $scope.currentEventOriginialValue = angular.copy($scope.currentEvent); 
-            });   
+            });
         });
     };
     
