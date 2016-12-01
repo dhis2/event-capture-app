@@ -182,8 +182,9 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.dhis2Events = [];
         $scope.currentEvent = {};
         $scope.currentEventOriginialValue = {};
-        $scope.fileNames = {};
+        $scope.fileNames = {};        
         $scope.currentFileNames = {};
+        $scope.orgUnitNames = {};
 
         $scope.eventRegistration = false;
         $scope.editGridColumns = false;
@@ -230,34 +231,29 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         });
     };
     
-    $scope.formatEvent = function(event) {
-        if(event.notes && event.notes.length > 0 && !$scope.noteExists){
-            $scope.noteExists = true;
-        }
-
-        angular.forEach(event.dataValues, function(dataValue){
-            if($scope.prStDes && $scope.prStDes[dataValue.dataElement]){
-                var val = dataValue.value;
-                if(angular.isObject($scope.prStDes[dataValue.dataElement].dataElement)){
-                    val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataValue.dataElement].dataElement, $scope.optionSets, 'USER');
+    function checkAndSetFileName( event, valueId, dataElementId ){        
+        FileService.get(valueId).then(function(response){
+            if(response && response.displayName){
+                if(!$scope.fileNames[event.event]){
+                    $scope.fileNames[event.event] = {};
                 }
-
-                event[dataValue.dataElement] = val;
-
-                if($scope.prStDes[dataValue.dataElement].dataElement.valueType === 'FILE_RESOURCE'){
-                    FileService.get(val).then(function(response){
-                        if(response && response.displayName){
-                            if(!$scope.fileNames[event.event]){
-                                $scope.fileNames[event.event] = {};
-                            }
-                            $scope.fileNames[event.event][dataValue.dataElement] = response.displayName;
-                        }
-                    });
-                }
+                $scope.fileNames[event.event][dataElementId] = response.displayName;
             }
         });
-
-        event['uid'] = event.event;
+    };
+    
+    function checkAndSetOrgUnitName( valueId ){
+        if( !$scope.orgUnitNames[valueId] ){
+            OrgUnitFactory.getFromStoreOrServer(valueId).then(function (response) {                            
+                if(response && response.data && response.data.n) {                                
+                    $scope.orgUnitNames[valueId] = response.data.n;
+                }
+            });
+        }
+    };
+    
+    function setCommonEventProps( event ){
+        event.uid = event.event;
         event.eventDate = DateUtils.formatFromApiToUser(event.eventDate);
         event.lastUpdated = DateUtils.formatFromApiToUser(event.lastUpdated);
         if (event.completedDate) {
@@ -268,6 +264,34 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         } else if(event.status === "COMPLETED") {
             event.status = true;
         }
+    }
+    
+    $scope.formatEvent = function(event) {
+        if(event.notes && event.notes.length > 0 && !$scope.noteExists){
+            $scope.noteExists = true;
+        }
+
+        angular.forEach(event.dataValues, function(dataValue){
+            if($scope.prStDes && $scope.prStDes[dataValue.dataElement] && dataValue.value){
+                
+                if(angular.isObject($scope.prStDes[dataValue.dataElement].dataElement)){
+                    dataValue.value = CommonUtils.formatDataValue(null, dataValue.value, $scope.prStDes[dataValue.dataElement].dataElement, $scope.optionSets, 'USER');
+                }
+
+                event[dataValue.dataElement] = dataValue.value;
+                
+                switch( $scope.prStDes[dataValue.dataElement].dataElement.valueType ){
+                    case "FILE_RESOURCE":
+                        checkAndSetFileName(event, dataValue.value, dataValue.dataElement);
+                        break;
+                    case "ORGANISATION_UNIT":
+                        checkAndSetOrgUnitName( event[dataValue.value] );
+                        break;
+                }
+            }
+        });
+
+        setCommonEventProps( event );
         
         event.state = 'FULL';
         delete event.dataValues;
@@ -285,33 +309,16 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 
                 switch ( de.valueType ){
                     case "FILE_RESOURCE":
-                        FileService.get(event[de.id]).then(function(response){
-                            if(response && response.displayName){
-                                if(!$scope.fileNames[event.event]){
-                                    $scope.fileNames[event.event] = {};
-                                }
-                                $scope.fileNames[event.event][de.id] = response.displayName;
-                            }
-                        });
+                        checkAndSetFileName(event, event[de.id], de.id);
                         break;
                     case "ORGANISATION_UNIT":
-                        
+                        checkAndSetOrgUnitName( event[de.id] );                        
                         break;
-                }                
+                }
             }
         });
         
-        event['uid'] = event.event;
-        event.eventDate = DateUtils.formatFromApiToUser(event.eventDate);
-        event.lastUpdated = DateUtils.formatFromApiToUser(event.lastUpdated);
-        if (event.completedDate) {
-            event.completedDate = DateUtils.formatFromApiToUser(event.completedDate);
-        }
-        if(event.status === "ACTIVE") {
-            event.status = false;
-        } else if(event.status === "COMPLETED") {
-            event.status = true;
-        }
+        setCommonEventProps( event );
         
         if( event.latitude ){
             var lat = $scope.formatNumberResult( event.latitude );
@@ -715,7 +722,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                         else{                            
                             $scope.filterParam += '&filter=' + col.id + ':like:' + $scope.filterText[col.id];
                         }
-                        
                     }
                 }
             }
