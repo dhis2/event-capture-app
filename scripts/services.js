@@ -321,7 +321,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
             return promise;
         },
         updateForEventDate: function(dhis2Event, fullEvent){
-            var promise = $http.put('../api/events/' + dhis2Event.event + '/updateEventDate', dhis2Event).then(function(response){
+            var promise = $http.put('../api/events/' + dhis2Event.event + '/eventDate', dhis2Event).then(function(response){
                 return response.data;         
             }, function(){
                 dhis2.ec.store.remove('events', fullEvent.event);
