@@ -411,7 +411,7 @@
                                                     </div>
                                                     <div ng-switch-when="ORGANISATION_UNIT">
                                                         <d2-org-unit-tree
-                                                                selected-org-unit="selectedOrgUnit"
+                                                                selected-org-unit="{{selectedOrgUnit.id}}"
                                                                 id="{{eventGridColumn.id}}"
                                                                 d2-value="currentEvent[eventGridColumn.id]"
                                                                 d2-required="eventGridColumn.compulsory"
