@@ -417,7 +417,8 @@
                                                                 d2-required="eventGridColumn.compulsory"
                                                                 d2-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
                                                                 d2-object="currentEvent"
-                                                                d2-function="updateEventDataValue(eventGridColumn.id)">
+                                                                d2-function="updateEventDataValue(eventGridColumn.id)"
+                                                                d2-orgunit-names="orgUnitNames">
                                                         </d2-org-unit-tree>
                                                     </div>                                                
                                                     <div ng-switch-when="TEXT">

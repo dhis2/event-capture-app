@@ -230,28 +230,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
         });
     };
-    
-    function checkAndSetFileName( event, valueId, dataElementId ){        
-        FileService.get(valueId).then(function(response){
-            if(response && response.displayName){
-                if(!$scope.fileNames[event.event]){
-                    $scope.fileNames[event.event] = {};
-                }
-                $scope.fileNames[event.event][dataElementId] = response.displayName;
-            }
-        });
-    };
-    
-    function checkAndSetOrgUnitName( valueId ){
-        if( !$scope.orgUnitNames[valueId] ){
-            OrgUnitFactory.getFromStoreOrServer(valueId).then(function (response) {                            
-                if(response && response.data && response.data.n) {                                
-                    $scope.orgUnitNames[valueId] = response.data.n;
-                }
-            });
-        }
-    };
-    
+   
     function setCommonEventProps( event ){
         event.uid = event.event;
         event.eventDate = DateUtils.formatFromApiToUser(event.eventDate);
@@ -282,10 +261,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 
                 switch( $scope.prStDes[dataValue.dataElement].dataElement.valueType ){
                     case "FILE_RESOURCE":
-                        checkAndSetFileName(event, dataValue.value, dataValue.dataElement);
+                        CommonUtils.checkAndSetFileName(event, dataValue.value, dataValue.dataElement);
                         break;
                     case "ORGANISATION_UNIT":
-                        checkAndSetOrgUnitName( dataValue.value );
+                        CommonUtils.checkAndSetOrgUnitName( dataValue.value );
                         break;
                 }
             }
