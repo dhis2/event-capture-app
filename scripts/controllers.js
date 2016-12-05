@@ -91,17 +91,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
         if (angular.isObject($scope.selectedOrgUnit)) {
-            if (orgUnitFromUrl) {
-                OrgUnitFactory.get(orgUnitFromUrl).then(function (orgUnit) {
-                    $scope.selectedOrgUnit = orgUnit;
-                });
-                selection.select(orgUnitFromUrl);
-                subtree.reloadTree();
-                orgUnitFromUrl = null;
-                $location.search("ou", null);
-                return;
-            }
-
             $scope.pleaseSelectLabel = $translate.instant('please_select');
             $scope.registeringUnitLabel = $translate.instant('registering_unit');
             $scope.eventCaptureLabel = $translate.instant('event_capture');
