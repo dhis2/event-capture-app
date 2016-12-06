@@ -269,6 +269,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
             }
         });
+        
+        $scope.fileNames = CurrentSelection.getFileNames();        
 
         setCommonEventProps( event );
         
@@ -288,10 +290,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 
                 switch ( de.valueType ){
                     case "FILE_RESOURCE":
-                        checkAndSetFileName(event, event[de.id], de.id);
+                        CommonUtils.checkAndSetFileName(event, event[de.id], de.id);
                         break;
                     case "ORGANISATION_UNIT":
-                        checkAndSetOrgUnitName( event[de.id] );                        
+                        CommonUtils.checkAndSetOrgUnitName( event[de.id] );                        
                         break;
                 }
             }
@@ -552,6 +554,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                         $scope.dhis2Events.push( ev );
                     });                                        
 
+                    $scope.fileNames = CurrentSelection.getFileNames();
+                    
                     if( data.metaData && data.metaData.pager ){
                         
                         data.metaData.pager.pageSize = data.metaData.pager.pageSize ? data.metaData.pager.pageSize : $scope.pager.pageSize;

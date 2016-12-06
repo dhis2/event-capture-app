@@ -113,27 +113,32 @@ styles/style.css
 ../icons/function-log-out.png
 ../icons/function-about-dhis2.png
 
-../dhis-web-commons/angular-forms/serverside-pagination.html
-../dhis-web-commons/angular-forms/custom-dataentry-form.html
-../dhis-web-commons/angular-forms/map.html
-../dhis-web-commons/angular-forms/error-messages.html
 ../dhis-web-commons/angular-forms/audit-history.html
-../dhis-web-commons/angular-forms/radio-button.html
+../dhis-web-commons/angular-forms/coordinate-input.html
+../dhis-web-commons/angular-forms/custom-dataentry-form.html
+../dhis-web-commons/angular-forms/error-messages.html
+../dhis-web-commons/angular-forms/map.html
 ../dhis-web-commons/angular-forms/orgunit-input.html
 ../dhis-web-commons/angular-forms/orgunit-tree.html
-../dhis-web-commons/angular-forms/coordinate-input.html
+../dhis-web-commons/angular-forms/radio-button.html
+../dhis-web-commons/angular-forms/serverside-pagination.html
 
-
+views/buttons-section.html
 views/column-modal.html
-views/ec-custom-form.html
+views/comments-section.html
+views/completedForm.html
 views/defaultForm.html
 views/dialog.html
+views/ec-custom-form.html
+views/event-details.html
 views/eventList.html
 views/home.html
+views/indicators.html
+views/left-bar.html
+views/modal-body.html
 views/modal.html
 views/notes.html
-views/buttons-section.html
-views/indicators.html
+views/status.html
 views/warnings.html
 
 ../dhis-web-commons/fonts/LiberationSans-Regular-webfont.eot
