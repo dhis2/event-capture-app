@@ -270,7 +270,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
         });
         
-        $scope.fileNames = CurrentSelection.getFileNames();        
+        $scope.fileNames = CurrentSelection.getFileNames();
+        $scope.orgUnitNames = CurrentSelection.getOrgUnitNames();
 
         setCommonEventProps( event );
         
@@ -555,6 +556,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     });                                        
 
                     $scope.fileNames = CurrentSelection.getFileNames();
+                    $scope.orgUnitNames = CurrentSelection.getOrgUnitNames();
                     
                     if( data.metaData && data.metaData.pager ){
                         
