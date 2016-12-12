@@ -91,16 +91,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
         if (angular.isObject($scope.selectedOrgUnit)) {
-            if (orgUnitFromUrl) {
-                OrgUnitFactory.get(orgUnitFromUrl).then(function (orgUnit) {
-                    $scope.selectedOrgUnit = orgUnit;
-                });
-                selection.select(orgUnitFromUrl);
-                subtree.reloadTree();
-                orgUnitFromUrl = null;
-                $location.search("ou", null);
-                return;
-            }
             OrgUnitFactory.getFromStoreOrServer($scope.selectedOrgUnit.id).then(function (orgUnitFromStore) {
                 if(orgUnitFromStore) {
                     $scope.model.ouDates = {startDate: orgUnitFromStore.odate, endDate: orgUnitFromStore.cdate };
