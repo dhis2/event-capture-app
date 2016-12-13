@@ -5,13 +5,10 @@
 <div id="leftBar">
     
     <d2-left-bar></d2-left-bar>
-    
-    <div id="orgUnitTree">
-        <ul>
-        </ul>
-    </div>
-    
-    <img id="ouwt_loader" src="../images/ajax-loader-bar.gif" alt="{{'in_progress'| translate}}"/>
+
+    <d2-main-org-unit-tree update-selected-org-unit="updateSelectedOrgUnit" tree-loaded="treeLoaded"></d2-main-org-unit-tree>
+
+    <img ng-if="!treeLoaded" id="ouwt_loader" src="../images/ajax-loader-bar.gif" alt="{{'in_progress'| translate}}"/>
     
     <div class="small-horizontal-spacing" ng-if="!treeLoaded">
         {{'loading_tree'| translate}}
@@ -27,8 +24,9 @@
         {{'loading_metadata'| translate}}
     </div>
 
-    <div ng-show="selectedOrgUnit && userAuthority.canAddOrUpdateEvent">
-        
+    <div ng-show="selectedOrgUnit">
+    <!--<div ng-show="selectedOrgUnit && userAuthority.canAddOrUpdateEvent">-->
+
         <h3>
             {{eventCaptureLabel}}
         </h3>
@@ -41,7 +39,7 @@
                         {{registeringUnitLabel}}
                     </div>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" selected-org-unit ng-model="selectedOrgUnit.displayName"
+                        <input type="text" class="form-control"  ng-model="selectedOrgUnit.displayName"
                                value="{{selectedOrgUnit.displayName|| pleaseSelectLabel}}" disabled="">
                     </div>
                 </div>
@@ -166,8 +164,8 @@
         
     </div>
     
-    <div ng-if="selectedOrgUnit && !userAuthority.canAddOrUpdateEvent">
-        <h1>{{'lacking_required_authority_to_add_update_event' | translate}}</h1>
-    </div>
+    <!--<div ng-if="selectedOrgUnit && !userAuthority.canAddOrUpdateEvent">-->
+        <!--<h1>{{'lacking_required_authority_to_add_update_event' | translate}}</h1>-->
+    <!--</div>-->
     
 </div>

@@ -89,17 +89,18 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     }
    
     //watch for selection of org unit from tree
-    $scope.$watch('selectedOrgUnit', function() {
-        if (angular.isObject($scope.selectedOrgUnit)) {
-            OrgUnitFactory.getFromStoreOrServer($scope.selectedOrgUnit.id).then(function (orgUnitFromStore) {
+    $scope.updateSelectedOrgUnit = function(selectedOrgUnit) {
+
+        if (angular.isObject(selectedOrgUnit)) {
+            $scope.selectedOrgUnit = selectedOrgUnit;
+            /*OrgUnitFactory.getFromStoreOrServer($scope.selectedOrgUnit.id).then(function (orgUnitFromStore) {
                 if(orgUnitFromStore) {
                     $scope.model.ouDates = {startDate: orgUnitFromStore.odate, endDate: orgUnitFromStore.cdate };
                 }
             });
             OrgUnitFactory.getOrgUnitClosedStatus($scope.selectedOrgUnit.id).then(function (closedStatus) {
                 $scope.model.editingDisabled =  closedStatus;
-            });
-
+            });*/
             $scope.pleaseSelectLabel = $translate.instant('please_select');
             $scope.registeringUnitLabel = $translate.instant('registering_unit');
             $scope.eventCaptureLabel = $translate.instant('event_capture');
@@ -139,7 +140,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
             });
         }
-    });
+    };
 
     $scope.verifyExpiryDate = function() {
         if(!$scope.currentEvent.eventDate){

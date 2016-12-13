@@ -168,7 +168,7 @@ function downloadMetaData(){
         console.log( 'Finished loading meta-data' ); 
         dhis2.availability.startAvailabilityCheck();
         console.log( 'Started availability check' );
-        selection.responseReceived();
+        //selection.responseReceived();
     });         
 
     def.resolve();

@@ -410,8 +410,16 @@ select {
 }
 
 div#orgUnitTree {
-    height: 50%;
-    border: 1px solid #e3e3e3;
+    height: 500px !important;
+    width: 100% !important;
+    padding: 0px !important;
+    overflow: auto;
+    border-top: 0px !important;
+}
+
+div#orgUnitTree li
+{
+    background-image: none;
 }
 
 .calendars-popup {
