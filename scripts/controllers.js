@@ -30,7 +30,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 ModalService,
                 DialogService,
                 CommonUtils,
-                FileService,
                 AuthorityService,
                 TrackerRulesExecutionService,
                 OrgUnitFactory,

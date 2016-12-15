@@ -167,6 +167,9 @@
                                             <span ng-switch-when="ORGANISATION_UNIT">                                                
                                                 {{orgUnitNames[dhis2Event[eventGridColumn.id]]}}
                                             </span>
+                                            <span ng-switch-when="AGE">
+                                                {{dhis2Event[eventGridColumn.id] | parseAge}}
+                                            </span>
                                             <span ng-switch-default>
                                                 {{dhis2Event[eventGridColumn.id]}}
                                             </span>
@@ -296,6 +299,25 @@
                                                                input-field-id={{eventGridColumn.id}} 
                                                                name="foo" 
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
+                                                    </div>
+                                                    <div ng-switch-when="AGE">
+                                                            <d2-age id="{{eventGridColumn.id}}" 
+                                                                    d2-age-saved="currentElement.updated && currentElement.id === eventGridColumn.id"
+                                                                    d2-object="currentEvent" 
+                                                                    d2-required="eventGridColumn.compulsory"
+                                                                    d2-disabled="model.editingDisabled"
+                                                                    d2-function="updateEventDataValue(eventGridColumn.id)">                                                    
+                                                            </d2-age>
+                                                        </div>
+                                                    <div ng-switch-when="PHONE_NUMBER">
+                                                        <input type="text"
+                                                                ng-model="currentEvent[eventGridColumn.id]"                                        
+                                                                ng-required={{eventGridColumn.compulsory}}
+                                                                ng-disabled="model.editingDisabled"
+                                                                name="foo" 
+                                                                input-field-id={{eventGridColumn.id}} 
+                                                                ng-blur="saveDatavalue()" 
+                                                                class="form-control"/>
                                                     </div>
                                                     <div ng-switch-when="LONG_TEXT">                                        
                                                         <textarea rows="3"
