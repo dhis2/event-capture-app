@@ -1,3 +1,11 @@
+// Tracker core
+import 'tracker-core/lib/dhis2.angular.services.js';
+import 'tracker-core/lib/dhis2.angular.directives.js';
+import 'tracker-core/lib/dhis2.angular.validations.js';
+import 'tracker-core/lib/dhis2.angular.filters.js';
+import 'tracker-core/lib/dhis2.angular.controllers.js';
+import 'tracker-core/lib/dhis2.angular.templates.js';
+
 import L from 'leaflet';
 import 'leaflet-geocoder-mapzen';
 import 'leaflet-contextmenu';
@@ -26,6 +34,7 @@ const eventCapture = angular.module('eventCapture',
                     'd2Directives',
                     'd2Services',
                     'd2Controllers',
+                    'd2Templates',
                     'ui.select',
                     'angularLocalStorage',
                     'pascalprecht.translate',
