@@ -41,6 +41,18 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $rootScope.ruleeffects = {};
     $scope.hiddenFields = [];
     $scope.assignedFields = [];
+
+            function iterate(current, depth) {
+                var children = current.childNodes;
+                for (var i = 0, len = children.length; i < len; i++) {
+                    iterate(children[i], depth + 1);
+                }
+                console.log("completed  "+depth);
+            }
+            iterate({childNodes:
+                [{childNodes:[{childNodes:[{childNodes:[{childNodes:[{childNodes:[{childNodes:[{childNodes:[]}]}]}]}]}]}]},
+                    {childNodes:[{childNodes:[{childNodes:[{childNodes:[{childNodes:[{childNodes:
+                        [{childNodes:[]}]}]}]}]}]}]}]},0);
     
     $scope.calendarSetting = CalendarService.getSetting();
     
@@ -92,14 +104,14 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
         if (angular.isObject(selectedOrgUnit)) {
             $scope.selectedOrgUnit = selectedOrgUnit;
-            OrgUnitFactory.getFromStoreOrServer($scope.selectedOrgUnit.id).then(function (orgUnitFromStore) {
-                if(orgUnitFromStore) {
-                    $scope.model.ouDates = {startDate: orgUnitFromStore.odate, endDate: orgUnitFromStore.cdate };
-                }
-            });
-            OrgUnitFactory.getOrgUnitClosedStatus($scope.selectedOrgUnit.id).then(function (closedStatus) {
-                $scope.model.editingDisabled =  closedStatus;
-            });
+            //OrgUnitFactory.getFromStoreOrServer($scope.selectedOrgUnit.id).then(function (orgUnitFromStore) {
+            //    if(orgUnitFromStore) {
+            //        $scope.model.ouDates = {startDate: orgUnitFromStore.odate, endDate: orgUnitFromStore.cdate };
+            //    }
+            //});
+            //OrgUnitFactory.getOrgUnitClosedStatus($scope.selectedOrgUnit.id).then(function (closedStatus) {
+            //    $scope.model.editingDisabled =  closedStatus;
+            //});
             $scope.pleaseSelectLabel = $translate.instant('please_select');
             $scope.registeringUnitLabel = $translate.instant('registering_unit');
             $scope.eventCaptureLabel = $translate.instant('event_capture');
