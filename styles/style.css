@@ -195,11 +195,38 @@ input[type=number] {
 }
 
 .dhis2-table-striped-border > tbody > tr:nth-child(odd)> td, .dhis2-table-striped > tbody > tr:nth-child(odd)> th {
-    background-color: #ebf0f6
+    background-color: #ebf0f6;
+}
+.dhis2-list-table-striped > thead > tr > th:first-child {
+    width : 33%;
+}
+.dhis2-list-table-striped > thead > tr > th:nth-child(2) {
+    padding-left: 2%;
+    width: 100%;
+}
+.dhis2-list-table-striped > tbody > tr > td:first-child {
+    width : 33%;
+}
+
+.dhis2-list-table-striped > tbody > tr > td:nth-child(2) {
+    padding-left: 2%;
+    width: 100%;
 }
 
 .listTable th {
     height: 30px;
+}
+
+.indicator-table > tbody > tr > td:first-child {
+    width: 50%;
+}
+
+.status-table > tbody > tr > td:first-child {
+    width: 100%;
+}
+
+.status-table > tbody > tr > td:nth-child(2) {
+    padding-left:9%;
 }
 
 .dhis2-table-striped>thead>tr, 
@@ -404,6 +431,7 @@ select {
 .small-vertical-spacing{
     margin-top: 5px;    
 }
+
 
 .vertical-spacing{
     margin-top: 20px;    
