@@ -264,6 +264,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
         setCommonEventProps( event );
         
+        if( $scope.selectedProgramStage && $scope.selectedProgramStage.captureCoordinates && !event.coordinate ){
+            event.coordinate = {};
+        }
+        
         event.state = 'FULL';
         delete event.dataValues;
     };
