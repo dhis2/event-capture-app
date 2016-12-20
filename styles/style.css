@@ -198,6 +198,24 @@ input[type=number] {
     background-color: #ebf0f6
 }
 
+.dhis2-list-table-striped > thead > tr > th:first-child {
+    width : 33%;
+}
+
+.dhis2-list-table-striped > thead > tr > th:nth-child(2) {
+    padding-left: 2%;
+    width: 100%;
+}
+
+.dhis2-list-table-striped > tbody > tr > td:first-child {
+    width : 33%;
+}
+
+.dhis2-list-table-striped > tbody > tr > td:nth-child(2) {
+    padding-left: 2%;
+    width: 100%;
+}
+
 .listTable th {
     height: 30px;
 }
@@ -236,6 +254,22 @@ input[type=number] {
 
 .dhis2-table-hover > tbody > tr:hover > td, .table-hover > tbody > tr:hover > th {
     background-color: #dfe9f4;
+}
+
+.indicator-table > tbody > tr > td:first-child {
+    width: 50%;
+}
+
+.indicator-table > tbody > tr > td:nth-child(2) {
+    width: 50%;
+}
+
+.status-table > tbody > tr > td:first-child {
+    width: 100%;
+}
+
+.status-table > tbody > tr > td:nth-child(2) {
+    padding-left: 9%;
 }
 
 #contextMenu {
