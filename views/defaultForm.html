@@ -131,12 +131,12 @@
                                        class="form-control"/>
                             </div>
                             <div ng-switch-when="AGE">
-                                    <d2-age id="{{eventGridColumn.id}}" 
-                                            d2-object="currentEvent" 
-                                            d2-required="eventGridColumn.compulsory"
-                                            d2-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled">                                                    
-                                    </d2-age>
-                                </div>
+                                <d2-age id="{{eventGridColumn.id}}" 
+                                        d2-object="currentEvent" 
+                                        d2-required="eventGridColumn.compulsory"
+                                        d2-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled">                                                    
+                                </d2-age>
+                            </div>
                             <div ng-switch-when="PHONE_NUMBER">
                                 <input type="text"
                                         ng-model="currentEvent[eventGridColumn.id]"                                        
