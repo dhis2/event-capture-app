@@ -220,6 +220,9 @@ input[type=number] {
 .indicator-table > tbody > tr > td:first-child {
     width: 50%;
 }
+.indicator-table > tbody > tr > td:nth-child(2) {
+    width: 50%;
+}
 
 .status-table > tbody > tr > td:first-child {
     width: 100%;
