@@ -93,10 +93,13 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             OrgUnitFactory.getFromStoreOrServer($scope.selectedOrgUnit.id).then(function (orgUnitFromStore) {
                 if(orgUnitFromStore) {
                     $scope.model.ouDates = {startDate: orgUnitFromStore.odate, endDate: orgUnitFromStore.cdate };
+                    $scope.model.editingDisabled = orgUnitFromStore.closedStatus;
+                    if(orgUnitFromStore.closedStatus) {
+                        setHeaderDelayMessage($translate.instant("orgunit_closed"));
+                    } else {
+                        hideHeaderMessage();
+                    }
                 }
-            });
-            OrgUnitFactory.getOrgUnitClosedStatus($scope.selectedOrgUnit.id).then(function (closedStatus) {
-                $scope.model.editingDisabled =  closedStatus;
             });
 
             $scope.pleaseSelectLabel = $translate.instant('please_select');
