@@ -11,6 +11,10 @@ html, body {
     display: none;
 }
 
+.no-padding {
+    padding:0px !important;
+}
+
 @media print {
     .not-for-screen {
         display: block;
@@ -785,4 +789,8 @@ ul.tree ul li:last-child:before {
 
 .age-field-info {
     padding-left: 5px;
+}
+
+tbody#list>tr>td>div.row-margin {
+    margin: 11px 5px 10px 5px;
 }
