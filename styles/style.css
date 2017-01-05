@@ -11,6 +11,10 @@ html, body {
     display: none;
 }
 
+.no-padding {
+    padding:0px !important;
+}
+
 @media print {
     .not-for-screen {
         display: block;
@@ -272,6 +276,9 @@ input[type=number] {
     padding-left: 9%;
 }
 
+tbody#list>tr>td>div.row-margin {
+    margin: 11px 5px 10px 5px;
+}
 #contextMenu {
     position: absolute;
     display:none;

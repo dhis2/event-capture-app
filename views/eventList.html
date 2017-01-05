@@ -131,10 +131,10 @@
                         </thead>
                         <tbody id="list">
                             <tr title="{{'click_for_action' | translate}}" ng-repeat="dhis2Event in dhis2Events | orderBy:d2Sort:reverse | gridFilter:filterText:filterTypes">
-                                <td ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}" ng-if="eventGridColumn.id !== 'comment'">
-
-                                    <!-- Visible when event is not under editing -->                                
-                                    <div d2-context-menu ng-click="showEventList(dhis2Event)" ng-show="currentEvent.event !== dhis2Event.event">
+                 			 <!-- Visible when event is not under editing -->   
+                                <td ng-if="(currentEvent.event !== dhis2Event.event) && (eventGridColumn.id !== 'comment')"
+                                    class="no-padding" d2-context-menu ng-click="showEventList(dhis2Event)" ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}">
+                                    <div class="row-margin">
                                         <span ng-switch="eventGridColumn.valueType">
                                             <span ng-switch-when="BOOLEAN">
                                                 <span ng-if="dhis2Event[eventGridColumn.id] == 'false'">{{noLabel}}</span>
@@ -154,10 +154,12 @@
                                             &nbsp;&nbsp;
                                         </span>
                                     </div>
-                                    <!-- Visible when event is not under editing -->                                
+                                </td>
+                                <!-- Visible when event is not under editing -->
 
-                                    <!-- Visible when event is under editing in grid -->
-                                    <div ng-if="currentEvent.event === dhis2Event.event" style="cursor:default;">
+                                <!-- Visible when event is under editing in grid -->
+                                <td ng-if="(currentEvent.event === dhis2Event.event) && (eventGridColumn.id !== 'comment')" ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}">
+                                    <div  style="cursor:default;">
                                         <ng-form name="innerFormGrid">
                                             <div ng-if="eventGridColumn.id === 'uid'">
                                                 <input type="text"
@@ -419,8 +421,9 @@
                                             </div>                                                                            
                                         </ng-form>
                                     </div>
-                                    <!-- Visible when event is under editing in grid -->
                                 </td>
+                                <!-- Visible when event is under editing in grid -->
+
                                 <!-- visible when comment exisits -->
                                 <td ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}" ng-if="eventGridColumn.id === 'comment'">
                                     <a href ng-click="showNotes(dhis2Event)" title="{{'show_comments'| translate}}" ng-if="dhis2Event.notes.length > 0"><i class="fa fa-info-circle"></i></a>
