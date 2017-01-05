@@ -533,38 +533,46 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
             
             DHIS2EventFactory.getByStage($scope.selectedOrgUnit.id, $scope.selectedProgramStage.id, $scope.attributeCategoryUrl, $scope.pager, true, null, $scope.filterParam + dataElementUrl, $scope.sortHeader ).then(function(data){
-                
-                if( data && data.headers && data.rows ){
-
-                    $scope.dhis2Events = [];
-                    angular.forEach(data.rows,function(r){
-                        var ev = {};
-                        for(var i=0; i<data.headers.length; i++ ){
-                            ev[data.headers[i].name] = r[i];
-                        }
-                        $scope.formatEventFromGrid( ev );
+                if( dhis2.ec.isOffline ) {
+                    angular.forEach(data.events, function(ev){
+                        $scope.formatEvent( ev );
                         $scope.dhis2Events.push( ev );
-                    });                                        
+                    });                    
+                }
+                else{
+                    if( data && data.headers && data.rows ){
 
-                    $scope.fileNames = CurrentSelection.getFileNames();
-                    $scope.orgUnitNames = CurrentSelection.getOrgUnitNames();
-                    
-                    if( data.metaData && data.metaData.pager ){
+                        $scope.dhis2Events = [];
+                        angular.forEach(data.rows,function(r){
+                            var ev = {};
+                            for(var i=0; i<data.headers.length; i++ ){
+                                ev[data.headers[i].name] = r[i];
+                            }
+                            $scope.formatEventFromGrid( ev );
+                            $scope.dhis2Events.push( ev );
+                        });                                        
+
+                        $scope.fileNames = CurrentSelection.getFileNames();
+                        $scope.orgUnitNames = CurrentSelection.getOrgUnitNames();                       
+                    }
+                }
+                
+                if( data.metaData && data.metaData.pager ){
+
+                    data.metaData.pager.pageSize = data.metaData.pager.pageSize ? data.metaData.pager.pageSize : $scope.pager.pageSize;
+                    $scope.pager = data.metaData.pager;
+                    $scope.pager.toolBarDisplay = 5;
+
+                    Paginator.setPage($scope.pager.page);
+                    Paginator.setPageCount($scope.pager.pageCount);
+                    Paginator.setPageSize($scope.pager.pageSize);
+                    Paginator.setItemCount($scope.pager.total);
+                }
+
+                if($scope.noteExists && !GridColumnService.columnExists($scope.eventGridColumns, 'comment')){
+                    $scope.eventGridColumns.push({displayName: 'comment', id: 'comment', type: 'TEXT', filterWithRange: false, compulsory: false, showFilter: false, show: true});
+                }
                         
-                        data.metaData.pager.pageSize = data.metaData.pager.pageSize ? data.metaData.pager.pageSize : $scope.pager.pageSize;
-                        $scope.pager = data.metaData.pager;
-                        $scope.pager.toolBarDisplay = 5;
-
-                        Paginator.setPage($scope.pager.page);
-                        Paginator.setPageCount($scope.pager.pageCount);
-                        Paginator.setPageSize($scope.pager.pageSize);
-                        Paginator.setItemCount($scope.pager.total);
-                    }
-
-                    if($scope.noteExists && !GridColumnService.columnExists($scope.eventGridColumns, 'comment')){
-                        $scope.eventGridColumns.push({displayName: 'comment', id: 'comment', type: 'TEXT', filterWithRange: false, compulsory: false, showFilter: false, show: true});
-                    }
-                }                
                 $scope.eventFetched = true;
             });
         }
@@ -1513,7 +1521,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         var dhis2Event = ContextMenuSelectedItem.getSelectedItem();
         
         var modalInstance = $modal.open({
-            templateUrl: '../dhis-web-commons/angular-forms/audit-history.html',
+            templateUrl: './templates/audit-history.html',
             controller: 'AuditHistoryController',
             resolve: {
                 eventId: function () {

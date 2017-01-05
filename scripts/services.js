@@ -12,7 +12,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
     };
 })
 
-.factory('OfflineECStorageService', function($http, $q, $rootScope, ECStorageService){
+.factory('OfflineECStorageService', function($http, $q, $rootScope, $translate, ECStorageService, ModalService, NotificationService){
     return {        
         hasLocalData: function() {
             var def = $q.defer();
@@ -45,9 +45,45 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
                     delete ev.id;
                     evs.events.push(ev);
                 });
-
-                $http.post(DHIS2URL + '/events', evs).then(function(evResponse){                            
+                
+                $http.post(DHIS2URL + '/events', evs).then(function(evResponse){
+                    dhis2.ec.store.removeAll( 'events' );
+                    NotificationService.displayDelayedHeaderMessage( $translate.instant('upload_success') );
+                    log( 'Successfully uploaded local events' );
                     def.resolve();
+                }, function( error ){
+                    var serverLog = '';
+                    if( error && error.data && error.data.response && error.data.response.importSummaries ){
+                        angular.forEach(error.data.response.importSummaries, function(is){
+                            if( is.description ){
+                                serverLog += is.description + ';  ';
+                            }
+                        });
+                    }
+                    
+                    var modalOptions = {
+                        closeButtonText: 'keep_offline_data',
+                        actionButtonText: 'delete_offline_data',
+                        headerText: 'error',
+                        bodyText: $translate.instant('data_upload_to_server_failed:') + '  ' + serverLog
+                    };
+                    
+                    var modalDefaults = {
+                        backdrop: true,
+                        keyboard: true,
+                        modalFade: true,
+                        templateUrl: 'views/modal-offline.html'
+                    };
+                        
+                        
+                    ModalService.showModal(modalDefaults, modalOptions).then(function(result){
+                        dhis2.ec.store.removeAll( 'events' );
+                        NotificationService.displayDelayedHeaderMessage( $translate.instant('offline_data_deleted') );
+                        def.resolve();
+                    }, function(){
+                        NotificationService.displayDelayedHeaderMessage( $translate.instant('upload_failed_try_again') );
+                        def.resolve();
+                    });
                 });                      
             });
             return def.promise;
@@ -306,11 +342,11 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
             
             var promise = $http.get( url ).then(function(response){                    
                 return response.data;        
-            }, function(){     
+            }, function(){                
                 var def = $q.defer();
                 ECStorageService.currentStore.open().done(function(){
-                    ECStorageService.currentStore.getAll('events').done(function(evs){
-                        var result = {events: [], pager: {pageSize: '', page: 1, toolBarDisplay: 5, pageCount: 1}};
+                    ECStorageService.currentStore.getAll('events').done(function(evs){                        
+                        var result = {events: [], metaData: {pager: {pageSize: '', page: 1, toolBarDisplay: 5, pageCount: 1}}};
                         angular.forEach(evs, function(ev){                            
                             if(ev.programStage === programStage && ev.orgUnit === orgUnit){
                                 ev.event = ev.id;
@@ -359,7 +395,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
         delete: function(dhis2Event){
             var promise = $http.delete(DHIS2URL + '/events/' + dhis2Event.event).then(function(response){
                 return response.data;
-            }, function(){
+            }, function( response ){
                 dhis2.ec.store.remove( 'events', dhis2Event.event );
                 return response.data;
             });

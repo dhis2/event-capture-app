@@ -11,8 +11,6 @@ var i18n_offline_notification = 'You are offline, data will be stored locally';
 var i18n_online_notification = 'You are online';
 var i18n_need_to_sync_notification = 'There is data stored locally, please upload to server';
 var i18n_sync_now = 'Upload';
-var i18n_sync_success = 'Upload to server was successful';
-var i18n_sync_failed = 'Upload to server failed, please try again later';
 var i18n_uploading_data_notification = 'Uploading locally stored data to the server';
 
 var PROGRAMS_METADATA = 'EVENT_PROGRAMS';
@@ -78,8 +76,7 @@ $(document).bind('dhis2.online', function(event, loggedIn)
 
         OfflineECStorageService.hasLocalData().then(function(localData){
             if(localData){
-                var message = i18n_need_to_sync_notification
-                    + ' <button id="sync_button" type="button">' + i18n_sync_now + '</button>';
+                var message = i18n_need_to_sync_notification + ' <button id="sync_button" type="button">' + i18n_sync_now + '</button>';
 
                 setHeaderMessage(message);
 
@@ -446,10 +443,7 @@ function uploadLocalData()
     var OfflineECStorageService = angular.element('body').injector().get('OfflineECStorageService');
     setHeaderWaitMessage(i18n_uploading_data_notification);
      
-    OfflineECStorageService.uploadLocalData().then(function(){
-        dhis2.ec.store.removeAll( 'events' );
-        log( 'Successfully uploaded local events' );      
-        setHeaderDelayMessage( i18n_sync_success );
+    OfflineECStorageService.uploadLocalData().then(function(){        
         selection.responseReceived(); //notify angular
     });
 }
