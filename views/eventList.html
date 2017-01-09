@@ -4,12 +4,17 @@
         <div ng-switch-when="undefined">
             <h4>
                 {{'empty_event_list'| translate}}
-            </h4>
+            </h4>            
         </div>                        
         <div ng-switch-when="0">  
             <h4 ng-if="eventFetched">
                 {{'empty_event_list'| translate}}
             </h4>
+            <div ng-if="!angular.equals(filterText,emptyFilterText)">
+                <button class="btn btn-success" ng-click="resetFilter()">
+                    {{'back_to_list' | translate}}
+                </button>
+            </div>
         </div>
         <div ng-switch-default>           
             <div class="vertical-spacing small-vertical-spacing">                

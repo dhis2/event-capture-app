@@ -440,6 +440,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                         $scope.filterText[prStDe.dataElement.id]= {};
                     }
                 });
+                
+                $scope.emptyFilterText = angular.copy( $scope.filterText );
 
                 $scope.customDataEntryForm = CustomFormService.getForProgramStage($scope.selectedProgramStage, $scope.prStDes);
 
@@ -644,12 +646,14 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.filterParam = '';
         
         angular.forEach($scope.eventGridColumns, function(col){            
-            if( col.id === gridColumn.id ){
-                col.showFilter = !col.showFilter;
-            }
-            else{
-                col.showFilter = false;
-            }
+            if( gridColumn ){
+                if( col.id === gridColumn.id ){
+                    col.showFilter = !col.showFilter;
+                }
+                else{
+                    col.showFilter = false;
+                }
+            }            
             
             if( applyFilter && $scope.filterText[col.id] ){
                 if( col.group === "STATIC" ){
@@ -722,6 +726,11 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     $scope.removeEndFilterText = function(gridColumnId){
         $scope.filterText[gridColumnId].end = undefined;
+    };
+    
+    $scope.resetFilter = function(){        
+        $scope.filterText = angular.copy($scope.emptyFilterText);
+        $scope.filterEvents(null, true);
     };
     
     $scope.cancel = function(){
