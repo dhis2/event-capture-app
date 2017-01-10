@@ -828,7 +828,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 dataValues.push({dataElement: dataElement, value: val});
             }
 
-            if(!dataValues.length && dataValues.length > 0){
+            if(!dataValues.length || dataValues.length === 0){
                 var dialogOptions = {
                     headerText: 'empty_form',
                     bodyText: 'please_fill_at_least_one_dataelement'
