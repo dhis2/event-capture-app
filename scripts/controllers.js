@@ -952,18 +952,14 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             //the form is valid, get the values
             //but there could be a case where all dataelements are non-mandatory and
             //the event form comes empty, in this case enforce at least one value
-            var valueExists = false;
             var dataValues = [];        
             for(var dataElement in $scope.prStDes){            
                 var val = $scope.currentEvent[dataElement];
-                if(val){
-                    valueExists = true;                
-                    val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataElement].dataElement, $scope.optionSets, 'API');
-                }
+                val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataElement].dataElement, $scope.optionSets, 'API');
                 dataValues.push({dataElement: dataElement, value: val});
             }
 
-            if(!valueExists){
+            if(!dataValues.length && dataValues.length > 0){
                 var dialogOptions = {
                     headerText: 'empty_form',
                     bodyText: 'please_fill_at_least_one_dataelement'
