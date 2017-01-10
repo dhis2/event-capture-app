@@ -33,7 +33,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 FileService,
                 AuthorityService,
                 TrackerRulesExecutionService,
-                OrgUnitFactory,
                 OptionSetService) {
     
     $scope.maxOptionSize = 30;
