@@ -141,7 +141,9 @@
                                             <span ng-switch-default>
                                                 <input type="text" style="width: 90%;" ng-model="filterText[eventGridColumn.id]" ng-blur="searchInGrid(eventGridColumn)">
                                             </span> 
-                                        </span>                                                    
+                                        </span>
+                                        <span ng-if="eventGridColumn.id !== 'uid'">{{eventGridColumn.displayName}}</span>
+                                        <span ng-if="eventGridColumn.id == 'uid'">{{eventGridColumn.displayName | translate}}</span>
                                     </span>
                                     <!-- filter input field ends -->                                
                                 </th>
