@@ -370,7 +370,7 @@
                                                                ng-required={{eventGridColumn.compulsory}}
                                                                input-field-id={{eventGridColumn.id}}                                                            
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"
-                                                               ng-disabled="model.editingDisabled"
+                                                               ng-disabled="model.editingDisabled || eventGridColumn.id === 'lastUpdated'"
                                                                name="foo"/>
                                                     </div>
                                                     <div ng-switch-when="DATETIME">
