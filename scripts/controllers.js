@@ -455,7 +455,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $scope.selectedCategories = [];
                 if($scope.selectedProgram.categoryCombo && !$scope.selectedProgram.categoryCombo.isDefault && $scope.selectedProgram.categoryCombo.categories){
                     $scope.selectedCategories = $scope.selectedProgram.categoryCombo.categories;
-                    $scope.getCategoryOptions();
+                    loadOptionsFromUrl();                    
                 }
                 else{
                     $scope.optionsReady = true;
@@ -464,12 +464,12 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
     };
     
-    $scope.getCategoryOptions = function(){
+    function loadOptionsFromUrl(){
         $scope.eventFetched = false;
         $scope.optionsReady = false;
         $scope.selectedOptions = [];
         var categoryOptions = null;
-
+        
         if (selectedOptionsFromUrl) {
             $scope.selectedOptions = selectedOptionsFromUrl;
             for (var index1 = 0; index1 < $scope.selectedCategories.length; index1++) {
@@ -482,19 +482,26 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
             }
             $scope.optionsReady = true;
-        } else {
-            for (var i = 0; i < $scope.selectedCategories.length; i++) {
-                if ($scope.selectedCategories[i].selectedOption && $scope.selectedCategories[i].selectedOption.id) {
-                    $scope.optionsReady = true;
-                    $scope.selectedOptions.push($scope.selectedCategories[i].selectedOption.id);
-                }
-                else {
-                    $scope.optionsReady = false;
-                    break;
-                }
+        }        
+    }
+    
+    $scope.getCategoryOptions = function(){
+        $scope.eventFetched = false;
+        $scope.optionsReady = false;
+        $scope.selectedOptions = [];
+        
+        for (var i = 0; i < $scope.selectedCategories.length; i++) {
+            if ($scope.selectedCategories[i].selectedOption && $scope.selectedCategories[i].selectedOption.id) {
+                $scope.optionsReady = true;
+                $scope.selectedOptions.push($scope.selectedCategories[i].selectedOption.id);
             }
-        }
-        if($scope.optionsReady){
+            else {
+                $scope.optionsReady = false;
+                break;
+            }
+        }        
+        
+        if($scope.optionsReady && !$scope.eventRegistration && !$scope.editingEventInFull){
             $scope.loadEvents();
         }
     };
