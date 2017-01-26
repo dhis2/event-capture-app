@@ -458,8 +458,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
     
     function loadOptions(){
-        $scope.eventFetched = false;
-        $scope.optionsReady = false;
         $scope.selectedOptions = [];
         var categoryOptions = null;
         
@@ -765,7 +763,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.eventRegistration = false;
         $scope.editingEventInFull = false;
         $scope.editingEventInGrid = false;
-        $scope.currentElement.updated = false;        
+        $scope.currentElement.updated = false;
         $scope.currentEvent = {};
         $scope.fileNames['SINGLE_EVENT'] = {};
         $scope.currentElement = {};
@@ -798,7 +796,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.currentEvent = ContextMenuSelectedItem.getSelectedItem();
         $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
         $scope.editingEventInGrid = !$scope.editingEventInGrid;
-
         $scope.outerForm.$valid = true;
         checkEventEditingStatus();
     };
