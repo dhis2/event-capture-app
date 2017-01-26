@@ -81,12 +81,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
     var eventIdFromUrl = ($location.search()).event;
 
-    var selectedOptionsFromUrl = ($location.search()).options;
-
-    if (selectedOptionsFromUrl) {
-        selectedOptionsFromUrl = selectedOptionsFromUrl.split(";");
-    }
-   
     //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
         if (angular.isObject($scope.selectedOrgUnit)) {
@@ -455,7 +449,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $scope.selectedCategories = [];
                 if($scope.selectedProgram.categoryCombo && !$scope.selectedProgram.categoryCombo.isDefault && $scope.selectedProgram.categoryCombo.categories){
                     $scope.selectedCategories = $scope.selectedProgram.categoryCombo.categories;
-                    loadOptionsFromUrl();                    
+                    loadCategoryOptions();
                 }
                 else{
                     $scope.optionsReady = true;
@@ -464,14 +458,14 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
     };
     
-    function loadOptionsFromUrl(){
+    function loadCategoryOptions(){
         $scope.eventFetched = false;
         $scope.optionsReady = false;
         $scope.selectedOptions = [];
         var categoryOptions = null;
         
-        if (selectedOptionsFromUrl) {
-            $scope.selectedOptions = selectedOptionsFromUrl;
+        if ($scope.currentEvent.attributeCategoryOptions) {
+            $scope.selectedOptions = attributeCategoryOptions.split(";");
             for (var index1 = 0; index1 < $scope.selectedCategories.length; index1++) {
                 categoryOptions = $scope.selectedCategories[index1].categoryOptions;
                 for(var index2=0; index2<categoryOptions.length; index2++) {
@@ -860,9 +854,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             if(!$location.search().event){
                 $location.search("event",$scope.currentEvent.event);
             }
-            if(!$location.search().options && $scope.optionsReady && $scope.selectedOptions.length>0){
-                $location.search("options",$scope.selectedOptions.join(";"));
-            }
             checkEventEditingStatus();
         });
         
@@ -1083,7 +1074,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         if ($location.search().ou) {
             orgUnitFromUrl = null;
             eventIdFromUrl = null;
-            selectedOptionsFromUrl = null;
             $location.search("event",null);
             $location.search("ou", null);
         }
@@ -1142,7 +1132,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             if( updatedEvent.status === 'COMPLETED' && $scope.currentEventOriginialValue.status !== 'COMPLETED' ){
                 updatedEvent.completedDate = DateUtils.formatFromUserToApi($scope.today);
             }
-            
+
             DHIS2EventFactory.update(updatedEvent).then(function(data){            
                 //reflect the change in the gird            
                 $scope.dhis2Events = DHIS2EventService.refreshList($scope.dhis2Events, $scope.currentEvent);    
