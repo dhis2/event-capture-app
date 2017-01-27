@@ -735,8 +735,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     $scope.cancel = function(){
 
-        resetUrl();
-        resetView();
+        resetUrl();        
         if($scope.formIsChanged()){
             var modalOptions = {
                 closeButtonText: 'no',
@@ -753,7 +752,9 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     }
                 }
                 
+                resetView();
                 if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
+                    
                     $scope.loadEvents();
                 }
                 else{
@@ -762,6 +763,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             });
         }
         else{
+            resetView();
             if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
                 $scope.loadEvents();
             }
