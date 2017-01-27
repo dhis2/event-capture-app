@@ -82,12 +82,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
     var eventIdFromUrl = ($location.search()).event;
 
-    var selectedOptionsFromUrl = ($location.search()).options;
-
-    if (selectedOptionsFromUrl) {
-        selectedOptionsFromUrl = selectedOptionsFromUrl.split(";");
-    }
-    //watch for selection of org unit from tree
+      //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
         if (angular.isObject($scope.selectedOrgUnit)) {
             $scope.pleaseSelectLabel = $translate.instant('please_select');
@@ -317,7 +312,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
                 $scope.filterTypes['eventDate'] = 'DATE';
                 $scope.filterText['eventDate']= {};
-
                 angular.forEach($scope.selectedProgramStage.programStageDataElements, function(prStDe){
                     
                     $scope.prStDes[prStDe.dataElement.id] = prStDe;
@@ -365,23 +359,20 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $scope.selectedCategories = [];
                 if($scope.selectedProgram.categoryCombo && !$scope.selectedProgram.categoryCombo.isDefault && $scope.selectedProgram.categoryCombo.categories){
                     $scope.selectedCategories = $scope.selectedProgram.categoryCombo.categories;
-                    $scope.getCategoryOptions();
                 }
                 else{
-                    $scope.optionsReady = true;
                     $scope.loadEvents();
-                }  
+                }
+                $scope.optionsReady = true; 
         }
     };
-    
-    $scope.getCategoryOptions = function(){
-        $scope.eventFetched = false;
-        $scope.optionsReady = false;
+
+    function loadOptions(){
         $scope.selectedOptions = [];
         var categoryOptions = null;
-
-        if (selectedOptionsFromUrl) {
-            $scope.selectedOptions = selectedOptionsFromUrl;
+        
+        if ($scope.currentEvent.attributeCategoryOptions) {
+            $scope.selectedOptions = $scope.currentEvent.attributeCategoryOptions.split(";");
             for (var index1 = 0; index1 < $scope.selectedCategories.length; index1++) {
                 categoryOptions = $scope.selectedCategories[index1].categoryOptions;
                 for(var index2=0; index2<categoryOptions.length; index2++) {
@@ -392,19 +383,26 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
             }
             $scope.optionsReady = true;
-        } else {
-            for (var i = 0; i < $scope.selectedCategories.length; i++) {
-                if ($scope.selectedCategories[i].selectedOption && $scope.selectedCategories[i].selectedOption.id) {
-                    $scope.optionsReady = true;
-                    $scope.selectedOptions.push($scope.selectedCategories[i].selectedOption.id);
-                }
-                else {
-                    $scope.optionsReady = false;
-                    break;
-                }
-            }
         }
-        if($scope.optionsReady){
+    }
+    
+    $scope.getCategoryOptions = function(){
+        $scope.eventFetched = false;
+        $scope.optionsReady = false;
+        $scope.selectedOptions = [];
+        
+        for (var i = 0; i < $scope.selectedCategories.length; i++) {
+            if ($scope.selectedCategories[i].selectedOption && $scope.selectedCategories[i].selectedOption.id) {
+                $scope.optionsReady = true;
+                $scope.selectedOptions.push($scope.selectedCategories[i].selectedOption.id);
+            }
+            else {
+                $scope.optionsReady = false;
+                break;
+            }
+        }        
+        
+        if($scope.optionsReady && !$scope.eventRegistration && !$scope.editingEventInFull){
             $scope.loadEvents();
         }
     };
@@ -701,34 +699,50 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.displayTextEffects = [];
         $scope.displayCustomForm = $scope.customDataEntryForm ? true:false;
 
-        $scope.currentEvent = ContextMenuSelectedItem.getSelectedItem();
-        $scope.editingEventInFull = !$scope.editingEventInFull;   
-        $scope.eventRegistration = false;
+        //$scope.currentEvent = ContextMenuSelectedItem.getSelectedItem();
         
-        angular.forEach($scope.selectedProgramStage.programStageDataElements, function(prStDe){
-            if(!$scope.currentEvent.hasOwnProperty(prStDe.dataElement.id)){
-                $scope.currentEvent[prStDe.dataElement.id] = '';
+        var event = ContextMenuSelectedItem.getSelectedItem();
+        
+        DHIS2EventFactory.get(event.event, event).then(function( event ){            
+            $scope.formatEvent( event );
+            $scope.currentEvent = event;
+            loadOptions();
+            /*
+              When the user goes directly to the event edit page for an event with category options,
+              the $scope.dhis2Events will not be initialised since the selected category option for the event
+              was not available. So we initialize it here so that the event list is visibile when the user
+              clicks 'Cancel'/'Update button.
+            */
+            if($scope.dhis2Events || ($scope.dhis2Events.length && $scope.dhis2Events.length===0)) {
+                $scope.loadEvents();
             }
-        }); 
-        $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
+            $scope.dhis2Events = DHIS2EventService.refreshList($scope.dhis2Events, $scope.currentEvent);		
+            $scope.editingEventInFull = !$scope.editingEventInFull;   
+            $scope.eventRegistration = false;
         
-        if($scope.editingEventInFull){
-            //Blank out rule effects, as there is no rules in effect before the first
-            //time the rules is run on a new page.
-            $rootScope.ruleeffects[$scope.currentEvent.event] = {};        
-            $scope.executeRules();
-        }
+        	angular.forEach($scope.selectedProgramStage.programStageDataElements, function(prStDe){
+            	if(!$scope.currentEvent.hasOwnProperty(prStDe.dataElement.id)){
+                	$scope.currentEvent[prStDe.dataElement.id] = '';
+            	}
+        	}); 
+       		$scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
+        
+        	if($scope.editingEventInFull){
+            	//Blank out rule effects, as there is no rules in effect before the first
+            	//time the rules is run on a new page.
+            	$rootScope.ruleeffects[$scope.currentEvent.event] = {};        
+            	$scope.executeRules();
+	        }
 
-        if(!$location.search().ou){
-            $location.search("ou",$scope.selectedOrgUnit.id);
-        }
-        if(!$location.search().event){
-            $location.search("event",$scope.currentEvent.event);
-        }
-        if(!$location.search().options && $scope.optionsReady && $scope.selectedOptions.length>0){
-            $location.search("options",$scope.selectedOptions.join(";"));
-        }
-        checkEventEditingStatus();
+        	if(!$location.search().ou){
+            	$location.search("ou",$scope.selectedOrgUnit.id);
+        	}
+	        if(!$location.search().event){
+    	        $location.search("event",$scope.currentEvent.event);
+    	    }
+       
+    	    checkEventEditingStatus();
+        });
     };
 
     function checkEventEditingStatus() {
@@ -944,7 +958,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         if ($location.search().ou) {
             orgUnitFromUrl = null;
             eventIdFromUrl = null;
-            selectedOptionsFromUrl = null;
             $location.search("event",null);
             $location.search("ou", null);
         }
