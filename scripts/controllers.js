@@ -473,7 +473,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
             }
             $scope.optionsReady = true;
-        }        
+        }
     }
     
     $scope.getCategoryOptions = function(){
@@ -824,11 +824,18 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         DHIS2EventFactory.get(event.event, event).then(function( event ){            
             $scope.formatEvent( event );
             $scope.currentEvent = event;
-
-            $scope.dhis2Events = DHIS2EventService.refreshList($scope.dhis2Events, $scope.currentEvent);
             loadOptions();
-            
-            $scope.editingEventInFull = !$scope.editingEventInFull;   
+            /*
+              When the user goes directly to the event edit page for an event with category options,
+              the $scope.dhis2Events will not be initialised since the selected category option for the event
+              was not available. So we initialize it here so that the event list is visibile when the user
+              clicks 'Cancel'/'Update button.
+            */
+            if($scope.dhis2Events || ($scope.dhis2Events.length && $scope.dhis2Events.length===0)) {
+                $scope.loadEvents();
+            }
+            $scope.dhis2Events = DHIS2EventService.refreshList($scope.dhis2Events, $scope.currentEvent);
+            $scope.editingEventInFull = !$scope.editingEventInFull;
             $scope.eventRegistration = false;
 
             angular.forEach($scope.selectedProgramStage.programStageDataElements, function(prStDe){
