@@ -10,7 +10,7 @@
             <h4 ng-if="eventFetched">
                 {{'empty_event_list'| translate}}
             </h4>
-            <div ng-if="!angular.equals(filterText,emptyFilterText)">
+            <div ng-if="!filterTextExist()">
                 <button class="btn btn-success" ng-click="resetFilter()">
                     {{'back_to_list' | translate}}
                 </button>
@@ -189,7 +189,7 @@
                                 <!-- Visible when event is not under editing -->
 
                                 <!-- Visible when event is under editing in grid -->
-                                <td ng-if="(currentEvent.event === dhis2Event.event) && (eventGridColumn.id !== 'comment')" ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}">
+                                <td ng-if="editingEventInGrid && (currentEvent.event === dhis2Event.event) && (eventGridColumn.id !== 'comment')" ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}">
                                     <div  style="cursor:default;">
                                         <ng-form name="innerFormGrid">
                                             <div ng-if="eventGridColumn.id === 'uid'">

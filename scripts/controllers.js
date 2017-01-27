@@ -45,13 +45,17 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.calendarSetting = CalendarService.getSetting();
     
     //Paging
-    $scope.pager = {pageSize: 50, page: 1, toolBarDisplay: 5};   
+    $scope.pager = {pageSize: 50, page: 1, toolBarDisplay: 5};
     
-    //Editing
-    $scope.eventRegistration = false;
+    function resetView(){
+        $scope.eventRegistration = false;
+        $scope.editingEventInFull = false;
+        $scope.editingEventInGrid = false;
+    }
+    
+    resetView();
+    
     $scope.editGridColumns = false;
-    $scope.editingEventInFull = false;
-    $scope.editingEventInGrid = false;   
     $scope.updateSuccess = false;
     $scope.currentGridColumnId = '';  
     $scope.dhis2Events = [];
@@ -167,10 +171,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.currentFileNames = {};
         $scope.orgUnitNames = {};
 
-        $scope.eventRegistration = false;
+        resetView();
         $scope.editGridColumns = false;
-        $scope.editingEventInFull = false;
-        $scope.editingEventInGrid = false;   
         $scope.updateSuccess = false;
         $scope.currentGridColumnId = '';           
         $scope.displayCustomForm = false;
@@ -499,8 +501,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         
     //get events for the selected program (and org unit)
     $scope.loadEvents = function(){
-        
-        $scope.noteExists = false;            
+        resetView();
+        $scope.noteExists = false;        
         $scope.dhis2Events = [];
         $scope.eventLength = 0;
         $scope.eventFetched = false;
@@ -734,6 +736,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.cancel = function(){
 
         resetUrl();
+        resetView();
         if($scope.formIsChanged()){
             var modalOptions = {
                 closeButtonText: 'no',
@@ -749,25 +752,34 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                         break;
                     }
                 }
-                $scope.showEventList();
+                
+                if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
+                    $scope.loadEvents();
+                }
+                else{
+                    $scope.showEventList();
+                }                
             });
         }
         else{
-            $scope.showEventList();
+            if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
+                $scope.loadEvents();
+            }
+            else{
+                $scope.showEventList();
+            }
         }
-       // $scope.model.editingDisabled = false;
     };
     
-    $scope.showEventList = function(dhis2Event){        
+    $scope.showEventList = function(dhis2Event){
+        
         ContextMenuSelectedItem.setSelectedItem(dhis2Event);
-        $scope.eventRegistration = false;
-        $scope.editingEventInFull = false;
-        $scope.editingEventInGrid = false;
+        resetView();
         $scope.currentElement.updated = false;
         $scope.currentEvent = {};
         $scope.fileNames['SINGLE_EVENT'] = {};
         $scope.currentElement = {};
-        $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
+        $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);        
     };
     
     $scope.showEventRegistration = function(){        
@@ -816,6 +828,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.note = {};
         $scope.displayTextEffects = [];
         $scope.displayCustomForm = $scope.customDataEntryForm ? true:false;
+        $scope.selectedOptionsOriginal = angular.copy($scope.selectedOptions);
 
         //$scope.currentEvent = ContextMenuSelectedItem.getSelectedItem();
         
@@ -1048,9 +1061,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
                     $scope.eventLength++;
 
-                    $scope.eventRegistration = false;
-                    $scope.editingEventInFull = false;
-                    $scope.editingEventInGrid = false;  
+                    resetView(); 
 
                     //reset form              
                     $scope.currentEvent = {};
@@ -1137,15 +1148,24 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             if( updatedEvent.status === 'COMPLETED' && $scope.currentEventOriginialValue.status !== 'COMPLETED' ){
                 updatedEvent.completedDate = DateUtils.formatFromUserToApi($scope.today);
             }
+            
+            if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ){
+                updatedEvent.attributeCategoryOptions = $scope.selectedOptions.join(';');                        
+            }
 
             DHIS2EventFactory.update(updatedEvent).then(function(data){            
-                //reflect the change in the gird            
-                $scope.dhis2Events = DHIS2EventService.refreshList($scope.dhis2Events, $scope.currentEvent);    
-                $scope.updateFileNames();
+                //reflect the change in the gird
                 $scope.outerForm.submitted = false;            
                 $scope.editingEventInFull = false;
                 $scope.currentEvent = {};
-                $scope.currentEventOriginialValue = angular.copy($scope.currentEvent); 
+                $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);                
+                if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ){
+                    $scope.loadEvents();
+                }
+                else{
+                    $scope.dhis2Events = DHIS2EventService.refreshList($scope.dhis2Events, $scope.currentEvent);    
+                    $scope.updateFileNames();
+                }                
             });
         });
     };
@@ -1883,7 +1903,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
         }
     };
-
+    
+    $scope.filterTextExist = function(){        
+        return angular.equals($scope.filterText, $scope.emptyFilterText);
+    };
 })
 
 .controller('NotesController', function($scope, $modalInstance, dhis2Event){
