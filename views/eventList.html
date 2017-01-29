@@ -158,7 +158,7 @@
                                 <!-- Visible when event is not under editing -->
 
                                 <!-- Visible when event is under editing in grid -->
-                                <td ng-if="(currentEvent.event === dhis2Event.event) && (eventGridColumn.id !== 'comment')" ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}">
+                                <td ng-if="editingEventInGrid && (currentEvent.event === dhis2Event.event) && (eventGridColumn.id !== 'comment')" ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}">
                                     <div  style="cursor:default;">
                                         <ng-form name="innerFormGrid">
                                             <div ng-if="eventGridColumn.id === 'uid'">
