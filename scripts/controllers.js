@@ -635,6 +635,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
                 
                 resetView();
+		$scope.currentEvent = {};
                 if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
                     
                     $scope.loadEvents();
@@ -646,6 +647,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
         else{
             resetView();
+	    $scope.currentEvent = {};	
             if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
                 $scope.loadEvents();
             }
