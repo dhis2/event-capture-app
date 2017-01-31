@@ -50,7 +50,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     function resetView(){
         $scope.eventRegistration = false;
         $scope.editingEventInFull = false;
-        $scope.editingEventInGrid = false;
+        $scope.editingEventInGrid = false;        
     }
     
     resetView();
@@ -753,6 +753,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
                 
                 resetView();
+                $scope.currentEvent = {};
                 if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
                     
                     $scope.loadEvents();
@@ -764,6 +765,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
         else{
             resetView();
+            $scope.currentEvent = {};
             if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
                 $scope.loadEvents();
             }
