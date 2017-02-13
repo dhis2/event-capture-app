@@ -502,10 +502,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     //get events for the selected program (and org unit)
     $scope.loadEvents = function(){
         resetView();
-        $scope.noteExists = false;        
-        $scope.dhis2Events = [];
-        $scope.eventLength = 0;
-        $scope.eventFetched = false;
+        $scope.noteExists = false;                
+        $scope.eventFetched = true;
         
         $scope.attributeCategoryUrl = {cc: $scope.selectedProgram.categoryCombo.id, default: $scope.selectedProgram.categoryCombo.isDefault, cp: ""};
         if(!$scope.selectedProgram.categoryCombo.isDefault){            
@@ -534,24 +532,24 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 dataElementUrl = '';
             }
             
-            DHIS2EventFactory.getByStage($scope.selectedOrgUnit.id, $scope.selectedProgramStage.id, $scope.attributeCategoryUrl, $scope.pager, true, null, $scope.filterParam + dataElementUrl, $scope.sortHeader ).then(function(data){
+            DHIS2EventFactory.getByStage($scope.selectedOrgUnit.id, $scope.selectedProgramStage.id, $scope.attributeCategoryUrl, $scope.pager, true, null, $scope.filterParam + dataElementUrl, $scope.sortHeader ).then(function(data){                
+                var _dhis2Events = [];
                 if( dhis2.ec.isOffline ) {
                     angular.forEach(data.events, function(ev){
                         $scope.formatEvent( ev );
-                        $scope.dhis2Events.push( ev );
+                        _dhis2Events.push( ev );
                     });                    
                 }
                 else{
                     if( data && data.headers && data.rows ){
-
-                        $scope.dhis2Events = [];
+                        _dhis2Events = [];
                         angular.forEach(data.rows,function(r){
                             var ev = {};
                             for(var i=0; i<data.headers.length; i++ ){
                                 ev[data.headers[i].name] = r[i];
                             }
                             $scope.formatEventFromGrid( ev );
-                            $scope.dhis2Events.push( ev );
+                            _dhis2Events.push( ev );
                         });                                        
 
                         $scope.fileNames = CurrentSelection.getFileNames();
@@ -576,6 +574,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
                         
                 $scope.eventFetched = true;
+                $scope.dhis2Events = _dhis2Events;
             });
         }
     };    
