@@ -45,28 +45,14 @@
                                     </ui-select-choices>
                                 </ui-select>
                             </div>
-                            <div ng-if="selectedProgram.dataEntryMethod && optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options.length < 7">                                    
-                                <label>
-                                    <input type="radio"
-                                           name="foo"
-                                           input-field-id={{eventGridColumn.id}}
-                                           ng-change="saveDatavalue()" 
-                                           ng-required={{eventGridColumn.compulsory}}
-                                           ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
-                                           ng-model="currentEvent[eventGridColumn.id]"
-                                           value=""> {{'no_value' | translate}}
-                                    <br>
-                                </label>                                    
-                                <label ng-repeat="option in  optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options">
-                                    <input type="radio"
-                                           name={{eventGridColumn.id}}
-                                           input-field-id={{eventGridColumn.id}}    
-                                           ng-change="saveDatavalue()" 
-                                           ng-required={{eventGridColumn.compulsory}}
-                                           ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
-                                           ng-model="currentEvent[eventGridColumn.id]"
-                                           value={{option.displayName}}> {{option.displayName}}<br>
-                                </label>
+                            <div ng-if="selectedProgram.dataEntryMethod && optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options.length < 7">
+                                <d2-radio id="eventGridColumn.id" 
+                                    d2-name="foo" 
+                                    d2-object="currentEvent" 
+                                    d2-options="optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options"
+                                    d2-required="eventGridColumn.compulsory"
+                                    d2-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled">
+                                </d2-radio>
                             </div>
                         </div>
                         <div ng-if="!prStDes[eventGridColumn.id].dataElement.optionSetValue" ng-switch="eventGridColumn.valueType">
@@ -347,30 +333,13 @@
                                         </span>
                                     </span>
                                     <span ng-if="selectedProgram.dataEntryMethod && optionSets[prStDes[de.dataElement.id].dataElement.optionSet.id].options.length < 7">
-                                        <label>
-                                             <input type="radio"
-                                                   name={{de.dataElement.id}}
-                                                   input-field-id={{de.dataElement.id}}
-                                                   ng-change="saveDatavalue()"
-                                                   ng-required={{prStDes[de.dataElement.id].compulsory}}
-                                                   ng-disabled="assignedFields[de.dataElement.id] || model.editingDisabled"
-                                                   ng-model="currentEvent[de.dataElement.id]"
-                                                   value="">{{'no_value' | translate}}
-                                            <br>
-                                        </label><br>
-                                        <span ng-repeat="option in optionSets[prStDes[de.dataElement.id].dataElement.optionSet.id].options">
-                                            <label>
-                                                <input type="radio"
-                                                       name={{de.dataElement.id}}
-                                                       input-field-id={{de.dataElement.id}}
-                                                       ng-change="saveDatavalue()"
-                                                       ng-required={{prStDes[de.dataElement.id].compulsory}}
-                                                       ng-disabled="assignedFields[de.dataElement.id] || model.editingDisabled"
-                                                       ng-model="currentEvent[de.dataElement.id]"
-                                                       value={{option.displayName}}> {{option.displayName}}
-                                                    <br>
-                                            </label><br>
-                                        </span>
+                                        <d2-radio id="de.dataElement.id" 
+                                            d2-name="foo" 
+                                            d2-object="currentEvent" 
+                                            d2-options="optionSets[prStDes[de.dataElement.id].dataElement.optionSet.id].options"
+                                            d2-required="prStDes[de.dataElement.id].compulsory"
+                                            d2-disabled="assignedFields[de.dataElement.id] || model.editingDisabled">
+                                        </d2-radio>
                                     </span>
                                 </div>
                                 <div ng-if="!prStDes[de.dataElement.id].dataElement.optionSetValue" ng-switch="prStDes[de.dataElement.id].dataElement.valueType">

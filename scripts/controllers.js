@@ -1806,7 +1806,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
    $scope.saveCurrentEventStatus = function(status) {
        $scope.currentEvent.status = status;
-
    };
     
     $scope.getInputNotifcationClass = function(id, custom){
