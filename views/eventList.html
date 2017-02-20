@@ -171,8 +171,8 @@
                                             <span ng-switch-when="FILE_RESOURCE">
                                                 <a href ng-click="downloadFile(dhis2Event.event, eventGridColumn.id, $event)">{{fileNames[dhis2Event.event][eventGridColumn.id]}}</a>
                                             </span>
-                                            <span ng-switch-when="ORGANISATION_UNIT">                                                
-                                                {{orgUnitNames[dhis2Event[eventGridColumn.id]]}}
+                                            <span ng-switch-when="ORGANISATION_UNIT">
+                                                {{eventGridColumn}}
                                             </span>
                                             <span ng-switch-when="AGE">
                                                 {{dhis2Event[eventGridColumn.id] | parseAge}}
@@ -434,6 +434,17 @@
                                                                 ng-blur="updateEventDataValue(eventGridColumn.id)" 
                                                                 name="foo" 
                                                                 ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>                                                    
+                                                    </div>
+                                                    <div ng-switch-when="EMAIL">
+                                                        <input type="email"
+                                                               name="foo"
+                                                               class="form-control"
+                                                               ng-model="currentEvent[eventGridColumn.id]"
+                                                               ng-model-options="{ updateOn: 'default blur', allowInvalid: true }"
+                                                               selected-program-id={{selectedProgram.id}}
+                                                               ng-disabled="model.editingDisabled"
+                                                               ng-blur="updateEventDataValue(eventGridColumn.id)"
+                                                               ng-required={{eventGridColumn.compulsory}}/>
                                                     </div>
                                                     <div ng-switch-default>
                                                         <div class="alert alert-danger form-control">

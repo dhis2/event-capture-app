@@ -261,6 +261,17 @@
                                         d2-orgunit-names="orgUnitNames">
                                 </d2-org-unit-tree>
                             </div>
+                            <div ng-switch-when="EMAIL">
+                                <input type="email"
+                                       name="foo"
+                                       class="form-control"
+                                       ng-model="currentEvent[eventGridColumn.id]"
+                                       ng-model-options="{ updateOn: 'default blur', allowInvalid: true }"
+                                       selected-program-id={{selectedProgram.id}}
+                                       ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
+                                       ng-blur="saveDatavalue()"
+                                       ng-required="eventGridColumn.compulsory"/>
+                            </div>
                             <div ng-switch-default>
                                 <div class="alert alert-danger form-control">
                                     {{'unsupported_value_type' | translate}}:  {{eventGridColumn.valueType}}
@@ -549,6 +560,17 @@
                                                 d2-function="saveDataValue()"
                                                 d2-orgunit-names="orgUnitNames">
                                         </d2-org-unit-tree>
+                                    </div>
+                                    <div ng-switch-when="EMAIL">
+                                        <input type="email"
+                                               name="foo"
+                                               class="form-control"
+                                               ng-model="currentEvent[de.dataElement.id]"
+                                               ng-model-options="{ updateOn: 'default blur', allowInvalid: true }"
+                                               selected-program-id={{selectedProgram.id}}
+                                               ng-disabled="assignedFields[de.dataElement.id] || model.editingDisabled"
+                                               ng-blur="saveDatavalue()"
+                                               ng-required="prStDes[de.dataElement.id].compulsory"/>
                                     </div>
                                     <div ng-switch-default>
                                         <div class="alert alert-danger form-control">
