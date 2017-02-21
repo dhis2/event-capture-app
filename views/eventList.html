@@ -235,6 +235,18 @@
                                                                name="foo" 
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
                                                     </div>
+                                                    <div ng-switch-when="PERCENTAGE">
+                                                        <input type="number"
+                                                               d2-number-validator
+                                                               number-type={{prStDes[eventGridColumn.id].dataElement.numberType}}
+                                                               ng-model="currentEvent[eventGridColumn.id]"
+                                                               ng-blur="updateEventDataValue(eventGridColumn.id)"
+                                                               ng-required={{eventGridColumn.compulsory}}
+                                                               ng-disabled="model.editingDisabled"
+                                                               input-field-id={{eventGridColumn.id}}
+                                                               name="foo"
+                                                               ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
+                                                    </div>
                                                     <div ng-switch-when="INTEGER">
                                                         <input type="number"                                                            
                                                                d2-number-validator
