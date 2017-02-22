@@ -74,10 +74,9 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     //notes
     $scope.note = {};
     $scope.displayTextEffects = [];
-    $scope.today = DateUtils.getToday();    
+    $scope.today = DateUtils.getToday();
     
-    var userProfile = SessionStorageService.get('USER_PROFILE');
-    var storedBy = userProfile && userProfile.username ? userProfile.username : '';
+    var storedBy = CommonUtils.getUsername();
     
     $scope.noteExists = false;
 
@@ -107,7 +106,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
             SessionStorageService.set('SELECTED_OU', $scope.selectedOrgUnit);
 
-            $scope.userAuthority = AuthorityService.getUserAuthorities(SessionStorageService.get('USER_ROLES'));
+            $scope.userAuthority = AuthorityService.getUserAuthorities(SessionStorageService.get('USER_PROFILE'));
             GridColumnService.get("eventCaptureGridColumns").then(function (gridColumns) {
                 if (gridColumns && gridColumns.status !== "ERROR") {
                     $scope.gridColumnsInUserStore = gridColumns;

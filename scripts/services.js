@@ -122,7 +122,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
     
     return {
         getProgramsByOu: function(ou, selectedProgram){
-            var roles = SessionStorageService.get('USER_ROLES');
+            var roles = SessionStorageService.get('USER_PROFILE');
             var userRoles = roles && roles.userCredentials && roles.userCredentials.userRoles ? roles.userCredentials.userRoles : [];
             var def = $q.defer();
             
