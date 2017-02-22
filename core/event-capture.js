@@ -21,7 +21,7 @@ var optionSetIds = [];
 
 var batchSize = 50;
 var programBatchSize = 50;
-var DHIS2URL = '../api';
+var DHIS2URL = '../api/26';
 
 dhis2.ec.isOffline = false;
 dhis2.ec.store = null;
