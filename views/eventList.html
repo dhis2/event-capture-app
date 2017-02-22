@@ -172,7 +172,7 @@
                                                 <a href ng-click="downloadFile(dhis2Event.event, eventGridColumn.id, $event)">{{fileNames[dhis2Event.event][eventGridColumn.id]}}</a>
                                             </span>
                                             <span ng-switch-when="ORGANISATION_UNIT">
-                                                {{eventGridColumn}}
+                                                {{orgUnitNames[dhis2Event[eventGridColumn.id]]}}
                                             </span>
                                             <span ng-switch-when="AGE">
                                                 {{dhis2Event[eventGridColumn.id] | parseAge}}
