@@ -301,7 +301,7 @@
 
 <div ng-if='selectedProgramStage.programStageSections.length && currentEvent.eventDate'>
     <div ng-if="currentEvent.eventDate">
-        <div ng-repeat='section in selectedProgramStage.programStageSections' ng-if="section.id === selectedSection.id || selectedSection.id === 'ALL' && !hiddenSections[section.id] ">
+        <div ng-repeat="section in selectedProgramStage.programStageSections | orderBy: 'sortOrder'" ng-if="section.id === selectedSection.id || selectedSection.id === 'ALL' && !hiddenSections[section.id] ">
             <div class="vertical-spacing section-label">
                {{section.displayName}}
             </div>
