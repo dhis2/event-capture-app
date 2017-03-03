@@ -148,7 +148,8 @@ function downloadMetaData(){
     var def = $.Deferred();
     var promise = def.promise();
     
-    promise = promise.then( dhis2.ec.store.open );    
+    promise = promise.then( dhis2.ec.store.open );
+    promise = promise.then( getSystemSetting );
     promise = promise.then( getUserProfile );
     promise = promise.then( getConstants );
     promise = promise.then( getOrgUnitLevels );    
@@ -168,6 +169,15 @@ function downloadMetaData(){
     });         
 
     def.resolve();
+}
+
+function getSystemSetting()
+{   
+    if(localStorage['SYSTEM_SETTING']){
+       return; 
+    }
+    
+    return dhis2.tracker.getTrackerObject(null, 'SYSTEM_SETTING', DHIS2URL + '/systemSettings', 'key=keyGoogleMapsApiKey&key=keyMapzenSearchApiKey&key=keyCalendar&key=keyDateFormat', 'localStorage', dhis2.ec.store);
 }
 
 function getUserProfile()
