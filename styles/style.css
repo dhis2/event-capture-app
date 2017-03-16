@@ -904,3 +904,17 @@ button.list-group-item-danger.active:focus {
   border-color: #a94442;
 }
 /* End from Bootstrap 3.3.x */
+
+.audit-spinner {
+    font-size: x-large;
+    margin-left: 50%;
+    margin-top: 20%;
+}
+
+.waiting-box {
+    height: 300px;
+}
+
+.loading-audit-data {
+    margin-left: 43%;
+}
