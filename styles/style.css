@@ -794,3 +794,17 @@ ul.tree ul li:last-child:before {
 tbody#list>tr>td>div.row-margin {
     margin: 11px 5px 10px 5px;
 }
+
+.audit-spinner {
+    font-size: x-large;
+    margin-left: 50%;
+    margin-top: 20%;
+}
+
+.waiting-box {
+    height: 300px;
+}
+
+.loading-audit-data {
+    margin-left: 43%;
+}
