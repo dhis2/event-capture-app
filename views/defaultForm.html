@@ -30,7 +30,7 @@
                 <td>
                     <ng-form name="innerForm">
                         <div ng-if="prStDes[eventGridColumn.id].dataElement.optionSetValue">
-                            <div ng-if="!selectedProgram.dataEntryMethod || optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options.length >= 7">
+                            <div ng-if="!prStDes[eventGridColumn.id].renderOptionsAsRadio || optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options.length >= 7">
                                 <ui-select ng-model="currentEvent[eventGridColumn.id]"
                                            theme="select2" 
                                            ng-required={{eventGridColumn.compulsory}}
@@ -45,7 +45,7 @@
                                     </ui-select-choices>
                                 </ui-select>
                             </div>
-                            <div ng-if="selectedProgram.dataEntryMethod && optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options.length < 7">
+                            <div ng-if="prStDes[eventGridColumn.id].renderOptionsAsRadio && optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options.length < 7">
                                 <d2-radio id="eventGridColumn.id" 
                                     d2-name="foo" 
                                     d2-object="currentEvent" 
@@ -338,7 +338,7 @@
                         <td>
                             <ng-form name="innerForm">
                                 <div ng-if="prStDes[de.id].dataElement.optionSetValue">
-                                    <span ng-if="!selectedProgram.dataEntryMethod || optionSets[prStDes[de.id].dataElement.optionSet.id].options.length >= 7">
+                                    <span ng-if="!prStDes[de.id].renderOptionsAsRadio || optionSets[prStDes[de.id].dataElement.optionSet.id].options.length >= 7">
                                         <span>
                                             <ui-select ng-model="currentEvent[de.id]"
                                                    theme="select2"
@@ -355,7 +355,7 @@
                                             </ui-select>
                                         </span>
                                     </span>
-                                    <span ng-if="selectedProgram.dataEntryMethod && optionSets[prStDes[de.id].dataElement.optionSet.id].options.length < 7">
+                                    <span ng-if="prStDes[de.id].renderOptionsAsRadio && optionSets[prStDes[de.id].dataElement.optionSet.id].options.length < 7">
                                         <d2-radio id="de.id" 
                                             d2-name="foo" 
                                             d2-object="currentEvent" 
