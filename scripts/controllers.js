@@ -89,6 +89,15 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
       //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
         if (angular.isObject($scope.selectedOrgUnit)) {
+            OrgUnitFactory.getFromStoreOrServer($scope.selectedOrgUnit.id).then(function (orgUnitFromStore) {
+                if(orgUnitFromStore) {
+                    $scope.model.ouDates = { startDate: orgUnitFromStore.odate, endDate: orgUnitFromStore.cdate };
+                    $scope.model.maxDate = orgUnitFromStore.reportDateRange.maxDate;
+                    $scope.model.minDate = orgUnitFromStore.reportDateRange.minDate;
+                    $scope.model.editingDisabled = orgUnitFromStore.closedStatus;
+                }
+            });
+
             $scope.pleaseSelectLabel = $translate.instant('please_select');
             $scope.registeringUnitLabel = $translate.instant('registering_unit');
             $scope.eventCaptureLabel = $translate.instant('event_capture');
@@ -129,6 +138,16 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             })
         }
     });
+
+    $scope.verifyExpiryDate = function() {
+        if(!$scope.currentEvent.eventDate){
+            return;
+        }
+        if (!DateUtils.verifyExpiryDate($scope.currentEvent.eventDate, $scope.selectedProgram.expiryPeriodType,
+                $scope.selectedProgram.expiryDays)) {
+            $scope.currentEvent.eventDate = null;
+        }
+    };
 
     $scope.completeEnrollment = function() {
         $scope.currentEvent.status = !$scope.currentEvent.status;
