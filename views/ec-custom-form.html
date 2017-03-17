@@ -15,7 +15,8 @@
             <input type="text"
                     placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
                     d2-date
-                    max-date='0'
+                    max-date='model.maxDate'
+                    min-date='model.minDate'
                     ng-model="currentEvent.eventDate"
                     ng-required="true"                     
                     d2-date-validator
