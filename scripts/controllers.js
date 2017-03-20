@@ -90,8 +90,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             OrgUnitFactory.getFromStoreOrServer($scope.selectedOrgUnit.id).then(function (orgUnitFromStore) {
                 if(orgUnitFromStore) {
                     $scope.model.ouDates = { startDate: orgUnitFromStore.odate, endDate: orgUnitFromStore.cdate };
-                    $scope.model.maxDate = orgUnitFromStore.reportDateRange.maxDate;
-                    $scope.model.minDate = orgUnitFromStore.reportDateRange.minDate;
+                    if(orgUnitFromStore.reportDateRange) {
+                        $scope.model.maxDate = orgUnitFromStore.reportDateRange.maxDate;
+                        $scope.model.minDate = orgUnitFromStore.reportDateRange.minDate;
+                    }
                     $scope.model.editingDisabled = orgUnitFromStore.closedStatus;
                 }
             });
