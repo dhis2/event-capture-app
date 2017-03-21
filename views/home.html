@@ -27,7 +27,11 @@
         {{'loading_metadata'| translate}}
     </div>
 
-    <div ng-show="selectedOrgUnit && userAuthority.canAddOrUpdateEvent">
+    <div ng-if="selectedOrgUnit && !userAuthority.canAddOrUpdateEvent">
+        <h1>{{'lacking_required_authority_to_add_update_event' | translate}}</h1>
+    </div>
+    
+    <div ng-show="selectedOrgUnit">
         
         <h3>
             {{eventCaptureLabel}}
@@ -95,7 +99,7 @@
                             type="button"
                             ng-show="selectedProgramStage" 
                             ng-click="showEventRegistration()" 
-                            ng-disabled="eventRegistration || editingEventInFull || editingEventInGrid">
+                            ng-disabled="eventRegistration || editingEventInFull || editingEventInGrid || !userAuthority.canAddOrUpdateEvent">
                         {{'register_event'| translate}}
                     </button>
                     <button class="btn btn-primary hideInPrint small-horizontal-spacing small-vertical-spacing"
@@ -164,10 +168,6 @@
         </form>
         <!-- event update / registration ends -->
         
-    </div>
-    
-    <div ng-if="selectedOrgUnit && !userAuthority.canAddOrUpdateEvent">
-        <h1>{{'lacking_required_authority_to_add_update_event' | translate}}</h1>
-    </div>
+    </div>    
     
 </div>

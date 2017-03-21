@@ -73,16 +73,15 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     //notes
     $scope.note = {};
+
     $scope.displayTextEffects = [];
-    $scope.today = DateUtils.getToday();
-    
-    var storedBy = CommonUtils.getUsername();
-    
+    $scope.today = DateUtils.getToday();    
     $scope.noteExists = false;
-
+    $scope.model.editingDisabled = false;
+    var storedBy = CommonUtils.getUsername();    
     var orgUnitFromUrl = ($location.search()).ou;
-
     var eventIdFromUrl = ($location.search()).event;
+    
 
      //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
@@ -336,8 +335,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.filterText = {};
         $scope.filterParam = '';
 
-        if( $scope.userAuthority && $scope.userAuthority.canAddOrUpdateEvent &&
-                $scope.selectedProgram && 
+        if( $scope.selectedProgram && 
                 $scope.selectedProgram.programStages && 
                 $scope.selectedProgram.programStages[0] && 
                 $scope.selectedProgram.programStages[0].id){ 

@@ -23,10 +23,10 @@
   },
   "homepage": "https://github.com/dhis2/event-capture-app#readme",
   "dependencies": {
-    "d2-tracker": "^27.0.0",
+    "d2-tracker": "27.0.8",
     "leaflet": "^0.7.7",
-    "leaflet-geocoder-mapzen": "1.4.1",
-    "leaflet-contextmenu": "^1.1.0"
+    "leaflet-contextmenu": "^1.1.0",
+    "leaflet-geocoder-mapzen": "1.4.1"
   },
   "devDependencies": {
     "babel-core": "^6.8.0",
