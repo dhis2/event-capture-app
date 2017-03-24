@@ -4,23 +4,12 @@ node_js:
 cache:
   directories:
   - node_modules
-before_script:
-- cd $HOME
-- git clone --depth=10 https://github.com/dhis2/tracker-core.git
-- cd $HOME/tracker-core
-- npm install
-- npm run build
-script:
-- npm link tracker-core
-- npm run build
 script:
 - npm run build
 after_success:
 - if ( [ "$TRAVIS_BRANCH" == "master" ] || [ ! -z "$TRAVIS_TAG" ] ) && [ "$TRAVIS_REPO_SLUG" == "dhis2/event-capture-app" ]  &&  [ "$TRAVIS_PULL_REQUEST" == "false" ] ; then
     mvn clean deploy --settings deploy/settings.xml && exit 0; 
   fi
-env:
-
 env:
   global:
   - secure: ov1ONG4xu5ni7mOb+KlwZttINuneTrqrj9y+6A3vtMCZdZ8UOv+DyZvusJL0C1aLMypmHmRf0MFHtJ5z/Do66DbarEqOr38mShNIwOXbjF+vOpCARs8IYqR8Ib0apr+Kv/gJpxc6JMb5B5E5MKagysUtID5LJREBzMPucNMsSPQVR56f3tNFGGrje3C+NMCsgnSOtPI3bUSYrhCYPfToEF/VM7SPvuqDmJwEMo8hoCtPQ5v+LsX6W0a0SoONBgt2IMQjpdBLeLY753aT2SooDUM4XWwNrIarrd26S0s7MaU4+BnbgAVHmk51gv8APOkMo/2uqiPLnGZhVlJyem7eNefj4WSbHT26Q5JPCDYv5d1v9RgXF6Zl4UVN14vSAvohQLHXxmnHHTo6INgCVAQk+ra9650sw7crMV3XcNKqIQsDmSZC7+UejIowsPBGA7ZDqs0Os4wC9FrnJ6QiLjah2uT4h06TWjp1NlWrlSGxwLlivNfujN3uXRbzbgIMQ+6OpKJJCorXDxbPtK8ZmuBJSbNPZyDN+hJm33QwGYUQ5BRjIgygcMbIcIVpLg0R6u1beEAVHoNQ1vu8RZ1rEdi9fnh5RQdG6/uJk6Z1yJzJhYGzFJEdeIJG9Q3+96vpmMpsbeFct6MV4GnKn+rQMxomOjThc9Bd//FKVqWrmuAxm20=
