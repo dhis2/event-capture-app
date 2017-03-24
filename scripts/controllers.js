@@ -1,8 +1,10 @@
+var eventCapture = angular.module('eventCapture');
+
 /* Controllers */
-var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'])
+//var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'])
 
 //Controller for settings page
-.controller('MainController',
+eventCapture.controller('MainController',
         function($rootScope,
                 $scope,
                 $route,
@@ -1905,7 +1907,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
 })
 
-.controller('NotesController', function($scope, $modalInstance, dhis2Event){
+eventCapture.controller('NotesController', function($scope, $modalInstance, dhis2Event){
 
     $scope.dhis2Event = dhis2Event;
 

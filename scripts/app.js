@@ -1,3 +1,5 @@
+import './eventCaptureModule';
+
 // Tracker core
 import 'd2-tracker/lib/dhis2.angular.services.js';
 import 'd2-tracker/lib/dhis2.angular.directives.js';
@@ -13,34 +15,13 @@ import 'd2-tracker/lib/Google.js';
 
 L.Icon.Default.imagePath = '../dhis-web-commons/leaflet/images';
 
-import './services.js';
-import './directives.js';
-import './controllers.js';
-import './filters.js';
+import '../scripts/services.js';
+import '../scripts/filters.js';
+import '../scripts/directives.js';
+import '../scripts/controllers.js';
 import './ng-csv.js';
 
-/* App Module */
-
-const eventCapture = angular.module('eventCapture',
-                    ['ui.bootstrap',
-                    'ngRoute',
-                    'ngCookies',
-                    'ngMessages',
-                    'ngSanitize',
-                    'eventCaptureDirectives',
-                    'eventCaptureControllers',
-                    'eventCaptureServices',
-                    'eventCaptureFilters',
-                    'd2Filters',
-                    'd2Directives',
-                    'd2Services',
-                    'd2Controllers',
-                    'd2Templates',
-                    'ui.select',
-                    'angularLocalStorage',
-                    'pascalprecht.translate',
-                    'leaflet-directive',
-                    ])
+angular.module('eventCapture')
 
 .value('DHIS2URL', '../api/26')
 
