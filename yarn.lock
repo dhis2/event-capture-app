@@ -1256,9 +1256,9 @@ currently-unhandled@^0.4.1:
   dependencies:
     array-find-index "^1.0.1"
 
-d2-tracker@27.0.12:
-  version "27.0.12"
-  resolved "https://registry.yarnpkg.com/d2-tracker/-/d2-tracker-27.0.12.tgz#f23a0a9ae19606ee6ef861cd9bd8ab083f355d49"
+d2-tracker@27.0.14:
+  version "27.0.14"
+  resolved "https://registry.yarnpkg.com/d2-tracker/-/d2-tracker-27.0.14.tgz#667e897f8c852b1eb744cd5a87536a9388183f3b"
   dependencies:
     gulp "^3.9.1"
     gulp-angular-templatecache "^2.0.0"
@@ -3704,13 +3704,13 @@ sax@~1.2.1:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.2.tgz#fd8631a23bc7826bef5d871bdb87378c95647828"
 
-"semver@2 || 3 || 4 || 5", semver@^4.1.0:
-  version "4.3.6"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-4.3.6.tgz#300bc6e0e86374f7ba61068b5b1ecd57fc6532da"
-
-semver@^5.3.0:
+"semver@2 || 3 || 4 || 5", semver@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.3.0.tgz#9b2ce5d3de02d17c6012ad326aa6b4d0cf54f94f"
+
+semver@^4.1.0:
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-4.3.6.tgz#300bc6e0e86374f7ba61068b5b1ecd57fc6532da"
 
 send@0.15.1:
   version "0.15.1"
