@@ -13,7 +13,8 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="eventGridColumn in eventGridColumns" ng-if="eventGridColumn.id !== 'comment' && eventGridColumn.id !== 'uid' && eventGridColumn.id !== 'eventDate' && !hiddenFields[eventGridColumn.id]">
+            <tr ng-repeat="eventGridColumn in eventGridColumns" 
+                ng-if="eventGridColumn.id !== 'comment' && eventGridColumn.id !== 'uid' && eventGridColumn.id !== 'eventDate' && eventGridColumn.id !== 'lastUpdated' && !hiddenFields[eventGridColumn.id]">
                 <td>
                     <span d2-pop-over 
                         class="popover-label hideInPrint"  
