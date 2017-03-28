@@ -36,7 +36,7 @@ if( dhis2.ec.memoryOnly ) {
 dhis2.ec.store = new dhis2.storage.Store({
     name: 'dhis2ec',
     adapters: [dhis2.storage.IndexedDBAdapter, dhis2.storage.DomSessionStorageAdapter, dhis2.storage.InMemoryAdapter],
-    objectStores: ['programs', 'optionSets', 'events', 'programValidations', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants']
+    objectStores: ['programs', 'optionSets', 'events', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants']
 });
 
 (function($) {
@@ -280,8 +280,6 @@ function getPrograms( programs, ids )
     
     _.each( _.values( batches ), function ( batch ) {        
         promise = getBatchPrograms( programs, batch );
-        promise = promise.then( getMetaProgramValidations );
-        promise = promise.then( getProgramValidations );
         promise = promise.then( getMetaProgramIndicators );
         promise = promise.then( getProgramIndicators );
         promise = promise.then( getMetaProgramRules );
@@ -397,19 +395,9 @@ function getOptionSets()
     return dhis2.tracker.getBatches( optionSetIds, batchSize, null, 'optionSets', 'optionSets', DHIS2URL + '/optionSets.json', 'paging=false&fields=id,displayName,version,options[id,displayName,code]', 'idb', dhis2.ec.store );
 }
 
-function getMetaProgramValidations( programs, programIds )
+function getMetaProgramIndicators( programs, programIds )
 {   
     programs.programIds = programIds;
-    return dhis2.tracker.getTrackerMetaObjects(programs, 'programValidations', DHIS2URL + '/programValidations.json', 'paging=false&fields=id&filter=program.id:in:');
-}
-
-function getProgramValidations( programValidations )
-{  
-    return dhis2.tracker.checkAndGetTrackerObjects( programValidations, 'programValidations', DHIS2URL + '/programValidations', 'fields=id,displayName,operator,rightSide[expression,description],leftSide[expression,description],program[id]', dhis2.ec.store);
-}
-
-function getMetaProgramIndicators( programs )
-{   
     return dhis2.tracker.getTrackerMetaObjects(programs, 'programIndicators', DHIS2URL + '/programIndicators.json', 'paging=false&fields=id&filter=program.id:in:');
 }
 
