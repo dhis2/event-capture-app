@@ -1308,213 +1308,152 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         });        
     };
 
-    $scope.getExportList = function(format) {
-
-        var deferred = $q.defer();
-        var fieldsToExport = $filter('filter')($scope.eventGridColumns, {show: true});
-        var idList = ["programStage", "orgUnit", "program", "event", "status", "eventDate", "created"];
+    $scope.getExportList = function (format) {
         var eventsJSON = [];
-        var eventsJSONIndex = -1;
-        var dataValuesJSON;
-        var headers = [];
-        var row;
-        var rowXML;
-        var eventsCSV = [];
-        var eventsXML = '';
-        var nameToIdMap = {};
-        var emptyRow = [];
-        if (!format || ($scope.model.exportFormats.indexOf(format) === -1)) {
-            return;
-        }
-        format = format.toLowerCase();
+        /*for csv we include only the below fields*/
+        var csvFields = ["event", "program", "programStage", "orgUnitName", "eventDate", "created", "status"];
+        var csvFieldsIndices = [];
+        var requiredFieldNames = [];
+        var deferred = $q.defer();
 
-        eventsCSV[0] = angular.copy(idList);
-
-        for (var ind = 0; ind < fieldsToExport.length; ind++) {
-            emptyRow[ind] = null;
-            nameToIdMap[fieldsToExport[ind].id] = fieldsToExport[ind].displayName;
-        }
-
-
-        initExportList();
-
-        /*Get All the events list from the server*/
         DHIS2EventFactory.getByStage($scope.selectedOrgUnit.id, $scope.selectedProgramStage.id,
             $scope.attributeCategoryUrl, true).then(function (data) {
-
-            if (angular.isObject(data.events)) {
-                angular.forEach(data.events, function (event) {
-                    ++eventsJSONIndex;
-                    eventsJSON[eventsJSONIndex] = {};
-                    row = angular.copy(emptyRow);
-                    rowXML = angular.copy(emptyRow);
-                    if (format === 'xml') {
-                        eventsXML += '<event>';
-                    }
-                    dataValuesJSON = [];
-                    angular.forEach(event.dataValues, function (dataValue) {
-                        if ($scope.prStDes[dataValue.dataElement]) {
-                            var val = dataValue.value;
-                            if (angular.isObject($scope.prStDes[dataValue.dataElement].dataElement)) {
-                                val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataValue.dataElement].dataElement, $scope.optionSets, 'USER');
-                            }
-                            event[dataValue.dataElement] = val;
-
-                            insertDataValueToRow(dataValue.dataElement, val);
-                        }
+            var headerArray, headerFieldNames;
+            var eventsXML = '<eventList>';
+            var eventsCSV = [], csvRow;
+            var processedData;
+            var dataValues;
+            var field, index, eventJSON;
+            if (angular.isObject(data)) {
+                if (angular.isObject(data.headers)) {
+                    headerArray = data.headers;
+                    headerFieldNames = data.headers.map(function(object) {
+                        return object.name;
                     });
-
-                    event.eventDate = DateUtils.formatFromApiToUser(event.eventDate);
-                    event['eventDate'] = event.eventDate;
-
-                    event.created = DateUtils.formatFromApiToUser(event.created);
-                    event['created'] = event.created;
-
-
-                    if (format === 'xml' || format === 'csv') {
-                        insertItemToRow(event, 'programStage');
-                        insertItemToRow(event, 'orgUnit');
-                        insertItemToRow(event, 'program');
-                        insertItemToRow(event, 'event');
-                        insertItemToRow(event, 'status');
-                        insertItemToRow(event, 'eventDate');
-                        insertItemToRow(event, 'created');
-                        insertRowToExportList();
-                    } else if (format === 'json') {
-                        if (event['programStage']) {
-                            eventsJSON[eventsJSONIndex]['programStage'] = event['programStage'];
-                        }
-                        if (event['orgUnit']) {
-                            eventsJSON[eventsJSONIndex]['orgUnit'] = event['orgUnit'];
-                        }
-                        if (event['program']) {
-                            eventsJSON[eventsJSONIndex]['program'] = event['program'];
-                        }
-                        if (event['event']) {
-                            eventsJSON[eventsJSONIndex]['event'] = event['event'];
-                        }
-                        if (event['status']) {
-                            eventsJSON[eventsJSONIndex]['status'] = event['status'];
-                        }
-                        if (event['eventDate']) {
-                            eventsJSON[eventsJSONIndex]['eventDate'] = event['eventDate'];
-                        }
-
-                        if (dataValuesJSON.length > 0) {
-                            eventsJSON[eventsJSONIndex]["dataValues"] = dataValuesJSON;
+                    if (format === "CSV") {
+                        eventsCSV[0]=[];
+                        for (var i = 0; i < csvFields.length; i++) {
+                            field = csvFields[i];
+                            index = headerFieldNames.indexOf(field);
+                            if (index > -1) {
+                                csvFieldsIndices.push(index);
+                                eventsCSV[0].push(field);
+                            }
                         }
                     }
-                    delete event.dataValues;
-                });
+                }
 
-                if (format === 'xml') {
-                    eventsXML += '</events>';
+                if (angular.isObject(data.rows)) {
+                    angular.forEach(data.rows, function (rowArray) {
+                        /* rowArray has one row of values for the event fields */
+                        if (angular.isObject(rowArray)) {
+                            if (format === "JSON") {
+                                eventJSON = {};
+                                dataValues = [];
+                                headerArray.forEach((key, idx) => {
+                                    if (rowArray[idx]) {
+                                        processedData =   getProcessedValue(headerArray[idx].name, rowArray[idx]);
+                                        if (processedData.isDataValue) {
+                                            dataValues.push({name:processedData.name, id:processedData.id, value:processedData.value})
+                                        } else {
+                                            eventJSON[processedData.name] = processedData.value;
+                                        }
+                                    }
+                                });
+                                if (dataValues.length > 0) {
+                                    eventJSON["dataValues"] = dataValues;
+                                }
+                                eventsJSON.push(eventJSON);
+                            } else if (format === "XML") {
+                                eventsXML += "<event>";
+                                dataValues = [];
+                                headerArray.forEach((key, idx) => {
+                                    if (rowArray[idx]) {
+                                        processedData = getProcessedValue(headerArray[idx].name, rowArray[idx]);
+                                        if(processedData.isDataValue) {
+                                            dataValues.push(processedData)
+                                        } else {
+                                            eventsXML += "<"+processedData.name+">"+processedData.value+"</"+processedData.name+">";
+                                        }
+                                    }
+                                });
+                                if(dataValues.length > 0) {
+                                    eventsXML += "<dataValues>";
+                                    for (var index = 0; index < dataValues.length; index++) {
+                                        eventsXML += '<dataValue dataElementId="' + dataValues[index].id + '" ' +
+                                            'dataElementName="' + dataValues[index].name + '" ' +
+                                            'value="' + dataValues[index].value + '"/>';
+                                    }
+                                    eventsXML += "</dataValues>";
+                                }
+                                eventsXML += "</event>";
+                            } else if (format === "CSV") {
+                                csvRow = [];
+                                csvFieldsIndices.forEach((idx) => {
+                                    processedData = getProcessedValue(headerArray[idx].name, rowArray[idx]);
+                                    csvRow.push(processedData.value);
+                                });
+                                eventsCSV.push(csvRow);
+                            }
+                        }
+                    })
                 }
             }
 
-            if (format === 'json') {
-                saveFile(format, JSON.stringify({"events": eventsJSON}));
-            } else if (format === 'xml') {
-                saveFile(format, eventsXML);
-            } else if (format === 'csv') {
+            if(format === "JSON") {
+                saveFile(JSON.stringify({"events": eventsJSON}));
+            } else if (format === "XML") {
+                eventsXML += '</eventList>';
+                saveFile(eventsXML);
+            } else if(format === "CSV") {
                 deferred.resolve(eventsCSV);
             }
-        });
 
-        function saveFile(format, data) {
-            var fileName = "eventList." + format;// any file name with any extension
-            var a = document.createElement('a');
-            var blob, url;
-            a.style = "display: none";
-            blob = new Blob(['' + data], {type: "octet/stream", endings: 'native'});
-            url = window.URL.createObjectURL(blob);
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(function () {
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            }, 300);
-        }
-
-
-        function initExportList() {
-            var item, id;
-            for (var index = 0; index < fieldsToExport.length; index++) {
-                item = fieldsToExport[index];
-                id = item.id === "uid" ? "event" : item.id;
-                if (idList.indexOf(id) === -1) {
-                    idList.push(id);
-                    eventsCSV[0].push(item.displayName);
-                }
-                if (format === 'json') {
-                    headers.push({
-                        "name": item.displayName
-                    });
-                }
-            }
-            if (format === 'xml') {
-                eventsXML += '<events>';
-            }
-        }
-
-        function insertDataValueToRow(dataElement, value) {
-            var index = idList.indexOf(dataElement);
-            if (index > -1) {
-                if (format === 'xml' || format === 'csv') {
-                    row[index] = {value: value, dataElement: dataElement, isDataValue: true};
-                } else if (format === 'json') {
-                    dataValuesJSON.push(value);
-                }
-            }
-        }
-
-        function insertItemToRow(item, name) {
-            var index = idList.indexOf(name);
-            if (index > -1) {
-                if (format === 'xml' || format === 'csv') {
-                    row[index] = {value: item[name], dataElement: name, isDataValue: false};
-                }
-            }
-        }
-
-        function insertRowToExportList() {
-            var dataValues = '';
-            var csvRow = [];
-            for (var index = 0; index < row.length; index++) {
-                if (row[index]) {
-                    if (format === 'xml') {
-                        if (row[index].isDataValue) {
-                            if (dataValues.length === 0) {
-                                dataValues += '<datavalues>';
-                            }
-                            dataValues += '<dataValue dataElementId="' + row[index].dataElement + '" ' +
-                                'dataElementName="' + nameToIdMap[row[index].dataElement] + '" ' +
-                                'value="' + row[index].value + '"/>';
-                        } else {
-                            eventsXML += '<' + row[index].dataElement + '>' + row[index].value + '</' + row[index].dataElement + '>';
+            function getProcessedValue(fieldName, fieldValue) {
+                var processedData = {name: fieldName, value: fieldValue};
+                switch(fieldName) {
+                    case 'program':
+                        processedData.value = $scope.selectedProgram && $scope.selectedProgram.name ? $scope.selectedProgram.name : fieldValue;
+                        break;
+                    case 'programStage':
+                        processedData.value = $scope.currentStage && $scope.currentStage.name ? $scope.currentStage.name : fieldValue;
+                        //alert(fieldValue);
+                        break;
+                    case 'created':
+                    case 'completedDate':
+                    case 'eventDate':
+                    case 'dueDate':
+                        processedData.value = DateUtils.formatFromApiToUser(fieldValue);
+                    default:
+                        if ($scope.prStDes[fieldName] && $scope.prStDes[fieldName].dataElement) {
+                            processedData.name = $scope.prStDes[fieldName].dataElement.name;
+                            processedData.value = CommonUtils.formatDataValue(null, processedData.value, $scope.prStDes[fieldName].dataElement, $scope.optionSets, 'USER');
+                            processedData.value = processedData.value.toString();
+                            processedData.isDataValue = true;
+                            processedData.id = $scope.prStDes[fieldName].dataElement.id;
                         }
-                    } else if (format === 'csv') {
-                        csvRow.push(row[index].value);
-                    }
-                } else {
-                    if (format === 'csv') {
-                        csvRow.push(null);
-                    }
                 }
-            }
-            if (format === 'csv') {
-                eventsCSV.push(csvRow);
+                return processedData;
             }
 
-            if (format === 'xml') {
-                if (dataValues.length > 0) {
-                    eventsXML += dataValues + '</datavalues>';
-                }
-                eventsXML += '</event>';
+            function saveFile(data) {
+                var fileName = "eventList." + format;// any file name with any extension
+                var a = document.createElement('a');
+                var blob, url;
+
+                a.style = "display: none";
+                blob = new Blob(['' + data], {type: "octet/stream", endings: 'native'});
+                url = window.URL.createObjectURL(blob);
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function () {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 300);
             }
-        }
+        });
 
         return deferred.promise;
     };
