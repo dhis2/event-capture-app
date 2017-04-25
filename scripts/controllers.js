@@ -1437,7 +1437,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
 
             function saveFile(data) {
-                var fileName = "eventList." + format;// any file name with any extension
+                var fileName = "eventList." + format.toLowerCase();// any file name with any extension
                 var a = document.createElement('a');
                 var blob, url;
 
