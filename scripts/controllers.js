@@ -323,7 +323,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
 
     $scope.getProgramDetails = function(){
-
+        var showStatus, addDataElementToGridColumns;
         $scope.selectedOptions = [];
         $scope.selectedProgramStage = null;
         $scope.eventFetched = false;
@@ -398,11 +398,27 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     $scope.prStDes[prStDe.dataElement.id] = prStDe;
                     $scope.newDhis2Event[prStDe.dataElement.id] = '';
 
-                    if(!$scope.eventGridColumnsRestored) {
+                    showStatus =  prStDe.displayInReports;
+                    addDataElementToGridColumns = false;
+
+                    if (!$scope.eventGridColumnsRestored) {
+                        showStatus = prStDe.displayInReports;
+                        addDataElementToGridColumns = true;
+                    } else {
+                        /*Check if any new dataelement is added to the programstage.If yes,
+                        * include the same in grid columns with show status as false.*/
+                        if (!$filter('filter')($scope.eventGridColumns, {id: prStDe.dataElement.id}, true)) {
+                            showStatus = false;
+                            addDataElementToGridColumns = true;
+                        }
+                    }
+
+                    if (addDataElementToGridColumns) {
                         //generate grid headers using program stage data elements
                         //create a template for new event
                         //for date type dataelements, filtering is based on start and end dates
-                        $scope.eventGridColumns.push({displayName: prStDe.dataElement.displayFormName,
+                        $scope.eventGridColumns.push({
+                                                  displayName: prStDe.dataElement.displayFormName,
                                                   id: prStDe.dataElement.id,
                                                   valueType: prStDe.dataElement.valueType,
                                                   compulsory: prStDe.compulsory,
@@ -413,7 +429,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                                                                         prStDe.dataElement.valueType === 'INTEGER_NEGATIVE' ||
                                                                         prStDe.dataElement.valueType === 'INTEGER_ZERO_OR_POSITIVE' ? true : false,
                                                   showFilter: false,
-                                                  show: prStDe.displayInReports,
+                                                  show: showStatus,
                                                   group: 'DYNAMIC'});
                     }
 
