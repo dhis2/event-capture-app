@@ -313,20 +313,16 @@ eventCapture.controller('MainController',
      * as the default one for that program (in $scope.search() function)
      * */
     $scope.restoreGridColumnsFromUserStore = function() {
-        $scope.eventGridColumnsRestored = false;
+        $scope.savedGridColumns = [];
         if($scope.gridColumnsInUserStore && $scope.selectedProgram && $scope.selectedProgram.id) {
             if ($scope.gridColumnsInUserStore[$scope.selectedProgram.id]) {
-                $scope.eventGridColumns = angular.copy($scope.gridColumnsInUserStore[$scope.selectedProgram.id]);
-                $scope.eventGridColumnsRestored = true;
+                $scope.savedGridColumns = angular.copy($scope.gridColumnsInUserStore[$scope.selectedProgram.id]);
             }
-        }
-        if (!$scope.eventGridColumnsRestored) {
-            $scope.eventGridColumns = [];   
         }
     };
 
     $scope.getProgramDetails = function(){
-        var showStatus, addDataElementToGridColumns;
+        var showStatus, savedColumn;
         $scope.selectedOptions = [];
         $scope.selectedProgramStage = null;
         $scope.eventFetched = false;
@@ -348,125 +344,120 @@ eventCapture.controller('MainController',
             $scope.selectedProgramStage = $scope.selectedProgram.programStages[0];
             $scope.currentStage = $scope.selectedProgramStage;
 
-                angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
+            angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
                     section.open = true;
+            });
+
+            $scope.prStDes = [];
+            $scope.restoreGridColumnsFromUserStore();
+            $scope.filterTypes = {};
+            $scope.newDhis2Event = {};
+            $scope.filterTypes['uid'] = 'TEXT';
+            $scope.eventGridColumns = [];
+
+            $scope.eventGridColumns.push({
+                displayName: 'event_uid',
+                id: 'uid',
+                valueType: 'TEXT',
+                compulsory: false,
+                filterWithRange: false,
+                showFilter: false,
+                show: getShowStatus(false, 'uid'),
+                group: 'FIXED'
+            });
+
+            $scope.eventGridColumns.push({
+                displayName: $scope.selectedProgramStage.reportDateDescription ? $scope.selectedProgramStage.reportDateDescription : $translate.instant('incident_date'),
+                id: 'eventDate',
+                valueType: 'DATE',
+                filterWithRange: true,
+                compulsory: false,
+                showFilter: false,
+                show: getShowStatus(true, 'eventDate'),
+                group: 'FIXED'
+            });
+
+            $scope.eventGridColumns.push({
+                displayName: $translate.instant('last_updated'),
+                id: 'lastUpdated',
+                valueType: 'DATE',
+                filterWithRange: true,
+                compulsory: false,
+                showFilter: false,
+                show: getShowStatus(true, 'lastUpdated'),
+                group: 'FIXED'
+            });
+
+            $scope.filterTypes['eventDate'] = 'DATE';
+            $scope.filterText['eventDate'] = {};
+
+            angular.forEach($scope.selectedProgramStage.programStageDataElements, function (prStDe) {
+
+                $scope.prStDes[prStDe.dataElement.id] = prStDe;
+                $scope.newDhis2Event[prStDe.dataElement.id] = '';
+
+                showStatus = getShowStatus(prStDe.displayInReports, prStDe.dataElement.id);
+
+                    //generate grid headers using program stage data elements
+                    //create a template for new event
+                    //for date type dataelements, filtering is based on start and end dates
+                $scope.eventGridColumns.push({
+                        displayName: prStDe.dataElement.displayFormName,
+                        id: prStDe.dataElement.id,
+                        valueType: prStDe.dataElement.valueType,
+                        compulsory: prStDe.compulsory,
+                        filterWithRange: prStDe.dataElement.valueType === 'DATE' ||
+                        prStDe.dataElement.valueType === 'NUMBER' ||
+                        prStDe.dataElement.valueType === 'INTEGER' ||
+                        prStDe.dataElement.valueType === 'INTEGER_POSITIVE' ||
+                        prStDe.dataElement.valueType === 'INTEGER_NEGATIVE' ||
+                        prStDe.dataElement.valueType === 'INTEGER_ZERO_OR_POSITIVE' ? true : false,
+                        showFilter: false,
+                        show: showStatus,
+                        group: 'DYNAMIC'
                 });
 
-                $scope.prStDes = [];
-                $scope.restoreGridColumnsFromUserStore();
-                $scope.filterTypes = {};
-                $scope.newDhis2Event = {};            
-                $scope.filterTypes['uid'] = 'TEXT';
+                $scope.filterTypes[prStDe.dataElement.id] = prStDe.dataElement.valueType;
 
-                if(!$scope.eventGridColumnsRestored) {
-                    $scope.eventGridColumns.push({
-                        displayName: 'event_uid',
-                        id: 'uid',
-                        valueType: 'TEXT',
-                        compulsory: false,
-                        filterWithRange: false,
-                        showFilter: false,
-                        show: false,
-                        group: 'FIXED'
-                    });
-                    
-                    $scope.eventGridColumns.push({
-                        displayName: $scope.selectedProgramStage.reportDateDescription ? $scope.selectedProgramStage.reportDateDescription : $translate.instant('incident_date'),
-                        id: 'eventDate',
-                        valueType: 'DATE',
-                        filterWithRange: true,
-                        compulsory: false,
-                        showFilter: false,
-                        show: true,
-                        group: 'FIXED'
-                    });
-                    
-                    $scope.eventGridColumns.push({
-                        displayName: $translate.instant('last_updated'),
-                        id: 'lastUpdated',
-                        valueType: 'DATE',
-                        filterWithRange: true,
-                        compulsory: false,
-                        showFilter: false,
-                        show: true,
-                        group: 'FIXED'
-                    });
+                if (prStDe.dataElement.valueType === 'DATE' ||
+                    prStDe.dataElement.valueType === 'NUMBER' ||
+                    prStDe.dataElement.valueType === 'INTEGER' ||
+                    prStDe.dataElement.valueType === 'INTEGER_POSITIVE' ||
+                    prStDe.dataElement.valueType === 'INTEGER_NEGATIVE' ||
+                    prStDe.dataElement.valueType === 'INTEGER_ZERO_OR_POSITIVE') {
+                    $scope.filterText[prStDe.dataElement.id] = {};
                 }
-                
-                $scope.filterTypes['eventDate'] = 'DATE';
-                $scope.filterText['eventDate']= {};
+            });
 
-                angular.forEach($scope.selectedProgramStage.programStageDataElements, function(prStDe){
+            $scope.emptyFilterText = angular.copy( $scope.filterText );
 
-                    $scope.prStDes[prStDe.dataElement.id] = prStDe;
-                    $scope.newDhis2Event[prStDe.dataElement.id] = '';
+            $scope.customDataEntryForm = CustomFormService.getForProgramStage($scope.selectedProgramStage, $scope.prStDes);
 
-                    showStatus =  prStDe.displayInReports;
-                    addDataElementToGridColumns = false;
+            if($scope.selectedProgramStage.captureCoordinates){
+                $scope.newDhis2Event.coordinate = {};
+            }
 
-                    if (!$scope.eventGridColumnsRestored) {
-                        showStatus = prStDe.displayInReports;
-                        addDataElementToGridColumns = true;
-                    } else {
-                        /*Check if any new dataelement is added to the programstage.If yes,
-                        * include the same in grid columns with show status as false.*/
-                        if (!$filter('filter')($scope.eventGridColumns, {id: prStDe.dataElement.id}, true)) {
-                            showStatus = false;
-                            addDataElementToGridColumns = true;
-                        }
-                    }
+            $scope.newDhis2Event.eventDate = '';
+            $scope.newDhis2Event.event = 'SINGLE_EVENT';
 
-                    if (addDataElementToGridColumns) {
-                        //generate grid headers using program stage data elements
-                        //create a template for new event
-                        //for date type dataelements, filtering is based on start and end dates
-                        $scope.eventGridColumns.push({
-                                                  displayName: prStDe.dataElement.displayFormName,
-                                                  id: prStDe.dataElement.id,
-                                                  valueType: prStDe.dataElement.valueType,
-                                                  compulsory: prStDe.compulsory,
-                                                  filterWithRange: prStDe.dataElement.valueType === 'DATE' ||
-                                                                        prStDe.dataElement.valueType === 'NUMBER' ||
-                                                                        prStDe.dataElement.valueType === 'INTEGER' ||
-                                                                        prStDe.dataElement.valueType === 'INTEGER_POSITIVE' ||
-                                                                        prStDe.dataElement.valueType === 'INTEGER_NEGATIVE' ||
-                                                                        prStDe.dataElement.valueType === 'INTEGER_ZERO_OR_POSITIVE' ? true : false,
-                                                  showFilter: false,
-                                                  show: showStatus,
-                                                  group: 'DYNAMIC'});
-                    }
+            $scope.selectedCategories = [];
+            if($scope.selectedProgram.categoryCombo && !$scope.selectedProgram.categoryCombo.isDefault && $scope.selectedProgram.categoryCombo.categories){
+                $scope.selectedCategories = $scope.selectedProgram.categoryCombo.categories;
+            }
+            else{
+                $scope.loadEvents();
+            }
+            $scope.optionsReady = true;
 
-                    $scope.filterTypes[prStDe.dataElement.id] = prStDe.dataElement.valueType;
+            function getShowStatus(defaultShowStatus, id) {
+                var showStatus = defaultShowStatus;
 
-                    if(prStDe.dataElement.valueType === 'DATE' ||
-                            prStDe.dataElement.valueType === 'NUMBER' ||
-                            prStDe.dataElement.valueType === 'INTEGER' ||
-                            prStDe.dataElement.valueType === 'INTEGER_POSITIVE' ||
-                            prStDe.dataElement.valueType === 'INTEGER_NEGATIVE' ||
-                            prStDe.dataElement.valueType === 'INTEGER_ZERO_OR_POSITIVE'){
-                        $scope.filterText[prStDe.dataElement.id]= {};
-                    }
-                });
-                
-                $scope.emptyFilterText = angular.copy( $scope.filterText );
-
-                $scope.customDataEntryForm = CustomFormService.getForProgramStage($scope.selectedProgramStage, $scope.prStDes);
-
-                if($scope.selectedProgramStage.captureCoordinates){
-                    $scope.newDhis2Event.coordinate = {};
+                savedColumn = $filter('filter')($scope.savedGridColumns, {id: id}, true);
+                if (savedColumn.length > 0) {
+                    showStatus = savedColumn[0].show;
                 }
-
-                $scope.newDhis2Event.eventDate = '';
-                $scope.newDhis2Event.event = 'SINGLE_EVENT';
-
-                $scope.selectedCategories = [];
-                if($scope.selectedProgram.categoryCombo && !$scope.selectedProgram.categoryCombo.isDefault && $scope.selectedProgram.categoryCombo.categories){
-                    $scope.selectedCategories = $scope.selectedProgram.categoryCombo.categories;
-                }
-                else{
-                    $scope.loadEvents();
-                }
-                $scope.optionsReady = true;
+                return showStatus;
+            }
         }
     };
     
