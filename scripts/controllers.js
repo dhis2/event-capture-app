@@ -1318,41 +1318,79 @@ eventCapture.controller('MainController',
         });        
     };
 
-    $scope.getExportList = function (format) {
-        var eventsJSON = [];
-        /*for csv we include only the below fields*/
+    $scope.getCSVExportList = function () {
         var csvFields = ["event", "program", "programStage", "orgUnitName", "eventDate", "created", "status"];
-        var csvFieldsIndices = [];
-        var requiredFieldNames = [];
+        var selectedDataElements;
         var deferred = $q.defer();
 
-        DHIS2EventFactory.getByStage($scope.selectedOrgUnit.id, $scope.selectedProgramStage.id,
-            $scope.attributeCategoryUrl, true).then(function (data) {
-            var headerArray, headerFieldNames;
-            var eventsXML = '<eventList>';
-            var eventsCSV = [], csvRow;
-            var processedData;
-            var dataValues;
-            var field, index, eventJSON;
+
+        var dataElementUrl = $filter('filter')($scope.eventGridColumns, {group: 'DYNAMIC', show: true}).map(function(c){return c.id;});
+
+        if( dataElementUrl && dataElementUrl.length > 0 ){
+            dataElementUrl = '&dataElement=' + dataElementUrl.join(',');
+        }
+        else{
+            dataElementUrl = '';
+        }
+        selectedDataElements = dataElementUrl.substr("&dataElement=".length).split(",");
+        csvFields = csvFields.concat(selectedDataElements);
+
+        DHIS2EventFactory.getByStage($scope.selectedOrgUnit.id, $scope.selectedProgramStage.id, $scope.attributeCategoryUrl,
+            null, false, null, $scope.filterParam + dataElementUrl).then(function(data){
+            var headerArray, headerFieldNames, headerFieldIds, eventsCSV=[], field, index, csvFieldsIndices=[], csvRow, processedData;
             if (angular.isObject(data)) {
                 if (angular.isObject(data.headers)) {
                     headerArray = data.headers;
-                    headerFieldNames = data.headers.map(function(object) {
+                    headerFieldIds = data.headers.map(function (object) {
                         return object.name;
                     });
-                    if (format === "CSV") {
-                        eventsCSV[0]=[];
-                        for (var i = 0; i < csvFields.length; i++) {
-                            field = csvFields[i];
-                            index = headerFieldNames.indexOf(field);
-                            if (index > -1) {
-                                csvFieldsIndices.push(index);
-                                eventsCSV[0].push(field);
-                            }
+                    headerFieldNames = data.headers.map(function (object) {
+                        return object.column;
+                    });
+                    eventsCSV[0]=[];
+                    for (var i = 0; i < csvFields.length; i++) {
+                        field = csvFields[i];
+                        index = headerFieldIds.indexOf(field);
+                        if (index > -1) {
+                            csvFieldsIndices.push(index);
+                            eventsCSV[0].push(headerFieldNames[index]);
                         }
                     }
                 }
+                if (angular.isObject(data.rows)) {
+                    angular.forEach(data.rows, function (rowArray) {
+                        /* rowArray has one row of values for the event fields */
+                        if (angular.isObject(rowArray)) {
+                            csvRow = [];
+                            csvFieldsIndices.forEach((idx) => {
+                                processedData = getProcessedValue(headerArray[idx].name, rowArray[idx]);
+                                csvRow.push(processedData.value);
+                            });
+                            eventsCSV.push(csvRow);
+                        }
+                    });
+                }
+                deferred.resolve(eventsCSV);
+            }
 
+        });
+        return deferred.promise;
+    };
+
+    $scope.getExportList = function (format) {
+        var eventsJSON = [];
+
+        DHIS2EventFactory.getByStage($scope.selectedOrgUnit.id, $scope.selectedProgramStage.id,
+            $scope.attributeCategoryUrl, true).then(function (data) {
+            var headerArray;
+            var eventsXML = '<eventList>';
+            var processedData;
+            var dataValues;
+            var eventJSON;
+            if (angular.isObject(data)) {
+                if (angular.isObject(data.headers)) {
+                    headerArray = data.headers;
+                }
                 if (angular.isObject(data.rows)) {
                     angular.forEach(data.rows, function (rowArray) {
                         /* rowArray has one row of values for the event fields */
@@ -1397,13 +1435,6 @@ eventCapture.controller('MainController',
                                     eventsXML += "</dataValues>";
                                 }
                                 eventsXML += "</event>";
-                            } else if (format === "CSV") {
-                                csvRow = [];
-                                csvFieldsIndices.forEach((idx) => {
-                                    processedData = getProcessedValue(headerArray[idx].name, rowArray[idx]);
-                                    csvRow.push(processedData.value);
-                                });
-                                eventsCSV.push(csvRow);
                             }
                         }
                     })
@@ -1415,58 +1446,57 @@ eventCapture.controller('MainController',
             } else if (format === "XML") {
                 eventsXML += '</eventList>';
                 saveFile(eventsXML);
-            } else if(format === "CSV") {
-                deferred.resolve(eventsCSV);
-            }
-
-            function getProcessedValue(fieldName, fieldValue) {
-                var processedData = {name: fieldName, value: fieldValue};
-                switch(fieldName) {
-                    case 'program':
-                        processedData.value = $scope.selectedProgram && $scope.selectedProgram.name ? $scope.selectedProgram.name : fieldValue;
-                        break;
-                    case 'programStage':
-                        processedData.value = $scope.currentStage && $scope.currentStage.name ? $scope.currentStage.name : fieldValue;
-                        //alert(fieldValue);
-                        break;
-                    case 'created':
-                    case 'completedDate':
-                    case 'eventDate':
-                    case 'dueDate':
-                        processedData.value = DateUtils.formatFromApiToUser(fieldValue);
-                    default:
-                        if ($scope.prStDes[fieldName] && $scope.prStDes[fieldName].dataElement) {
-                            processedData.name = $scope.prStDes[fieldName].dataElement.name;
-                            processedData.value = CommonUtils.formatDataValue(null, processedData.value, $scope.prStDes[fieldName].dataElement, $scope.optionSets, 'USER');
-                            processedData.value = processedData.value.toString();
-                            processedData.isDataValue = true;
-                            processedData.id = $scope.prStDes[fieldName].dataElement.id;
-                        }
-                }
-                return processedData;
-            }
-
-            function saveFile(data) {
-                var fileName = "eventList." + format.toLowerCase();// any file name with any extension
-                var a = document.createElement('a');
-                var blob, url;
-
-                a.style = "display: none";
-                blob = new Blob(['' + data], {type: "octet/stream", endings: 'native'});
-                url = window.URL.createObjectURL(blob);
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(function () {
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-                }, 300);
             }
         });
 
-        return deferred.promise;
+        function saveFile(data) {
+            var fileName = "eventList." + format.toLowerCase();// any file name with any extension
+            var a = document.createElement('a');
+            var blob, url;
+
+            a.style = "display: none";
+            blob = new Blob(['' + data], {type: "octet/stream", endings: 'native'});
+            url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function () {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 300);
+        }
     };
+
+    function getProcessedValue(fieldName, fieldValue) {
+        var processedData = {name: fieldName, value: fieldValue};
+        switch (fieldName) {
+            case 'program':
+                processedData.value = $scope.selectedProgram && $scope.selectedProgram.name ? $scope.selectedProgram.name : fieldValue;
+                break;
+            case 'programStage':
+                processedData.value = $scope.currentStage && $scope.currentStage.name ? $scope.currentStage.name : fieldValue;
+                //alert(fieldValue);
+                break;
+            case 'created':
+            case 'completedDate':
+            case 'eventDate':
+            case 'dueDate':
+                processedData.value = DateUtils.formatFromApiToUser(fieldValue);
+            default:
+                if ($scope.prStDes[fieldName] && $scope.prStDes[fieldName].dataElement) {
+                    processedData.name = $scope.prStDes[fieldName].dataElement.name;
+                    processedData.value = CommonUtils.formatDataValue(null, processedData.value, $scope.prStDes[fieldName].dataElement, $scope.optionSets, 'USER');
+                    processedData.value = processedData.value.toString();
+                    processedData.isDataValue = true;
+                    processedData.id = $scope.prStDes[fieldName].dataElement.id;
+                }
+        }
+        return processedData;
+    }
+
+
+
 
     $scope.showNotes = function(dhis2Event){
         
