@@ -29,7 +29,7 @@
                                 <li><h6 class="dropdown-header">Download as</h6></li>
                                 <li class="divider"></li>
                                 <li ng-repeat="format in model.exportFormats">
-                                    <a href ng-if="format==='CSV'" filename="eventList.csv" ng-csv="getCSVExportList(format)">{{format}}</a>
+                                    <a href ng-if="format==='CSV'" filename="eventList.csv" ng-csv="getCSVExportList()">{{format}}</a>
                                     <a href ng-if="format!=='CSV'" ng-click="getExportList(format)">{{format}}</a>
                                 </li>
                             </ul>
