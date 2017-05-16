@@ -531,7 +531,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 dataElementUrl = '';
             }
             
-            DHIS2EventFactory.getByStage($scope.selectedOrgUnit.id, $scope.selectedProgramStage.id, $scope.attributeCategoryUrl, $scope.pager, true, null, $scope.filterParam + dataElementUrl, $scope.sortHeader ).then(function(data){                
+            DHIS2EventFactory.getByStage($scope.selectedOrgUnit.id, $scope.selectedProgramStage.id, $scope.attributeCategoryUrl, $scope.pager, true, null, $scope.filterParam + dataElementUrl, $scope.sortHeader, $scope.selectedEventId ).then(function(data){
                 var _dhis2Events = [];
                 if( dhis2.ec.isOffline ) {
                     angular.forEach(data.events, function(ev){
@@ -557,7 +557,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
                 
                 if( data.metaData && data.metaData.pager ){
-
                     data.metaData.pager.pageSize = data.metaData.pager.pageSize ? data.metaData.pager.pageSize : $scope.pager.pageSize;
                     $scope.pager = data.metaData.pager;
                     $scope.pager.toolBarDisplay = 5;
@@ -642,7 +641,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     $scope.filterEvents = function(gridColumn, applyFilter){
         $scope.filterParam = '';
-        
+        $scope.selectedEventId = null;
         angular.forEach($scope.eventGridColumns, function(col){            
             if( gridColumn ){
                 if( col.id === gridColumn.id ){
@@ -705,8 +704,12 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                                 }
                             }
                         }
-                        else{                            
-                            $scope.filterParam += '&filter=' + col.id + ':like:' + $scope.filterText[col.id];
+                        else{
+                            if(col.id === "uid") {
+                                $scope.selectedEventId = $scope.filterText[col.id];
+                            } else {
+                                $scope.filterParam += '&filter=' + col.id + ':like:' + $scope.filterText[col.id];
+                            }
                         }
                     }
                 }

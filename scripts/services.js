@@ -304,13 +304,17 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
     };
     
     return {
-        getByStage: function(orgUnit, programStage, attributeCategoryUrl, pager, paging, format, filterUrl, sortParam){
+        getByStage: function(orgUnit, programStage, attributeCategoryUrl, pager, paging, format, filterUrl, sortParam, eventId){
             var url;
             if (format === "csv") {
             	url = DHIS2URL + '/events.csv?' + 'orgUnit=' + orgUnit;
             } 
             else {
             	url = DHIS2URL + '/events/query.json?' + 'orgUnit=' + orgUnit;
+            }
+
+            if(eventId) {
+                url += "&event="+eventId
             }
             
             if( programStage ) {                
