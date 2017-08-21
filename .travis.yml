@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+- '6'
+cache:
+  directories:
+  - node_modules
+script:
+- npm run build
+after_success:
+- if ( [ "$TRAVIS_BRANCH" == "master" ] || [ ! -z "$TRAVIS_TAG" ] ) && [ "$TRAVIS_REPO_SLUG" == "dhis2/event-capture-app" ]  &&  [ "$TRAVIS_PULL_REQUEST" == "false" ] ; then
+    mvn clean deploy --settings deploy/settings.xml && exit 0; 
+  fi
+env:
+  global:
+  - secure: ov1ONG4xu5ni7mOb+KlwZttINuneTrqrj9y+6A3vtMCZdZ8UOv+DyZvusJL0C1aLMypmHmRf0MFHtJ5z/Do66DbarEqOr38mShNIwOXbjF+vOpCARs8IYqR8Ib0apr+Kv/gJpxc6JMb5B5E5MKagysUtID5LJREBzMPucNMsSPQVR56f3tNFGGrje3C+NMCsgnSOtPI3bUSYrhCYPfToEF/VM7SPvuqDmJwEMo8hoCtPQ5v+LsX6W0a0SoONBgt2IMQjpdBLeLY753aT2SooDUM4XWwNrIarrd26S0s7MaU4+BnbgAVHmk51gv8APOkMo/2uqiPLnGZhVlJyem7eNefj4WSbHT26Q5JPCDYv5d1v9RgXF6Zl4UVN14vSAvohQLHXxmnHHTo6INgCVAQk+ra9650sw7crMV3XcNKqIQsDmSZC7+UejIowsPBGA7ZDqs0Os4wC9FrnJ6QiLjah2uT4h06TWjp1NlWrlSGxwLlivNfujN3uXRbzbgIMQ+6OpKJJCorXDxbPtK8ZmuBJSbNPZyDN+hJm33QwGYUQ5BRjIgygcMbIcIVpLg0R6u1beEAVHoNQ1vu8RZ1rEdi9fnh5RQdG6/uJk6Z1yJzJhYGzFJEdeIJG9Q3+96vpmMpsbeFct6MV4GnKn+rQMxomOjThc9Bd//FKVqWrmuAxm20=
+  - secure: hBcTyaSuIKuSnIn/7hTeefBn4oeBmMexMwRjqtZgHL+qvQNZKJlIIVVsxxg901D1ZlwZjh5ToQFaIj1astQo+a8GNc56PSTxmp0LydWicTSbokz9Hd2QvxmBahcIsqvsN0r9mTu1gN6LVZnlsdGxkQmzUWfAwOPiwsX/Jkb9n1lSP8IrYjqg9jTXI6w1pILsqI4JaRtW8Sd3ZCVG8uvsmntsje1MCRXv8Cdr54ThcDLpABx6ohj1s5rTZEhaSKudGqOmXhroV8SLI9IWNyP/SXtu3DbiAq48tIMxpKoc0lsgwK2cn4Stho+QBvyvehvuK0XEPIxrE8WsJfhomj5TX8AkgAltTqN70anelL8qpH38sluAC+2m+qaBzmAUZjvxMByldcdP59uPRgtAQv8FtUjNFV6jnstX4RvgikxNI00sSWf4HlO+7OREQr0vyQigaV7fRibwmP2OGJaq7146aVm/O4Xiu98D3QmkMNwvqLwOrGL+ePbUEhcvuczf3YzfsFwCsuwyzwj/v1y/4Rl04OW4JlJtqhZ2oU4TRqXWULPYSzNIsEP/iglcLgWjv0iePlU8cQ0jYTwmSNvFdBe3964JiyJ9vxXFFnXn92wakDB6SF8AY3HeNe9C1MxpiZloNm3osESzdcpoSs8e4zP8gZQyj0bGhjZ+0ryIMpF4SSM=
+notifications:
+  slack:
+    secure: WReEyMu+bgmypE1CZ0eQDQ5bzAOT9znnrFD1925s23yOStjsWH/i8HOj6LUH8orJtzPwSGMXBkBIZNfg4n0kUzUKc47bJRKzFPPrrpbxc1Gx9O3TKjg3sY/pb03rbayTXJ9gxFwvnW7qd66NcuAy3UIBlei38s6HL+OrAuBPrzW190A1f7Fn3aNDN8qoG4zIWLW4Z4KZ5EA3iPHDCVl9t2V1eGveHN3eaGfASMifdmUTbXna7/KuOUMEPpw3mL6mptwk9JYvl2Zyg0Eg//gW9A5zNWmae3d0jz+fiX5utyyaH3i3hFLeNclL6VPZSZrR03S6kZSAe903N32hq+ox+rsMCbtqntHdTQT/q6sTbaG0Rjp/v9wJysgQV/2+LBrOMVN9ECBB7ErIITI6FXVFSigCJ4Fft9gEiqaekrCuob5bSr91XTSny2bXtPCUJl3+loIo4aAonANmEdN7K34OQmB9Io7WWkNmKiZGFFyItUlCy9F5zSCxrfZJX1QicfnP9hJyJXS7BwhuWc6WpHHoZ6mHFWXD07XyhKgIf6msGqyARHFDXe7P9759V+d1GZoeUKhllUhJd8YouVIX2ZxDzn9XL2a6/pfELr2aVnOKgMNEFPLvLv6u5RDZUfIsCaFx6PoQINauvYwvx7zAfvvqE3QGJEyUivqDJQZj1aOuAkM=
+    on_success: change
+    on_faiure: always
