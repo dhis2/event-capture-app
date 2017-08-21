@@ -1,6 +1,6 @@
 {
   "name": "event-capture-app",
-  "version": "27.0.4",
+  "version": "27.0.5",
   "description": "DHIS2 event capture app",
   "main": "index.js",
   "scripts": {
