@@ -436,6 +436,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
             $scope.newDhis2Event.eventDate = '';
             $scope.newDhis2Event.event = 'SINGLE_EVENT';
+            $scope.newDhis2Event.orgUnit = $scope.selectedOrgUnit.id;
 
             $scope.selectedCategories = [];
             if($scope.selectedProgram.categoryCombo && !$scope.selectedProgram.categoryCombo.isDefault && $scope.selectedProgram.categoryCombo.categories){
