@@ -177,7 +177,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     $scope.showEventForEditing(eventIdFromUrl);
                 } else {
                     $scope.selectedProgram = response.selectedProgram;
-                    $scope.getProgramDetails();
+                    $scope.getProgramDetails( $scope.selectedProgram );
                 }
             });
         }
@@ -193,7 +193,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 for (var i = 0; i < $scope.programs.length; i++) {
                     if ($scope.programs[i].id === event.program) {
                         $scope.selectedProgram = $scope.programs[i];
-                        $scope.getProgramDetails();                        
+                        $scope.getProgramDetails( $scope.selectedProgram );                        
                         if( $scope.selectedProgram.programStages[0].id === event.programStage ){
                             $scope.formatEvent(event);
                             $scope.currentEvent = angular.copy(event);
@@ -318,7 +318,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
     };
 
-    $scope.getProgramDetails = function(){
+    $scope.getProgramDetails = function( program ){
+        $scope.selectedProgram = program;
         var showStatus, savedColumn;
         $scope.selectedOptions = [];
         $scope.selectedProgramStage = null;

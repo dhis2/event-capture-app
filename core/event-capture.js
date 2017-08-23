@@ -312,7 +312,7 @@ function getBatchPrograms( programs, batch )
     $.ajax( {
         url: DHIS2URL + '/programs.json',
         type: 'GET',
-        data: 'fields=*,categoryCombo[id,displayName,isDefault,categories[id,displayName,categoryOptions[id,displayName]]],organisationUnits[id,displayName],programStages[*,dataEntryForm[*],programStageSections[id,displayName,sortOrder,dataElements[id]],programStageDataElements[*,dataElement[*,optionSet[id]]]]&paging=false&filter=id:in:' + ids
+        data: 'fields=*,categoryCombo[id,displayName,isDefault,categories[id,displayName,categoryOptions[id,displayName,organisationUnits[id]]]],organisationUnits[id,displayName],programStages[*,dataEntryForm[*],programStageSections[id,displayName,sortOrder,dataElements[id]],programStageDataElements[*,dataElement[*,optionSet[id]]]]&paging=false&filter=id:in:' + ids
     }).done( function( response ){
 
         if(response.programs){
@@ -323,7 +323,22 @@ function getBatchPrograms( programs, batch )
                 });
                 program.organisationUnits = ou;
 
+                if( program.categoryCombo && program.categoryCombo.categories ){
+                    _.each( _.values( program.categoryCombo.categories ), function ( ca ) {                            
+                        if( ca.categoryOptions ){
+                            _.each( _.values( ca.categoryOptions ), function ( co ) {
+                                var mappedOrganisationUnits = [];
+                                if( co.organisationUnits && co.organisationUnits.length > 0 ){                                        
+                                    mappedOrganisationUnits = $.map(co.organisationUnits, function(ou){return ou.id;});
+                                }                                
+                                co.organisationUnits = mappedOrganisationUnits;
+                            });
+                        }
+                    });
+                }
+                
                 dhis2.ec.store.set( 'programs', program );
+
             });
         }
         

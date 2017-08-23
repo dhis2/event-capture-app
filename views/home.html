@@ -54,15 +54,16 @@
                         {{programLabel}}
                     </div>
                     <div class="col-sm-8">
-                        <select id="programId" 
-                                class="form-control"
-                                name="programId" 
-                                ng-model="selectedProgram" 
-                                ng-options="program as program.displayName for program in programs | orderBy: 'name'" 
-                                ng-change="getProgramDetails()"
-                                ng-disabled="eventRegistration || editingEventInFull || editingEventInGrid">
-                            <option value="">{{pleaseSelectLabel}}</option>
-                        </select>
+                        <ui-select ng-model="selectedProgram" 
+                                theme="select2" 
+                                on-select="getProgramDetails( selectedProgram )"    
+                                ng-disabled="eventRegistration || editingEventInFull || editingEventInGrid"
+                                style="width:100%;">
+                            <ui-select-match allow-clear="true" class="form-control-ui-select" placeholder="{{programs.length > 0 ? 'select_or_search' : 'empty'| translate}}">{{$select.selected.displayName|| $select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="program in programs | filter: $select.search | limitTo:maxOptionSize | orderBy: 'name'">
+                                <span ng-bind-html="program.displayName | highlight: $select.search"></span>
+                            </ui-select-choices>
+                        </ui-select>
                     </div>
                 </div>
                 <div class="row small-vertical-spacing" ng-if="selectedProgram" ng-repeat="category in selectedCategories">
@@ -70,13 +71,15 @@
                         {{category.displayName}}
                     </div>
                     <div class="col-sm-8">
-                        <select class="form-control"
-                                name="option"                             
-                                ng-model="category.selectedOption"
-                                ng-options="option as option.displayName for option in category.categoryOptions"
-                                ng-change="getCategoryOptions()">
-                            <option value="">{{pleaseSelectLabel}}</option>
-                        </select>
+                        <ui-select ng-model="category.selectedOption"                                        
+                                theme="select2"  
+                                on-select="getCategoryOptions()"
+                                style="width:100%;">
+                            <ui-select-match allow-clear="true" class="form-control-ui-select" placeholder="{{category.categoryOptions && category.categoryOptions.length > 0 ? 'select_or_search' : 'empty'| translate}}">{{$select.selected.displayName|| $select.selected}}</ui-select-match>
+                            <ui-select-choices  repeat="option in category.categoryOptions | categoryOptionFilter:selectedOrgUnit | filter: $select.search | limitTo:maxOptionSize">
+                                <span ng-bind-html="option.displayName | highlight: $select.search"></span>
+                            </ui-select-choices>
+                        </ui-select>
                     </div>
                 </div>
                 <div class="row small-vertical-spacing" ng-if="selectedProgramStage && selectedProgramStage.programStageSections.length  && eventRegistration || editingEventInFull">
