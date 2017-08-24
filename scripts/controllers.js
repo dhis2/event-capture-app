@@ -719,6 +719,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         });
                 
         if( applyFilter ){
+            $scope.pager.page = 1;
             $scope.loadEvents();
         }       
     };
