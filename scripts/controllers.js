@@ -717,6 +717,7 @@ eventCapture.controller('MainController',
         });
                 
         if( applyFilter ){
+            $scope.pager.page = 1;
             $scope.loadEvents();
         }       
     };
