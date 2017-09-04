@@ -657,25 +657,25 @@ eventCapture.controller('MainController',
             }            
             
             if( applyFilter && $scope.filterText[col.id] ){
-                if( col.group === "STATIC" ){
+                if( col.group === "FIXED" ){
                     switch ( col.id ){
                         case "eventDate":
                             if( $scope.filterText[col.id].start || $scope.filterText[col.id].end ){                            
                                 if( $scope.filterText[col.id].start ){
-                                    $scope.filterParam += '&startDate=' + $scope.filterText[col.id].start;
+                                    $scope.filterParam += '&startDate=' + DateUtils.formatFromUserToApi($scope.filterText[col.id].start);
                                 }                    
                                 if( $scope.filterText[col.id].end ){
-                                    $scope.filterParam += '&endDate=' + $scope.filterText[col.id].end;
+                                    $scope.filterParam += '&endDate=' + DateUtils.formatFromUserToApi($scope.filterText[col.id].end);
                                 }
                             }
                             break;
                         case "lastUpdated":
                             if( $scope.filterText[col.id].start || $scope.filterText[col.id].end ){                            
                                 if( $scope.filterText[col.id].start ){
-                                    $scope.filterParam += '&lastUpdatedStartDate=' + $scope.filterText[col.id].start;
+                                    $scope.filterParam += '&lastUpdatedStartDate=' + DateUtils.formatFromUserToApi($scope.filterText[col.id].start);
                                 }                    
                                 if( $scope.filterText[col.id].end ){
-                                    $scope.filterParam += '&lastUpdatedEndDate=' + $scope.filterText[col.id].end;
+                                    $scope.filterParam += '&lastUpdatedEndDate=' + DateUtils.formatFromUserToApi($scope.filterText[col.id].end);
                                 }
                             }
                             break;
