@@ -48,8 +48,8 @@
             <!-- context menu for event grid -->
             <div id="contextMenu" class="contextMenu" style="width: 180px;">
                 <ul id="contextMenuItems" class="contextMenuItems">
-                    <li><a href ng-click="showEditEventInFull()"><i class="fa fa-edit"></i>&nbsp;&nbsp;{{'edit'| translate}}</a></li>
-                    <li><a href ng-click="showEditEventInGrid()"><i class="fa fa-edit"></i>&nbsp;&nbsp;{{'edit_in_grid'| translate}}</a></li>
+                    <li ng-if="userAuthority.canAddOrUpdateEvent"><a href ng-click="showEditEventInFull()"><i class="fa fa-edit"></i>&nbsp;&nbsp;{{'edit'| translate}}</a></li>
+                    <li ng-if="userAuthority.canAddOrUpdateEvent"><a href ng-click="showEditEventInGrid()"><i class="fa fa-edit"></i>&nbsp;&nbsp;{{'edit_in_grid'| translate}}</a></li>
                     <li><a href ng-click="showAuditHistory()"><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;{{'audit_history'| translate}}</a></li>
                     <li class="divider">&nbsp;</li>
                     <li ng-if="userAuthority.canDeleteEvent"><a href ng-click="removeEvent()"><i class="fa fa-trash-o"></i>&nbsp;&nbsp;{{'remove'| translate}}</a></li>                                       
