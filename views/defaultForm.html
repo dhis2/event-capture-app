@@ -319,7 +319,9 @@
             <div class="vertical-spacing section-label">
                {{section.displayName}}
             </div>
-
+			<div class="alert alert-info" ng-if="section.description">
+                {{section.description}}
+            </div>
             <div class="vertical-spacing" ng-if="!section.dataElements || section.dataElements.length === 0">
                 <div class="alert alert-warning">{{'section_has_no_dataelements'| translate}}</div>
             </div>
