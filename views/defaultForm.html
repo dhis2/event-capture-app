@@ -199,16 +199,24 @@
                                        class="form-control">
                             </div>
                             <div ng-switch-when="DATETIME">
-                                <input type="text"
-                                       placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
-                                       d2-date
-                                       max-date="prStDes[eventGridColumn.id].allowFutureDate ? '' : 0"
-                                       ng-model="currentEvent[eventGridColumn.id]"
-                                       ng-required={{eventGridColumn.compulsory}}
-                                       ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
-                                       name="foo"
-                                       input-field-id={{eventGridColumn.id}}
-                                       style="width:85%;"/>
+                                <d2-date-time datetime-model="currentEvent"
+                                              datetime-model-id="eventGridColumn.id"
+                                              datetime-date-placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
+                                              datetime-max-date="prStDes[eventGridColumn.id].allowFutureDate ? '' : 0"
+                                              datetime-required="eventGridColumn.compulsory"
+                                              datetime-save-methode="saveDatavalue"
+                                              datetime-use-notification="true"
+                                              datetime-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled">
+                                </d2-date-time>
+                            </div>
+                            <div ng-switch-when="TIME">
+                                <d2-time time-model="currentEvent"
+                                         time-model-id="eventGridColumn.id"
+                                         time-required="eventGridColumn.compulsory"
+                                         time-save-methode="saveDatavalue"
+                                         time-use-notification="true"
+                                         time-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled">
+                                </d2-time>
                             </div>
                             <div ng-switch-when="TRUE_ONLY">
                                 <input type="checkbox"
