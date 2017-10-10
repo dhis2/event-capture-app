@@ -18,6 +18,8 @@ var PROGRAMS_METADATA = 'EVENT_PROGRAMS';
 var EVENT_VALUES = 'EVENT_VALUES';
 
 var optionSetIds = [];
+var categoryOptionIds = [];
+var programCategoryOptions = {};
 
 var batchSize = 50;
 var programBatchSize = 50;
@@ -155,18 +157,80 @@ function downloadMetaData(){
     promise = promise.then( getOrgUnitLevels );    
     promise = promise.then( getMetaPrograms );
     promise = promise.then( filterMissingPrograms );
-    promise = promise.then( getPrograms );    
+    promise = promise.then( getPrograms );
     promise = promise.then( getOptionSetsForDataElements );
     promise = promise.then( getOptionSets );
-    promise.done( function() {    
-        //Enable ou selection after meta-data has downloaded
-        $( "#orgUnitTree" ).removeClass( "disable-clicks" );
+    promise = promise.then( getCategoryOptions );
+    promise.done( function() {
+        var SessionStorageService = angular.element('body').injector().get('SessionStorageService');
+        var NotificationService = angular.element('body').injector().get('NotificationService');
+        var categoryOptions = SessionStorageService.get('eventCaptureCategoryOptions');
+        var mappedOptions = {};
+        if( categoryOptions && categoryOptions.length > 0 ){
+            angular.forEach(categoryOptions, function( co ){
+                var mappedOrganisationUnits = [];
+                if( co.organisationUnits && co.organisationUnits.length > 0 ){                                
+                    mappedOrganisationUnits = $.map(co.organisationUnits, function(ou){return ou.id;});
+                }                                
+                co.organisationUnits = mappedOrganisationUnits;
+                mappedOptions[co.id] = co;
+            });
         
-        console.log( 'Finished loading meta-data' ); 
-        dhis2.availability.startAvailabilityCheck();
-        console.log( 'Started availability check' );
-        selection.responseReceived();
-    });         
+            var getSharingSetting = function( mappedObjs, id ){
+                var o = null;                
+                if( mappedObjs && 
+                    id && 
+                    mappedObjs[id] && 
+                    mappedObjs[id].access && 
+                    mappedObjs[id].access.read === true ){
+                    o = mappedObjs[id];
+                }
+                return o;
+            }
+
+            dhis2.ec.store.getAll('programs').done(function(programs){            
+                angular.forEach(programs, function(program){                
+                    if( program.categoryCombo && program.categoryCombo.categories ){
+                        if( programCategoryOptions[program.id] && programCategoryOptions[program.id][program.categoryCombo.id] ){                            
+                            angular.forEach(program.categoryCombo.categories, function(ca){
+                                var filteredOpts = programCategoryOptions[program.id][program.categoryCombo.id][ca.id];
+                                if( filteredOpts ){                                
+                                    var opts = [];
+                                    angular.forEach(filteredOpts, function(opId){
+                                        var o = getSharingSetting( mappedOptions, opId );
+                                        if( o ){
+                                            opts.push( o );
+                                        }
+                                    });
+                                    ca.categoryOptions = opts;
+                                }
+                                else{
+                                    NotificationService.showNotifcationDialog('Error', 'Not able to fetch sharing settings for category options');
+                                }
+                            });
+                        }
+                        else{
+                            NotificationService.showNotifcationDialog('Error', 'Not able to fetch sharing settings for category options');
+                        }                        
+                    }
+                });
+
+                dhis2.ec.store.removeAll('programs').done(function(){                    
+                    dhis2.ec.store.setAll('programs', programs).done(function(){                        
+                        //Enable ou selection after meta-data has downloaded
+                        $( "#orgUnitTree" ).removeClass( "disable-clicks" );
+                        console.log( 'Finished loading meta-data' );         
+                        dhis2.availability.startAvailabilityCheck();
+                        console.log( 'Started availability check' );        
+                        selection.responseReceived();
+                    });
+                });
+            });
+        }
+        else{            
+            NotificationService.showNotifcationDialog('Error', 'Not able to fetch sharing settings for category options');
+        }
+    });
 
     def.resolve();
 }
@@ -212,7 +276,7 @@ function getOrgUnitLevels()
 
 function getMetaPrograms()
 {    
-    return dhis2.tracker.getTrackerObjects('programs', 'programs', DHIS2URL + '/programs.json', 'filter=programType:eq:WITHOUT_REGISTRATION&paging=false&fields=id,version,categoryCombo[id,isDefault,categories[id]],programStages[id,programStageSections[id],programStageDataElements[dataElement[id,optionSet[id,version]]]]', 'temp', dhis2.ec.store);    
+    return dhis2.tracker.getTrackerObjects('programs', 'programs', DHIS2URL + '/programs.json', 'filter=programType:eq:WITHOUT_REGISTRATION&paging=false&fields=id,version,categoryCombo[id,categories[id,categoryOptions[id]]],programStages[programStageDataElements[dataElement[optionSet[id,version]]]]', 'temp', dhis2.ec.store);    
 }
 
 function filterMissingPrograms( programs )
@@ -231,7 +295,21 @@ function filterMissingPrograms( programs )
     var build = builder.promise();
 
     var ids = [];
-    _.each( _.values( programs ), function ( program ) {        
+    _.each( _.values( programs ), function ( program ) {
+        programCategoryOptions[program.id] = {};        
+        if( program.categoryCombo && program.categoryCombo.categories ){
+            programCategoryOptions[program.id][program.categoryCombo.id] = {};
+            _.each( _.values( program.categoryCombo.categories ), function ( ca ) {                
+                if( ca.categoryOptions ){
+                    programCategoryOptions[program.id][program.categoryCombo.id][ca.id] = [];
+                    _.each( _.values( ca.categoryOptions ), function ( co ) {
+                        categoryOptionIds.push( co.id );
+                        programCategoryOptions[program.id][program.categoryCombo.id][ca.id].push( co.id );
+                    });
+                }
+            });
+        }
+
         if(program.programStages && program.programStages[0] && program.programStages[0].programStageDataElements){
             build = build.then(function() {
                 var d = $.Deferred();
@@ -246,7 +324,7 @@ function filterMissingPrograms( programs )
             });
         }        
     });
-
+    
     build.done(function() {
         def.resolve();
         promise = promise.done( function () {
@@ -262,7 +340,7 @@ function filterMissingPrograms( programs )
 }
 
 function getPrograms( programs, ids )
-{
+{    
     if( !ids || !ids.length || ids.length < 1){
         return;
     }
@@ -290,7 +368,7 @@ function getPrograms( programs, ids )
 
     build.done(function() {
         def.resolve();
-        promise = promise.done( function () {                      
+        promise = promise.done( function () {            
             mainDef.resolve( programs, ids );
         } );        
         
@@ -312,7 +390,7 @@ function getBatchPrograms( programs, batch )
     $.ajax( {
         url: DHIS2URL + '/programs.json',
         type: 'GET',
-        data: 'fields=*,categoryCombo[id,displayName,isDefault,categories[id,displayName,categoryOptions[id,displayName,organisationUnits[id]]]],organisationUnits[id,displayName],programStages[*,dataEntryForm[*],programStageSections[id,displayName,description,sortOrder,dataElements[id]],programStageDataElements[*,dataElement[*,optionSet[id]]]]&paging=false&filter=id:in:' + ids
+        data: 'fields=*,categoryCombo[id,displayName,isDefault,categories[id,displayName,categoryOptions[id]]],organisationUnits[id,displayName],programStages[*,dataEntryForm[*],programStageSections[id,displayName,description,sortOrder,dataElements[id]],programStageDataElements[*,dataElement[*,optionSet[id]]]]&paging=false&filter=id:in:' + ids
     }).done( function( response ){
 
         if(response.programs){
@@ -321,24 +399,8 @@ function getBatchPrograms( programs, batch )
                 _.each(_.values( program.organisationUnits), function(o){
                     ou[o.id] = o.displayName;
                 });
-                program.organisationUnits = ou;
-
-                if( program.categoryCombo && program.categoryCombo.categories ){
-                    _.each( _.values( program.categoryCombo.categories ), function ( ca ) {                            
-                        if( ca.categoryOptions ){
-                            _.each( _.values( ca.categoryOptions ), function ( co ) {
-                                var mappedOrganisationUnits = [];
-                                if( co.organisationUnits && co.organisationUnits.length > 0 ){                                        
-                                    mappedOrganisationUnits = $.map(co.organisationUnits, function(ou){return ou.id;});
-                                }                                
-                                co.organisationUnits = mappedOrganisationUnits;
-                            });
-                        }
-                    });
-                }
-                
+                program.organisationUnits = ou;                
                 dhis2.ec.store.set( 'programs', program );
-
             });
         }
         
@@ -439,6 +501,15 @@ function getMetaProgramRuleVariables( programs )
 function getProgramRuleVariables( programRuleVariables )
 {
     return dhis2.tracker.checkAndGetTrackerObjects( programRuleVariables, 'programRuleVariables', DHIS2URL + '/programRuleVariables', 'fields=id,displayName,programRuleVariableSourceType,program[id],programStage[id],dataElement[id],useCodeForOptionSet', dhis2.ec.store);
+}
+
+function getCategoryOptions()
+{
+    var SessionStorageService = angular.element('body').injector().get('SessionStorageService');    
+    if( SessionStorageService.get('eventCaptureCategoryOptions') ){
+       return; 
+    }
+    return dhis2.tracker.getBatches( categoryOptionIds, batchSize, null, 'eventCaptureCategoryOptions', 'categoryOptions', DHIS2URL + '/categoryOptions.json', 'paging=false&fields=id,displayName,organisationUnits[id],access', 'sessionStorage', dhis2.ec.store );    
 }
 
 function uploadLocalData()
