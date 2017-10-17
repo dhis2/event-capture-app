@@ -95,6 +95,8 @@ eventCapture.controller('MainController',
                     if(orgUnitFromStore.reportDateRange) {
                         $scope.model.maxDate = orgUnitFromStore.reportDateRange.maxDate;
                         $scope.model.minDate = orgUnitFromStore.reportDateRange.minDate;
+                        $scope.model.minDate = DateUtils.formatFromApiToUserCalendar($scope.model.minDate);
+                        $scope.model.minDate = DateUtils.formatFromApiToUser($scope.model.minDate);
                     }
                     $scope.model.editingDisabled = orgUnitFromStore.closedStatus;
                 }
@@ -222,7 +224,13 @@ eventCapture.controller('MainController',
         } else if(event.status === "COMPLETED") {
             event.status = true;
         }
-    }
+    };
+
+    $scope.formatCalendar = function(date) {
+        var temp = DateUtils.formatFromApiToUserCalendar(date);
+        temp = DateUtils.formatFromApiToUser(temp);
+        return temp;
+    };
     
     $scope.formatEvent = function(event) {
         if(event.notes && event.notes.length > 0 && !$scope.noteExists){
