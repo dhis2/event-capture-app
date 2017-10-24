@@ -35,7 +35,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 OrgUnitFactory,
                 OptionSetService) {
     
-    $scope.maxOptionSize = 30;    
+    $scope.maxOptionSize = 100;
     $scope.treeLoaded = false;    
     $scope.selectedSection = {id: 'ALL'};    
     $rootScope.ruleeffects = {};
