@@ -1715,7 +1715,11 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     else if(effect.action === "SHOWWARNING" 
                             || effect.action === "WARNINGONCOMPLETE"){
                         if(effect.action === "SHOWWARNING") {
-                            $scope.warningMessages.push(effect.content + (effect.data ? effect.data : ""));
+                            if($scope.hiddenFields[effect.dataElement.id]) {
+                                console.log("Warning (" + effect.id + ") hidden because, data element (" + effect.dataElement.id + ") is hidden by program rule.");
+                            } else {
+                                $scope.warningMessages.push(effect.content + (effect.data ? effect.data : ""));
+                            }
                         }
                         $scope.warningMessagesOnComplete.push(effect.content + (effect.data ? effect.data : ""));
                     }
