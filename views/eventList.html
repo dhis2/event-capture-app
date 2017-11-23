@@ -211,7 +211,7 @@
                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                name="foo" 
                                                                d2-option-validator
-                                                               on-select="updateEventDataValue(eventGridColumn.id)" 
+                                                               on-select="updateEventDataValue(eventGridColumn.id, currentEvent)" 
                                                                on-remove="validateOptionOnRemove(eventGridColumn.compulsory)"
                                                                input-field-id={{eventGridColumn.id}}                                                               
                                                                style="width:100%;">
@@ -228,11 +228,12 @@
                                                 </div>
                                                 <div ng-if="!prStDes[eventGridColumn.id].dataElement.optionSetValue" ng-switch="eventGridColumn.valueType">                                            
                                                     <div ng-switch-when="NUMBER">
-                                                        <input type="number"                                                            
+                                                        <input type="number"   
+                                                                ng-hide="hiddenFields[eventGridColumn.id]"                                                         
                                                                d2-number-validator
                                                                number-type={{prStDes[eventGridColumn.id].dataElement.numberType}}
                                                                ng-model="currentEvent[eventGridColumn.id]" 
-                                                               ng-blur="updateEventDataValue(eventGridColumn.id)" 
+                                                               ng-blur="updateEventDataValue(eventGridColumn.id, currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}} 
@@ -241,10 +242,11 @@
                                                     </div>
                                                     <div ng-switch-when="PERCENTAGE">
                                                         <input type="number"
+                                                               ng-hide="hiddenFields[eventGridColumn.id]"
                                                                d2-number-validator
                                                                number-type={{prStDes[eventGridColumn.id].dataElement.numberType}}
                                                                ng-model="currentEvent[eventGridColumn.id]"
-                                                               ng-blur="updateEventDataValue(eventGridColumn.id)"
+                                                               ng-blur="updateEventDataValue(eventGridColumn.id, currentEvent)"
                                                                ng-required={{eventGridColumn.compulsory}}
                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}}
@@ -252,11 +254,12 @@
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
                                                     </div>
                                                     <div ng-switch-when="INTEGER">
-                                                        <input type="number"                                                            
+                                                        <input type="number"   
+                                                                ng-hide="hiddenFields[eventGridColumn.id]"                                                         
                                                                d2-number-validator
                                                                number-type={{prStDes[eventGridColumn.id].dataElement.numberType}}
                                                                ng-model="currentEvent[eventGridColumn.id]" 
-                                                               ng-blur="updateEventDataValue(eventGridColumn.id)" 
+                                                               ng-blur="updateEventDataValue(eventGridColumn.id,currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}} 
@@ -264,11 +267,12 @@
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
                                                     </div>
                                                     <div ng-switch-when="INTEGER_POSITIVE">
-                                                        <input type="number"                                                            
+                                                        <input type="number" 
+                                                                ng-hide="hiddenFields[eventGridColumn.id]"                                                           
                                                                d2-number-validator
                                                                number-type={{prStDes[eventGridColumn.id].dataElement.numberType}}
                                                                ng-model="currentEvent[eventGridColumn.id]" 
-                                                               ng-blur="updateEventDataValue(eventGridColumn.id)" 
+                                                               ng-blur="updateEventDataValue(eventGridColumn.id,currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}} 
@@ -280,7 +284,7 @@
                                                                d2-number-validator
                                                                number-type={{prStDes[eventGridColumn.id].dataElement.numberType}}
                                                                ng-model="currentEvent[eventGridColumn.id]" 
-                                                               ng-blur="updateEventDataValue(eventGridColumn.id)" 
+                                                               ng-blur="updateEventDataValue(eventGridColumn.id,currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}} 
@@ -288,11 +292,12 @@
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
                                                     </div>
                                                     <div ng-switch-when="INTEGER_ZERO_OR_POSITIVE">
-                                                        <input type="number"                                                            
+                                                        <input type="number"   
+                                                                ng-hide="hiddenFields[eventGridColumn.id]"                                                         
                                                                d2-number-validator
                                                                number-type={{prStDes[eventGridColumn.id].dataElement.numberType}}
                                                                ng-model="currentEvent[eventGridColumn.id]" 
-                                                               ng-blur="updateEventDataValue(eventGridColumn.id)" 
+                                                               ng-blur="updateEventDataValue(eventGridColumn.id,currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}} 
@@ -300,7 +305,8 @@
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
                                                     </div>
                                                     <div ng-switch-when="AGE">
-                                                        <d2-age id="{{eventGridColumn.id}}" 
+                                                        <d2-age id="{{eventGridColumn.id}}"
+                                                                ng-hide="hiddenFields[eventGridColumn.id]" 
                                                                 d2-age-saved="currentElement.updated && currentElement.id === eventGridColumn.id"
                                                                 d2-object="currentEvent" 
                                                                 d2-required="eventGridColumn.compulsory"
@@ -310,16 +316,18 @@
                                                     </div>
                                                     <div ng-switch-when="PHONE_NUMBER">
                                                         <input type="text"
+                                                                ng-hide="hiddenFields[eventGridColumn.id]"
                                                                 ng-model="currentEvent[eventGridColumn.id]"                                        
                                                                 ng-required={{eventGridColumn.compulsory}}
                                                                 ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                 name="foo" 
                                                                 input-field-id={{eventGridColumn.id}} 
-                                                                ng-blur="updateEventDataValue(eventGridColumn.id)" 
+                                                                ng-blur="updateEventDataValue(eventGridColumn.id, currentEvent)" 
                                                                 class="form-control"/>
                                                     </div>
                                                     <div ng-switch-when="LONG_TEXT">                                        
                                                         <textarea rows="3"
+                                                                ng-hide="hiddenFields[eventGridColumn.id]"
                                                                 ng-model="currentEvent[eventGridColumn.id]"                                        
                                                                 ng-required={{eventGridColumn.compulsory}}
                                                                 ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
@@ -331,6 +339,7 @@
                                                     </div>
                                                     <div ng-switch-when="TEXT">
                                                         <input type="text"
+                                                                   ng-hide="hiddenFields[eventGridColumn.id]"
                                                                    ng-model="currentEvent[eventGridColumn.id]" 
                                                                    ng-required={{eventGridColumn.compulsory}}
                                                                    ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
@@ -338,25 +347,30 @@
                                                                    name="foo" 
                                                                    ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>                                                    
                                                     </div>
-                                                    <div ng-switch-when="BOOLEAN" class="form-control">
+                                                    <div ng-switch-when="BOOLEAN" ng-cloak>
                                                         <d2-radio-button
+                                                            ng-hide="hiddenFields[eventGridColumn.id]"
+                                                            class="form-control"
+                                                            ng-cloak
                                                             dh-required="eventGridColumn.compulsory"
                                                             dh-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                             dh-value="currentEvent[eventGridColumn.id]"
                                                             dh-name="foo"
                                                             dh-event="currentEvent.event"
-                                                            dh-click="updateDatavalueRadio(eventGridColumn, currentEvent, value)"
+                                                            dh-current-element="currentElement"
+                                                            dh-click="updateEventDataValueRadio(eventGridColumn.id, currentEvent, value)"
                                                             dh-id="eventGridColumn.id">
                                                         </d2-radio-button>
                                                     </div>
                                                     <div ng-switch-when="DATE">
                                                         <input type="text" 
+                                                               ng-hide="hiddenFields[eventGridColumn.id]"
                                                                placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
                                                                d2-date
                                                                max-date="prStDes[eventGridColumn.id].allowFutureDate ? '' : 0" 
                                                                d2-date-validator
                                                                ng-model="currentEvent[eventGridColumn.id]"
-                                                               blur-or-change="eventGridColumn.id === 'eventDate' ? updateEventDate() : updateEventDataValue(eventGridColumn.id)" 
+                                                               blur-or-change="eventGridColumn.id === 'eventDate' ? updateEventDate() : updateEventDataValue(eventGridColumn.id, currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
                                                                input-field-id={{eventGridColumn.id}}                                                            
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"
@@ -364,13 +378,14 @@
                                                                name="foo"/>
                                                     </div>
                                                     <div ng-switch-when="DATETIME">
-                                                        <input type="text" 
+                                                        <input type="text"
+                                                               ng-hide="hiddenFields[eventGridColumn.id]"
                                                                placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
                                                                d2-date
                                                                max-date="prStDes[eventGridColumn.id].allowFutureDate ? '' : 0" 
                                                                d2-date-validator
                                                                ng-model="currentEvent[eventGridColumn.id]"
-                                                               blur-or-change="updateEventDataValue(eventGridColumn.id)" 
+                                                               blur-or-change="updateEventDataValue(eventGridColumn.id, currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
                                                                input-field-id={{eventGridColumn.id}}                                                            
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"
@@ -379,16 +394,17 @@
                                                     </div>
                                                     <div ng-switch-when="TRUE_ONLY">
                                                         <input type="checkbox"
+                                                               ng-hide="hiddenFields[eventGridColumn.id]"
                                                                d2-validation 
                                                                ng-model="currentEvent[eventGridColumn.id]"
-                                                               ng-change="updateEventDataValue(eventGridColumn.id)" 
+                                                               ng-change="updateEventDataValue(eventGridColumn.id, currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}} 
                                                                input-field-id={{eventGridColumn.id}}
                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                name="foo"/>
                                                     </div>
                                                     <div ng-switch-when="FILE_RESOURCE">                                
-                                                        <div class="input-group">
+                                                        <div class="input-group" ng-hide="hiddenFields[eventGridColumn.id]">
                                                             <div class="form-control">
                                                                 <a href ng-click="downloadFile(currentEvent.event, eventGridColumn.id, $event)">{{fileNames[currentEvent.event][eventGridColumn.id]}}</a>
                                                             </div>
@@ -420,6 +436,7 @@
                                                     </div>
                                                     <div ng-switch-when="COORDINATE">
                                                         <d2-map id="{{eventGridColumn.id}}"
+                                                                ng-hide="hiddenFields[eventGridColumn.id]"
                                                                 d2-lat-saved="currentElement.updated && currentElement.id === eventGridColumn.id"
                                                                 d2-lng-saved="currentElement.updated && currentElement.id === eventGridColumn.id"
                                                                 d2-object="currentEvent" 
@@ -432,6 +449,7 @@
                                                     </div>
                                                     <div ng-switch-when="ORGANISATION_UNIT">
                                                         <d2-org-unit-tree
+                                                                ng-hide="hiddenFields[eventGridColumn.id]"
                                                                 selected-org-unit-id="{{selectedOrgUnit.id}}"
                                                                 id="{{eventGridColumn.id}}"
                                                                 d2-value="currentEvent[eventGridColumn.id]"
@@ -444,6 +462,7 @@
                                                     </div>                                                
                                                     <div ng-switch-when="EMAIL">
                                                         <input type="email"
+                                                               ng-hide="hiddenFields[eventGridColumn.id]"
                                                                name="foo"
                                                                class="form-control"
                                                                ng-model="currentEvent[eventGridColumn.id]"
@@ -456,6 +475,7 @@
                                                     <div ng-switch-when="URL">
                                                         <div class="hideInPrint">
                                                             <input type="url"
+                                                                   ng-hide="hiddenFields[eventGridColumn.id]"
                                                                    placeholder="{{'url_format' | translate}}"
                                                                    class="form-control"
                                                                    ng-pattern="/^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}(:[0-9]{1,5})?(\/.*)?$/"
