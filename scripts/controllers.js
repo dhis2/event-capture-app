@@ -1782,7 +1782,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                         $scope.warningMessagesOnComplete.push(effect.content + (effect.data ? effect.data : ""));
                     }
                     else if(effect.action === "ASSIGN") {
-                        var processedValue = effect.data;
+                        var data = $filter('trimquotes')(effect.data);
+                        var processedValue = CommonUtils.formatDataValue(null, data, $scope.prStDes[effect.dataElement.id].dataElement, $scope.optionSets, 'USER');
                         
                         //For "ASSIGN" actions where we have a dataelement, we save the calculated value to the dataelement:
                         if($scope.prStDes[effect.dataElement.id].dataElement.optionSet) {
