@@ -208,7 +208,7 @@
                                                     <ui-select ng-model="currentEvent[eventGridColumn.id]" 
                                                                theme="select2" 
                                                                ng-required={{eventGridColumn.compulsory}}
-                                                               ng-disabled="model.editingDisabled"
+                                                               ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                name="foo" 
                                                                d2-option-validator
                                                                on-select="updateEventDataValue(eventGridColumn.id, currentEvent)" 
@@ -234,7 +234,7 @@
                                                                ng-model="currentEvent[eventGridColumn.id]" 
                                                                ng-blur="updateEventDataValue(eventGridColumn.id, currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
-                                                               ng-disabled="model.editingDisabled"
+                                                               ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}} 
                                                                name="foo" 
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
@@ -246,7 +246,7 @@
                                                                ng-model="currentEvent[eventGridColumn.id]"
                                                                ng-blur="updateEventDataValue(eventGridColumn.id, currentEvent)"
                                                                ng-required={{eventGridColumn.compulsory}}
-                                                               ng-disabled="model.editingDisabled"
+                                                               ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}}
                                                                name="foo"
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
@@ -258,7 +258,7 @@
                                                                ng-model="currentEvent[eventGridColumn.id]" 
                                                                ng-blur="updateEventDataValue(eventGridColumn.id,currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
-                                                               ng-disabled="model.editingDisabled"
+                                                               ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}} 
                                                                name="foo" 
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
@@ -270,7 +270,7 @@
                                                                ng-model="currentEvent[eventGridColumn.id]" 
                                                                ng-blur="updateEventDataValue(eventGridColumn.id,currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
-                                                               ng-disabled="model.editingDisabled"
+                                                               ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}} 
                                                                name="foo" 
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
@@ -282,7 +282,7 @@
                                                                ng-model="currentEvent[eventGridColumn.id]" 
                                                                ng-blur="updateEventDataValue(eventGridColumn.id,currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
-                                                               ng-disabled="model.editingDisabled"
+                                                               ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}} 
                                                                name="foo" 
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
@@ -294,7 +294,7 @@
                                                                ng-model="currentEvent[eventGridColumn.id]" 
                                                                ng-blur="updateEventDataValue(eventGridColumn.id,currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}}
-                                                               ng-disabled="model.editingDisabled"
+                                                               ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                input-field-id={{eventGridColumn.id}} 
                                                                name="foo" 
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>
@@ -304,7 +304,7 @@
                                                                 d2-age-saved="currentElement.updated && currentElement.id === eventGridColumn.id"
                                                                 d2-object="currentEvent" 
                                                                 d2-required="eventGridColumn.compulsory"
-                                                                d2-disabled="model.editingDisabled"
+                                                                d2-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                 d2-function="updateEventDataValue(eventGridColumn.id,currentEvent)">                                                    
                                                         </d2-age>
                                                     </div>
@@ -312,7 +312,7 @@
                                                         <input type="text"
                                                                 ng-model="currentEvent[eventGridColumn.id]"                                        
                                                                 ng-required={{eventGridColumn.compulsory}}
-                                                                ng-disabled="model.editingDisabled"
+                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                 name="foo" 
                                                                 input-field-id={{eventGridColumn.id}} 
                                                                 ng-blur="updateEventDataValue(eventGridColumn.id, currentEvent)" 
@@ -322,7 +322,7 @@
                                                         <textarea rows="3"
                                                                 ng-model="currentEvent[eventGridColumn.id]"                                        
                                                                 ng-required={{eventGridColumn.compulsory}}
-                                                                ng-disabled="model.editingDisabled"
+                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                 ng-blur="updateEventDataValue(eventGridColumn.id,currentEvent)" 
                                                                 name="foo" 
                                                                 input-field-id={{eventGridColumn.id}} 
@@ -333,7 +333,7 @@
                                                         <input type="text"
                                                                    ng-model="currentEvent[eventGridColumn.id]" 
                                                                    ng-required={{eventGridColumn.compulsory}}
-                                                                   ng-disabled="model.editingDisabled"
+                                                                   ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                    ng-blur="updateEventDataValue(eventGridColumn.id, currentEvent)" 
                                                                    name="foo" 
                                                                    ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>                                                    
@@ -341,7 +341,7 @@
                                                     <div ng-switch-when="BOOLEAN" class="form-control">
                                                         <d2-radio-button
                                                             dh-required="eventGridColumn.compulsory"
-                                                            dh-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
+                                                            dh-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                             dh-value="currentEvent[eventGridColumn.id]"
                                                             dh-name="foo"
                                                             dh-event="currentEvent.event"
@@ -361,7 +361,7 @@
                                                                ng-required={{eventGridColumn.compulsory}}
                                                                input-field-id={{eventGridColumn.id}}                                                            
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"
-                                                               ng-disabled="model.editingDisabled || eventGridColumn.id === 'lastUpdated'"
+                                                               ng-disabled="model.editingDisabled || eventGridColumn.id === 'lastUpdated' || hiddenFields[eventGridColumn.id]"
                                                                name="foo"/>
                                                     </div>
                                                     <div ng-switch-when="DATETIME">
@@ -375,7 +375,7 @@
                                                                ng-required={{eventGridColumn.compulsory}}
                                                                input-field-id={{eventGridColumn.id}}                                                            
                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"
-                                                               ng-disabled="model.editingDisabled"
+                                                               ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                name="foo"/>
                                                     </div>
                                                     <div ng-switch-when="TRUE_ONLY">
@@ -385,7 +385,7 @@
                                                                ng-change="updateEventDataValue(eventGridColumn.id, currentEvent)" 
                                                                ng-required={{eventGridColumn.compulsory}} 
                                                                input-field-id={{eventGridColumn.id}}
-                                                               ng-disabled="model.editingDisabled"
+                                                               ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                name="foo"/>
                                                     </div>
                                                     <div ng-switch-when="FILE_RESOURCE">                                
@@ -405,7 +405,7 @@
                                                                         <i class="fa fa-upload"></i>
                                                                         <input type="file" 
                                                                                ng-required={{eventGridColumn.compulsory}}
-                                                                               ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
+                                                                               ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                                name="foo"
                                                                                input-field-id={{eventGridColumn.id}}
                                                                                d2-file-input-list="dhis2Events"
@@ -425,7 +425,7 @@
                                                                 d2-lng-saved="currentElement.updated && currentElement.id === eventGridColumn.id"
                                                                 d2-object="currentEvent" 
                                                                 d2-required="eventGridColumn.compulsory"
-                                                                d2-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
+                                                                d2-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                 d2-function="updateEventDataValue(arg1)" 
                                                                 d2-coordinate-format="'TEXT'"
                                                                 d2-function-param-text="eventGridColumn.id">
@@ -437,9 +437,9 @@
                                                                 id="{{eventGridColumn.id}}"
                                                                 d2-value="currentEvent[eventGridColumn.id]"
                                                                 d2-required="eventGridColumn.compulsory"
-                                                                d2-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
+                                                                d2-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                 d2-object="currentEvent"
-                                                                d2-function="updateEventDataValue(eventGridColumn.id)"
+                                                                d2-function="updateEventDataValue(eventGridColumn.id, currentEvent)"
                                                                 d2-orgunit-names="orgUnitNames">
                                                         </d2-org-unit-tree>
                                                     </div>                                                
@@ -447,8 +447,8 @@
                                                         <input type="text"
                                                                 ng-model="currentEvent[eventGridColumn.id]" 
                                                                 ng-required={{eventGridColumn.compulsory}}
-                                                                ng-disabled="model.editingDisabled"
-                                                                ng-blur="updateEventDataValue(eventGridColumn.id)" 
+                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
+                                                                ng-blur="updateEventDataValue(eventGridColumn.id, currentEvent)" 
                                                                 name="foo" 
                                                                 ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>                                                    
                                                     </div>
@@ -459,8 +459,8 @@
                                                                ng-model="currentEvent[eventGridColumn.id]"
                                                                ng-model-options="{ updateOn: 'default blur', allowInvalid: true }"
                                                                selected-program-id={{selectedProgram.id}}
-                                                               ng-disabled="model.editingDisabled"
-                                                               ng-blur="updateEventDataValue(eventGridColumn.id)"
+                                                               ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
+                                                               ng-blur="updateEventDataValue(eventGridColumn.id, currentEvent)"
                                                                ng-required={{eventGridColumn.compulsory}}/>
                                                     </div>
                                                     <div ng-switch-when="URL">
@@ -471,8 +471,8 @@
                                                                    ng-pattern="/^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}(:[0-9]{1,5})?(\/.*)?$/"
                                                                    ng-model="currentEvent[eventGridColumn.id]"
                                                                    ng-required="eventGridColumn.compulsory"
-                                                                   ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
-                                                                   ng-blur="updateEventDataValue(eventGridColumn.id)"
+                                                                   ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || hiddenFields[eventGridColumn.id]"
+                                                                   ng-blur="updateEventDataValue(eventGridColumn.id, currentEvent)"
                                                                    name="foo"/>
                                                         </div>
                                                     </div>
