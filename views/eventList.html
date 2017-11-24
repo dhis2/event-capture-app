@@ -480,14 +480,21 @@
                                                         <div class="alert alert-danger form-control">
                                                             {{'unsupported_value_type' | translate}}:  {{eventGridColumn.valueType}}
                                                         </div>                                          
-                                                    </div>
+                                                    </div>                                                    
                                                     <div ng-messages="innerFormGrid.foo.$error" ng-if="interacted(innerFormGrid.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">
                                                     </div>
                                                 </div>
-                                            </div>                                                                            
+                                            </div>                                                                         
                                         </ng-form>
                                     </div>
                                 </td>
+                                <td ng-if="editingEventInGrid && (currentEvent.event === dhis2Event.event) && (eventGridColumn.id !== 'comment') && warningMessages.length > 0" style="background-color: white; border: none; padding-left: 10px;">
+                                    <span style="font-weight:bold"><i class="fa fa-exclamation-triangle" style="color: #FFCC00"></i> {{'validation_warnings'| translate}}:</span>
+                                    <ul style="padding-left: 15px">
+                                        <li ng-repeat="msg in warningMessages">{{msg}}</li>
+                                    </ul>
+                                </td>
+
                                 <!-- Visible when event is under editing in grid -->
 
                                 <!-- visible when comment exisits -->
