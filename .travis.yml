@@ -7,9 +7,9 @@ cache:
 script:
 - npm run build
 after_success:
-- if ( [ "$TRAVIS_BRANCH" == "master" ] || [ ! -z "$TRAVIS_TAG" ] ) && [ "$TRAVIS_REPO_SLUG"
-  == "dhis2/event-capture-app" ]  &&  [ "$TRAVIS_PULL_REQUEST" == "false" ] ; then
-  mvn clean deploy --settings deploy/settings.xml && exit 0 fi
+- if ( [ "$TRAVIS_BRANCH" == "master" ] || [ ! -z "$TRAVIS_TAG" ] ) && [ "$TRAVIS_REPO_SLUG" == "dhis2/event-capture-app" ]  &&  [ "$TRAVIS_PULL_REQUEST" == "false" ] ; then
+         mvn clean deploy --settings deploy/settings.xml && exit 0 
+  fi
 env:
   global:
   - secure: Z/mMfIg41l6L0sCtdJdzlQJ9tS4SVE+brU0fu9Nt4PpHVg6locwBwM4fdrj+0z9fLXvXBB351EWkf0XfFA5I98iTjcEcjl62bMF/0IcT7oKc+U8LXHV99URXlPzFTsWgzTbE3TrMuiAgWH7dGplepcefox18hHwXfFAXRp5APBCdAhJd+4eUDINm+CI0hxOPp/TgD0PXPFuWAYaXmLC/1ue3by8eJkxTuLUrI2CO6JQgFmv+9Cx9TcvKeKBtSrlh65ZWMJfvVM4HaCHsEeDGCLpeHdTg/s8fP2rmDaGr+qyhnc2piMcSfC1QBfN8C9E8fFF00mGb8J4/tNK8yFP/U949wNr7ZKabp2sN1/VYiaT/Iq9zftr2al6eN4qm0czVqJf2ZeVGOxP0RSJkzzXB744jyO3PI2myuiXNR5PX7hkccOO2BghR91AkG5vAzEpDa9lK/GH71k3tyYdXlrSRYzziTjDx0pEyEy8FilTz7YjbbYhDvRY7S3Gpd52YFFNjNrS9wiOi/pfLOT6xFeYGq/8eJycQImT6NvCKNhHYd7iEplE+LyE70BqlZrxkyI5JVSWDQGiKiDU4g1ssh7yPXAHiPkXM0MA7sG2ApkEQtzxQ4qKMxmgzEamAk4KUqvcUbqx6c6DSuXCoKNPn5fUVipiYyYVfZR4i3HEO1Xa5uys=
