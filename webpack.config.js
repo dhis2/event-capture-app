@@ -89,7 +89,7 @@ module.exports = {
             filename: 'event-capture.appcache',
         })
     ],
-    devtool: ['sourcemap'],
+    devtool: 'sourcemap',
     devServer: {
         contentBase: '.',
         progress: true,
