@@ -442,15 +442,6 @@
                                                                 d2-orgunit-names="orgUnitNames">
                                                         </d2-org-unit-tree>
                                                     </div>                                                
-                                                    <div ng-switch-when="TEXT">
-                                                        <input type="text"
-                                                                ng-model="currentEvent[eventGridColumn.id]" 
-                                                                ng-required={{eventGridColumn.compulsory}}
-                                                                ng-disabled="model.editingDisabled"
-                                                                ng-blur="updateEventDataValue(eventGridColumn.id)" 
-                                                                name="foo" 
-                                                                ng-class="getInputNotifcationClass(eventGridColumn.id,false)"/>                                                    
-                                                    </div>
                                                     <div ng-switch-when="EMAIL">
                                                         <input type="email"
                                                                name="foo"
