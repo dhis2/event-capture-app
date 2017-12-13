@@ -315,7 +315,7 @@
                                                                 ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                 name="foo" 
                                                                 input-field-id={{eventGridColumn.id}} 
-                                                                ng-blur="saveDatavalue()" 
+                                                                ng-blur="updateEventDataValue(eventGridColumn.id)" 
                                                                 class="form-control"/>
                                                     </div>
                                                     <div ng-switch-when="LONG_TEXT">                                        
@@ -345,7 +345,7 @@
                                                             dh-value="currentEvent[eventGridColumn.id]"
                                                             dh-name="foo"
                                                             dh-event="currentEvent.event"
-                                                            dh-click="saveDatavalueRadio(eventGridColumn, currentEvent, value)"
+                                                            dh-click="updateDatavalueRadio(eventGridColumn, currentEvent, value)"
                                                             dh-id="eventGridColumn.id">
                                                         </d2-radio-button>
                                                     </div>
