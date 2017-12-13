@@ -1174,7 +1174,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 //reflect the change in the gird
                 $scope.outerForm.submitted = false;            
                 $scope.editingEventInFull = false;
-                $scope.currentEvent = {};
+                //$scope.currentEvent = {};
                 $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);                
                 if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ){
                     $scope.loadEvents();
@@ -1182,7 +1182,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 else{
                     $scope.dhis2Events = DHIS2EventService.refreshList($scope.dhis2Events, $scope.currentEvent);    
                     $scope.updateFileNames();
-                }                
+                }
+                $scope.currentEvent = {};              
             });
         });
     };
@@ -1789,6 +1790,12 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         event[id] = value;
         $scope.executeRules();
     };
+
+    $scope.updateDatavalueRadio = function(prStDe, event, value){
+        var id = prStDe.dataElement ? prStDe.dataElement.id : prStDe.id;
+        event[id] = value;
+        $scope.updateEventDataValue(id);
+    }
 
    $scope.saveCurrentEventStatus = function(status) {
        $scope.currentEvent.status = status;
