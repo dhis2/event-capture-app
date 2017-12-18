@@ -328,6 +328,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
     $scope.getProgramDetails = function( program ){
         $scope.selectedProgram = program;
+        $rootScope.ruleeffects = {};
         var showStatus, savedColumn;
         $scope.selectedOptions = [];
         $scope.selectedProgramStage = null;
