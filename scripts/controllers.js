@@ -330,6 +330,7 @@ eventCapture.controller('MainController',
     };
 
     $scope.getProgramDetails = function(){
+        $rootScope.ruleeffects = {};
         var showStatus, savedColumn;
         $scope.selectedOptions = [];
         $scope.selectedProgramStage = null;
