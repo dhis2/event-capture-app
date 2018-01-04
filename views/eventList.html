@@ -178,8 +178,9 @@
                                                 {{dhis2Event[eventGridColumn.id] | parseAge}}
                                             </span>
                                             <div ng-switch-when="DATE">
-                                                <span ng-if="eventGridColumn.id !== 'lastUpdated'">{{dhis2Event[eventGridColumn.id]}}</span>
+                                                <span ng-if="eventGridColumn.id !== 'lastUpdated' && eventGridColumn.id !== 'eventDate'">{{dhis2Event[eventGridColumn.id]}}</span>
                                                 <span ng-if="eventGridColumn.id === 'lastUpdated'">{{formatCalendar(dhis2Event[eventGridColumn.id])}}</span>
+                                                <span ng-if="eventGridColumn.id === 'eventDate'">{{formatCalendar(dhis2Event[eventGridColumn.id])}}</span>
                                             </div>
                                             <span ng-switch-default>
                                                 {{dhis2Event[eventGridColumn.id]}}
