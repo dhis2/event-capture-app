@@ -14,7 +14,7 @@
             </td>
             <td>
                 <input type="text"
-                       ng-disabled="model.editingDisabled"
+                       ng-disabled="model.editingDisabled || !hasDataWrite()"
                        placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
                        d2-date
                        max-date='model.maxDate'
@@ -35,7 +35,7 @@
                 {{'coordinate' | translate}}
             </td>
             <td>
-                <d2-map d2-object="currentEvent" d2-disabled="model.editingDisabled" d2-coordinate-format="'COORDINATE'"></d2-map>
+                <d2-map d2-object="currentEvent" d2-disabled="model.editingDisabled || !hasDataWrite()" d2-coordinate-format="'COORDINATE'"></d2-map>
             </td>            
         </tr>
     </tbody>

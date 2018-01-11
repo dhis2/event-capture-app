@@ -9,7 +9,7 @@
                     {{'event_completed'| translate}}
                 </td>
                 <td>
-                    <input type="checkbox" ng-model="currentEvent.status" ng-disabled="(currentEvent.status && !userAuthority.canUnCompleteEvent) || model.editingDisabled"/>                    
+                    <input type="checkbox" ng-model="currentEvent.status" ng-disabled="(currentEvent.status && !userAuthority.canUnCompleteEvent) || model.editingDisabled || !hasDataWrite()"/>                    
                 </td>
             </tr>
             <tr ng-if="currentEvent.status && !userAuthority.canUnCompleteEvent">

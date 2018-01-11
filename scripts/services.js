@@ -5,7 +5,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
     var store = new dhis2.storage.Store({
         name: 'dhis2ec',
         adapters: [dhis2.storage.IndexedDBAdapter, dhis2.storage.DomSessionStorageAdapter, dhis2.storage.InMemoryAdapter],
-        objectStores: ['programs', 'optionSets', 'events', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants', 'dataElements']
+        objectStores: ['programs', 'optionSets', 'events', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants', 'dataElements','programAccess']
     });
     return{
         currentStore: store
@@ -119,48 +119,84 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
 
 /* Factory to fetch programs */
 .factory('ProgramFactory', function($q, $rootScope, SessionStorageService, ECStorageService, CommonUtils) {
-    
+    var access = null;
     return {
+        getAllAccesses: function(){
+            var def = $q.defer();
+            if(access){
+                def.resolve(access);
+            }else{
+                ECStorageService.currentStore.open().done(function(){
+                    ECStorageService.currentStore.getAll('programAccess').done(function(programAccess){
+                        access = { programsById: {}, programStagesById: {}};
+                        angular.forEach(programAccess, function(program){
+                            access.programsById[program.id] = program.access;
+                            angular.forEach(program.programStages, function(programStage){
+                                access.programStagesById[programStage.id] = programStage.access;
+                            });
+                        });
+                        def.resolve(access);
+                    });
+                });
+            }
+            return def.promise;
+            
+        },
+
         getProgramsByOu: function(ou, selectedProgram){
             var roles = SessionStorageService.get('USER_PROFILE');
             var userRoles = roles && roles.userCredentials && roles.userCredentials.userRoles ? roles.userCredentials.userRoles : [];
             var def = $q.defer();
             
-            ECStorageService.currentStore.open().done(function(){
-                ECStorageService.currentStore.getAll('programs').done(function(prs){
-                    var programs = [];
-                    angular.forEach(prs, function(pr){                            
-                        if(pr.organisationUnits.hasOwnProperty( ou.id ) && CommonUtils.userHasValidRole(pr, 'programs', userRoles)){
-                            programs.push(pr);
+            this.getAllAccesses().then(function(access){
+                ECStorageService.currentStore.open().done(function(){
+                    ECStorageService.currentStore.getAll('programs').done(function(prs){
+                        var programs = [];
+                        angular.forEach(prs, function(pr){                            
+                            if(pr.organisationUnits.hasOwnProperty( ou.id ) && CommonUtils.userHasValidRole(pr, 'programs', userRoles) && access && access.programsById[pr.id] && access.programsById[pr.id].data.read){
+                                pr.access = access.programsById[pr.id];
+                                programs.push(pr);
+                                var accessibleStages = [];
+                                angular.forEach(pr.programStages, function(prs){
+                                    var prsAccess = access.programStagesById[prs.id];
+                                    if(prsAccess && prsAccess.data.read){
+                                        prs.access = prsAccess;
+                                        accessibleStages.push(prs);
+                                    }
+                                });
+                                pr.programStages = accessibleStages;
+
+                            }
+                        });
+                        
+                        if(programs.length === 0){
+                            selectedProgram = null;
                         }
-                    });
-                    
-                    if(programs.length === 0){
-                        selectedProgram = null;
-                    }
-                    else if(programs.length === 1){
-                        selectedProgram = programs[0];
-                    } 
-                    else{
-                        if(selectedProgram){
-                            var continueLoop = true;
-                            for(var i=0; i<programs.length && continueLoop; i++){
-                                if(programs[i].id === selectedProgram.id){                                
-                                    selectedProgram = programs[i];
-                                    continueLoop = false;
+                        else if(programs.length === 1){
+                            selectedProgram = programs[0];
+                        } 
+                        else{
+                            if(selectedProgram){
+                                var continueLoop = true;
+                                for(var i=0; i<programs.length && continueLoop; i++){
+                                    if(programs[i].id === selectedProgram.id){                                
+                                        selectedProgram = programs[i];
+                                        continueLoop = false;
+                                    }
+                                }
+                                if(continueLoop){
+                                    selectedProgram = null;
                                 }
                             }
-                            if(continueLoop){
-                                selectedProgram = null;
-                            }
                         }
-                    }
-                    
-                    $rootScope.$apply(function(){
-                        def.resolve({programs: programs, selectedProgram: selectedProgram});
-                    });                      
+                        
+                        $rootScope.$apply(function(){
+                            def.resolve({programs: programs, selectedProgram: selectedProgram});
+                        });                      
+                    });
                 });
             });
+
             
             return def.promise;
         }

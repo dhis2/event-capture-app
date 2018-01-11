@@ -38,7 +38,7 @@ if( dhis2.ec.memoryOnly ) {
 dhis2.ec.store = new dhis2.storage.Store({
     name: 'dhis2ec',
     adapters: [dhis2.storage.IndexedDBAdapter, dhis2.storage.DomSessionStorageAdapter, dhis2.storage.InMemoryAdapter],
-    objectStores: ['programs', 'optionSets', 'events', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants']
+    objectStores: ['programs', 'optionSets', 'events', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants','programAccess']
 });
 
 (function($) {
@@ -162,6 +162,7 @@ function downloadMetaData(){
     promise = promise.then( getOptionSetsForDataElements );
     promise = promise.then( getOptionSets );
     promise = promise.then( getCategoryOptions );
+    promise = promise.then( getProgramAccess);
     promise.done( function() {
         var SessionStorageService = angular.element('body').injector().get('SessionStorageService');
         var NotificationService = angular.element('body').injector().get('NotificationService');
@@ -283,6 +284,27 @@ function getOrgUnitLevels()
         }        
         return dhis2.tracker.getTrackerObjects('ouLevels', 'organisationUnitLevels', DHIS2URL + '/organisationUnitLevels.json', 'filter=level:gt:1&fields=id,displayName,level&paging=false', 'idb', dhis2.ec.store);
     }); 
+}
+
+function getProgramAccess(){
+    return dhis2.tracker.getTrackerObjects('programAccess','programs', DHIS2URL+'/programs.json', 'filter=programType:eq:WITHOUT_REGISTRATION&paging=false&fields=id,access[data[read,write]],programStages[access[data[read,write]]]','temp', dhis2.ec.store).then(function(programAccesses){
+        //Temporary getting programStageAccess
+        var programAccessesById = {};
+        _.each(_.values(programAccesses), function(programAccess){
+            programAccess.programStages = [];
+            programAccessesById[programAccess.id] = programAccess;
+        });
+        return dhis2.tracker.getTrackerObjects('programStageAccess','programStages', DHIS2URL+'/programStages.json', 'paging=false&fields=id,program,access[data[read,write]]','temp', dhis2.ec.store).then(function(programStageAccesses){
+            _.each(_.values(programStageAccesses), function(programStageAccess){
+                if(programAccessesById[programStageAccess.program.id]){
+                    programAccessesById[programStageAccess.program.id].programStages.push(programStageAccess);
+                }
+                
+            });
+            return dhis2.ec.store.setAll('programAccess',programAccesses);
+        });
+
+    });
 }
 
 function getMetaPrograms()

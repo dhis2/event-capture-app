@@ -1966,6 +1966,14 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.filterTextExist = function(){        
         return angular.equals($scope.filterText, $scope.emptyFilterText);
     };
+
+    $scope.canDeleteEvent = function(){
+        return $scope.userAuthority.canDeleteEvent && $scope.hasDataWrite();
+    }
+
+    $scope.hasDataWrite = function(){
+        return $scope.selectedProgramStage && $scope.selectedProgramStage.access && $scope.selectedProgramStage.access.data.write;
+    }
 })
 
 .controller('NotesController', function($scope, $modalInstance, dhis2Event){

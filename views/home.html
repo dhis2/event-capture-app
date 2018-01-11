@@ -101,7 +101,8 @@
                     <button class="btn btn-success hideInPrint small-horizontal-spacing small-vertical-spacing"
                             type="button"
                             ng-show="selectedProgramStage" 
-                            ng-click="showEventRegistration()" 
+                            ng-click="showEventRegistration()"
+                            ng-if="selectedProgramStage.access.data.write"
                             ng-disabled="eventRegistration || editingEventInFull || editingEventInGrid || !userAuthority.canAddOrUpdateEvent">
                         {{'register_event'| translate}}
                     </button>
