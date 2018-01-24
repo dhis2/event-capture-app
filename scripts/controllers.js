@@ -55,6 +55,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     resetView();
     
+    
     $scope.editGridColumns = false;
     $scope.updateSuccess = false;
     $scope.currentGridColumnId = '';  
