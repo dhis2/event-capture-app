@@ -57,6 +57,7 @@ eventCapture.controller('MainController',
     
     resetView();
     
+    
     $scope.editGridColumns = false;
     $scope.updateSuccess = false;
     $scope.currentGridColumnId = '';  
