@@ -218,6 +218,16 @@
                                          time-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()">
                                 </d2-time>
                             </div>
+                            <div ng-switch-when="USERNAME">
+                                <d2-users-input d2-model="currentEvent"
+                                                d2-model-id="eventGridColumn.id"
+                                                d2-required="eventGridColumn.compulsory"
+                                                d2-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
+                                                d2-save-methode="saveDatavalue"
+                                                d2-max-option-size="maxOptionSize"
+                                                d2-use-notification="true">
+                                </d2-users-input>
+                            </div>
                             <div ng-switch-when="TRUE_ONLY">
                                 <input type="checkbox"
                                        ng-model="currentEvent[eventGridColumn.id]"                                                               

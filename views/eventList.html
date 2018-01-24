@@ -394,6 +394,19 @@
                                                                ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
                                                                name="foo"/>
                                                     </div>
+                                                    <div ng-switch-when="USERNAME" ng-hide="hiddenFields[eventGridColumn.id]">
+                                                        <d2-users-input d2-model="currentEvent"
+                                                                        d2-model-id="eventGridColumn.id"
+                                                                        d2-required="eventGridColumn.compulsory"
+                                                                        d2-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
+                                                                        d2-save-methode="updateEventDataValue"
+                                                                        d2-save-methode-parameter1="eventGridColumn.id"
+                                                                        d2-save-methode-parameter2="currentEvent"
+                                                                        d2-max-option-size="maxOptionSize"
+                                                                        d2-use-notification="true"
+                                                                        d2-element="eventGridColumn.id">
+                                                        </d2-users-input>
+                                                    </div>
                                                     <div ng-switch-when="TRUE_ONLY">
                                                         <input type="checkbox"
                                                                ng-hide="hiddenFields[eventGridColumn.id]"
