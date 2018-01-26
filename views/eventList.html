@@ -52,8 +52,8 @@
                     <li ng-if="selectedProgramStage.access.data.write"><a href ng-click="showEditEventInFull()"><i class="fa fa-edit"></i>&nbsp;&nbsp;{{'edit'| translate}}</a></li>
                     <li ng-if="selectedProgramStage.access.data.write"><a href ng-click="showEditEventInGrid()"><i class="fa fa-edit"></i>&nbsp;&nbsp;{{'edit_in_grid'| translate}}</a></li>
                     <li><a href ng-click="showAuditHistory()"><i class="glyphicon glyphicon-user"></i>&nbsp;&nbsp;{{'audit_history'| translate}}</a></li>
-                    <li class="divider" ng-if="canDeleteEvent()">&nbsp;</li>
-                    <li ng-if="canDeleteEvent()"><a href ng-click="removeEvent()"><i class="fa fa-trash-o"></i>&nbsp;&nbsp;{{'remove'| translate}}</a></li>                                       
+                    <li class="divider" ng-if="hasDataWrite()">&nbsp;</li>
+                    <li ng-if="hasDataWrite()"><a href ng-click="removeEvent()"><i class="fa fa-trash-o"></i>&nbsp;&nbsp;{{'remove'| translate}}</a></li>                                       
                 </ul>
             </div>
             <!-- context menu ends -->                            

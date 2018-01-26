@@ -24,6 +24,7 @@ var programCategoryOptions = {};
 var batchSize = 50;
 var programBatchSize = 50;
 var DHIS2URL = '../api/28';
+var hasAllAccess = false;
 
 dhis2.ec.isOffline = false;
 dhis2.ec.store = null;
@@ -154,6 +155,7 @@ function downloadMetaData(){
     promise = promise.then( getSystemSetting );
     promise = promise.then( getUserSetting );
     promise = promise.then( getUserProfile );
+    promise = promise.then( setHasAllAccess);
     promise = promise.then( getConstants );
     promise = promise.then( getOrgUnitLevels );    
     promise = promise.then( getMetaPrograms );
@@ -284,38 +286,6 @@ function getOrgUnitLevels()
         }        
         return dhis2.tracker.getTrackerObjects('ouLevels', 'organisationUnitLevels', DHIS2URL + '/organisationUnitLevels.json', 'filter=level:gt:1&fields=id,displayName,level&paging=false', 'idb', dhis2.ec.store);
     }); 
-}
-
-function getProgramAccess(){
-    return dhis2.tracker.getTrackerObjects('programAccess','programs', DHIS2URL+'/programs.json', 'filter=programType:eq:WITHOUT_REGISTRATION&paging=false&fields=id,access[data[read,write]],programStages[access[data[read,write]]]','temp', dhis2.ec.store).then(function(programAccesses){
-        //Temporary getting programStageAccess
-        var SessionStorageService = angular.element('body').injector().get('SessionStorageService');    
-        var userProfile = SessionStorageService.get('USER_PROFILE');
-        var hasAllAccess = false;
-        if(userProfile && userProfile.authorities){
-            var r = $.grep(userProfile.authorities, function(a){ return a === 'ALL'});
-            if(r.length > 0) hasAllAccess = true;
-        }
-
-        var programAccessesById = {};
-        _.each(_.values(programAccesses), function(programAccess){
-            if(hasAllAccess) programAccess.access.data = {read: true, write: true };
-            programAccess.programStages = [];
-            programAccessesById[programAccess.id] = programAccess;
-        });
-
-        return dhis2.tracker.getTrackerObjects('programStageAccess','programStages', DHIS2URL+'/programStages.json', 'paging=false&fields=id,program,access[data[read,write]]','temp', dhis2.ec.store).then(function(programStageAccesses){
-            _.each(_.values(programStageAccesses), function(programStageAccess){
-                if(hasAllAccess) programStageAccess.access.data = {read : true, write: true};
-                if(programAccessesById[programStageAccess.program.id]){
-                    programAccessesById[programStageAccess.program.id].programStages.push(programStageAccess);
-                }
-                
-            });
-            return dhis2.ec.store.setAll('programAccess',programAccesses);
-        });
-
-    });
 }
 
 function getMetaPrograms()
@@ -563,5 +533,41 @@ function uploadLocalData()
      
     OfflineECStorageService.uploadLocalData().then(function(){        
         selection.responseReceived(); //notify angular
+    });
+}
+
+//ACCESS
+function setHasAllAccess(){
+    var def = $.Deferred();
+    var SessionStorageService = angular.element('body').injector().get('SessionStorageService');    
+    var userProfile = SessionStorageService.get('USER_PROFILE');
+    if(userProfile && userProfile.authorities){
+        var r = $.grep(userProfile.authorities, function(a){ return a === 'ALL'});
+        if(r.length > 0) hasAllAccess = true;
+    }
+    def.resolve();
+    return def.promise();
+}
+
+function getProgramAccess(){
+    return dhis2.tracker.getTrackerObjects('programAccess','programs', DHIS2URL+'/programs.json', 'filter=programType:eq:WITHOUT_REGISTRATION&paging=false&fields=id,access[data[read,write]],programStages[access[data[read,write]]]','temp', dhis2.ec.store).then(function(programAccesses){
+        var programAccessesById = {};
+        _.each(_.values(programAccesses), function(programAccess){
+            if(hasAllAccess) programAccess.access.data = {read: true, write: true };
+            programAccess.programStages = [];
+            programAccessesById[programAccess.id] = programAccess;
+        });
+
+        return dhis2.tracker.getTrackerObjects('programStageAccess','programStages', DHIS2URL+'/programStages.json', 'paging=false&fields=id,program,access[data[read,write]]','temp', dhis2.ec.store).then(function(programStageAccesses){
+            _.each(_.values(programStageAccesses), function(programStageAccess){
+                if(programAccessesById[programStageAccess.program.id]){
+                    if(hasAllAccess) programStageAccess.access.data = {read : true, write: true};
+                    programAccessesById[programStageAccess.program.id].programStages.push(programStageAccess);
+                }
+                
+            });
+            return dhis2.ec.store.setAll('programAccess',programAccesses);
+        });
+
     });
 }

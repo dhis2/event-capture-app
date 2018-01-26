@@ -27,7 +27,7 @@
         {{'loading_metadata'| translate}}
     </div>
 
-    <div ng-if="selectedOrgUnit && !userAuthority.canAddOrUpdateEvent">
+    <div ng-if="selectedOrgUnit && ($scope.selectedProgramStage && !hasDataWrite())">
         <h1>{{'lacking_required_authority_to_add_update_event' | translate}}</h1>
     </div>
     
@@ -103,7 +103,7 @@
                             ng-show="selectedProgramStage" 
                             ng-click="showEventRegistration()"
                             ng-if="selectedProgramStage.access.data.write"
-                            ng-disabled="eventRegistration || editingEventInFull || editingEventInGrid || !userAuthority.canAddOrUpdateEvent">
+                            ng-disabled="eventRegistration || editingEventInFull || editingEventInGrid">
                         {{'register_event'| translate}}
                     </button>
                     <button class="btn btn-primary hideInPrint small-horizontal-spacing small-vertical-spacing"
