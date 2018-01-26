@@ -26,7 +26,7 @@
                         <a href title="{{'details'| translate}}" tabindex="-1">{{eventGridColumn.displayName}}</a>
                     </span>
                     <span class="not-for-screen">{{eventGridColumn.displayName}}</span>
-                    <span ng-if="eventGridColumn.compulsory" class="required">*</span>                    
+                    <span ng-if="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]" class="required">*</span>                    
                 </td>                
                 <td>
                     <ng-form name="innerForm">
@@ -34,7 +34,7 @@
                             <div ng-if="!prStDes[eventGridColumn.id].renderOptionsAsRadio || optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options.length >= 7">
                                 <ui-select ng-model="currentEvent[eventGridColumn.id]"
                                            theme="select2" 
-                                           ng-required={{eventGridColumn.compulsory}}
+                                           ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                            name="foo" 
                                            input-field-id={{eventGridColumn.id}} 
                                            ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
@@ -62,7 +62,7 @@
                                        d2-number-validator
                                        number-type={{eventGridColumn.valueType}}
                                        ng-model="currentEvent[eventGridColumn.id]"                                        
-                                       ng-required={{eventGridColumn.compulsory}}
+                                       ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                        ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                        name="foo" 
                                        input-field-id={{eventGridColumn.id}} 
@@ -74,7 +74,7 @@
                                        d2-number-validator
                                        number-type={{eventGridColumn.valueType}}
                                        ng-model="currentEvent[eventGridColumn.id]"
-                                       ng-required={{eventGridColumn.compulsory}}
+                                       ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                        ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                        name="foo"
                                        input-field-id={{eventGridColumn.id}}
@@ -86,7 +86,7 @@
                                        d2-number-validator
                                        number-type={{eventGridColumn.valueType}}
                                        ng-model="currentEvent[eventGridColumn.id]"                                        
-                                       ng-required={{eventGridColumn.compulsory}}
+                                       ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                        ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                        name="foo" 
                                        input-field-id={{eventGridColumn.id}} 
@@ -98,7 +98,7 @@
                                        d2-number-validator
                                        number-type={{eventGridColumn.valueType}}
                                        ng-model="currentEvent[eventGridColumn.id]"                                        
-                                       ng-required={{eventGridColumn.compulsory}}
+                                       ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                        ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                        name="foo" 
                                        input-field-id={{eventGridColumn.id}} 
@@ -110,7 +110,7 @@
                                        d2-number-validator
                                        number-type={{eventGridColumn.valueType}}
                                        ng-model="currentEvent[eventGridColumn.id]"                                        
-                                       ng-required={{eventGridColumn.compulsory}}
+                                       ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                        ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                        name="foo" 
                                        input-field-id={{eventGridColumn.id}} 
@@ -122,7 +122,7 @@
                                        d2-number-validator
                                        number-type={{eventGridColumn.valueType}}
                                        ng-model="currentEvent[eventGridColumn.id]"                                        
-                                       ng-required={{eventGridColumn.compulsory}}
+                                       ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                        ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                        name="foo" 
                                        input-field-id={{eventGridColumn.id}} 
@@ -139,7 +139,7 @@
                             <div ng-switch-when="PHONE_NUMBER">
                                 <input type="text"
                                         ng-model="currentEvent[eventGridColumn.id]"                                        
-                                        ng-required={{eventGridColumn.compulsory}}
+                                        ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                         ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                         name="foo" 
                                         input-field-id={{eventGridColumn.id}} 
@@ -149,7 +149,7 @@
                             <div ng-switch-when="TEXT">
                                 <input type="text"
                                         ng-model="currentEvent[eventGridColumn.id]"                                        
-                                        ng-required={{eventGridColumn.compulsory}}
+                                        ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                         ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                         name="foo" 
                                         input-field-id={{eventGridColumn.id}} 
@@ -159,7 +159,7 @@
                             <div ng-switch-when="LONG_TEXT">
                                 <textarea rows="3"
                                         ng-model="currentEvent[eventGridColumn.id]"                                        
-                                        ng-required={{eventGridColumn.compulsory}}
+                                        ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                         ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                         name="foo" 
                                         input-field-id={{eventGridColumn.id}} 
@@ -191,7 +191,7 @@
                                        max-date="prStDes[eventGridColumn.id].allowFutureDate ? '' : 0"                                        
                                        d2-date-validator
                                        ng-model="currentEvent[eventGridColumn.id]"                                                               
-                                       ng-required={{eventGridColumn.compulsory}}
+                                       ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                        ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                        name="foo" 
                                        input-field-id={{eventGridColumn.id}} 
@@ -231,7 +231,7 @@
                             <div ng-switch-when="TRUE_ONLY">
                                 <input type="checkbox"
                                        ng-model="currentEvent[eventGridColumn.id]"                                                               
-                                       ng-required={{eventGridColumn.compulsory}}
+                                       ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                        ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                        name="foo" 
                                        input-field-id={{eventGridColumn.id}} 
@@ -256,7 +256,7 @@
                                             <span title="{{'upload' | translate}}">
                                                 <i class="fa fa-upload"></i>
                                                 <input type="file" 
-                                                       ng-required={{eventGridColumn.compulsory}}
+                                                       ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
                                                        ng-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
                                                        name="foo"
                                                        input-field-id={{eventGridColumn.id}}
@@ -368,7 +368,7 @@
                                 <a href title="{{'details'| translate}}" tabindex="-1">{{prStDes[de.id].dataElement.displayFormName}}</a>
                             </span>
                             <span class="not-for-screen">{{prStDes[de.id].dataElement.displayFormName}}</span>
-                            <span ng-if="prStDes[de.id].compulsory" class="required">*</span>
+                            <span ng-if="prStDes[de.id].compulsory || mandatoryFields[de.id]" class="required">*</span>
                         </td>
                         <td>
                             <ng-form name="innerForm">
@@ -376,7 +376,7 @@
                                     <span ng-if="!prStDes[de.id].renderOptionsAsRadio || optionSets[prStDes[de.id].dataElement.optionSet.id].options.length >= 7">
                                         <d2-option-list d2-model="currentEvent"
                                                         d2-model-id="de.id"
-                                                        d2-required="prStDes[de.id].compulsory"
+                                                        d2-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                         d2-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                         d2-save-methode="saveDatavalue"
                                                         d2-max-option-size="maxOptionSize"
@@ -388,7 +388,7 @@
                                             d2-name="foo" 
                                             d2-object="currentEvent" 
                                             d2-options="optionSets[prStDes[de.id].dataElement.optionSet.id].options"
-                                            d2-required="prStDes[de.id].compulsory"
+                                            d2-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                             d2-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                             d2-function="saveDatavalue()">
                                         </d2-radio>
@@ -400,7 +400,7 @@
                                                 d2-number-validator
                                                 number-type={{prStDes[de.id].dataElement.valueType}}
                                                 ng-model="currentEvent[de.id]"
-                                                ng-required={{prStDes[de.id].compulsory}}
+                                                ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                 ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                 name="foo"
                                                 input-field-id={{de.id}}
@@ -412,7 +412,7 @@
                                                d2-number-validator
                                                number-type={{prStDes[de.id].dataElement.valueType}}
                                                ng-model="currentEvent[de.id]"
-                                               ng-required={{prStDes[de.id].compulsory}}
+                                               ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                name="foo"
                                                input-field-id={{de.id}}
@@ -424,7 +424,7 @@
                                                d2-number-validator
                                                number-type={{prStDes[de.id].dataElement.valueType}}
                                                ng-model="currentEvent[de.id]"
-                                               ng-required={{prStDes[de.id].compulsory}}
+                                               ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                name="foo"
                                                input-field-id={{de.id}}
@@ -436,7 +436,7 @@
                                                d2-number-validator
                                                number-type={{prStDes[de.id].dataElement.valueType}}
                                                ng-model="currentEvent[de.id]"
-                                               ng-required={{prStDes[de.id].compulsory}}
+                                               ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                name="foo"
                                                input-field-id={{de.id}}
@@ -448,7 +448,7 @@
                                                d2-number-validator
                                                number-type={{prStDes[de.id].dataElement.valueType}}
                                                ng-model="currentEvent[de.id]"
-                                               ng-required={{prStDes[de.id].compulsory}}
+                                               ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                name="foo"
                                                input-field-id={{de.id}}
@@ -460,7 +460,7 @@
                                                d2-number-validator
                                                number-type={{prStDes[de.id].dataElement.valueType}}
                                                ng-model="currentEvent[de.id]"
-                                               ng-required={{prStDes[de.id].compulsory}}
+                                               ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                name="foo"
                                                input-field-id={{de.id}}
@@ -470,14 +470,14 @@
                                     <div ng-switch-when="AGE">
                                         <d2-age id="{{de.id}}" 
                                                 d2-object="currentEvent" 
-                                                d2-required="prStDes[de.id].compulsory"
+                                                d2-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                 d2-disabled="assignedFields[de.id] || model.editingDisabled">                                                    
                                         </d2-age>
                                     </div>
                                     <div ng-switch-when="PHONE_NUMBER">
                                         <input type="text"
                                                 ng-model="currentEvent[de.id]"
-                                                ng-required={{prStDes[de.id].compulsory}}
+                                                ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                 ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                 name="foo"
                                                 input-field-id={{de.id}}
@@ -487,7 +487,7 @@
                                     <div ng-switch-when="TEXT">
                                         <input type="text"
                                                 ng-model="currentEvent[de.id]"
-                                                ng-required={{prStDes[de.id].compulsory}}
+                                                ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                 ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                 name="foo"
                                                 input-field-id={{de.id}}
@@ -497,7 +497,7 @@
                                     <div ng-switch-when="LONG_TEXT">
                                         <textarea rows="3"
                                                 ng-model="currentEvent[de.id]"
-                                                ng-required={{prStDes[de.id].compulsory}}
+                                                ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                 ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                 name="foo"
                                                 input-field-id={{de.id}}
@@ -508,7 +508,7 @@
                                     <div ng-switch-when="BOOLEAN">
                                         <div class="form-control hideInPrint">
                                             <d2-radio-button
-                                                dh-required="prStDes[de.id].compulsory"
+                                                dh-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                 dh-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                 dh-value="currentEvent[de.id]"
                                                 dh-name="foo"
@@ -529,7 +529,7 @@
                                                max-date="prStDes[de.id].allowFutureDate ? '' : 0"
                                                d2-date-validator
                                                ng-model="currentEvent[de.id]"
-                                               ng-required={{prStDes[de.id].compulsory}}
+                                               ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                name="foo"
                                                input-field-id={{de.id}}
@@ -543,7 +543,7 @@
                                                max-date="prStDes[de.id].allowFutureDate ? '' : 0"
                                                d2-date-validator
                                                ng-model="currentEvent[de.id]"
-                                               ng-required={{prStDes[de.id].compulsory}}
+                                               ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                name="foo"
                                                input-field-id={{de.id}}
@@ -553,7 +553,7 @@
                                     <div ng-switch-when="TRUE_ONLY">
                                         <input type="checkbox"
                                                ng-model="currentEvent[de.id]"
-                                               ng-required={{prStDes[de.id].compulsory}}
+                                               ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                name="foo"
                                                input-field-id={{de.id}}
@@ -578,7 +578,7 @@
                                                     <span title="{{'upload' | translate}}">
                                                         <i class="fa fa-upload"></i>
                                                         <input type="file"
-                                                               ng-required={{eventGridColumn.compulsory}}
+                                                               ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                                ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                                name="foo"
                                                                input-field-id={{de.id}}
@@ -597,7 +597,7 @@
                                     <div ng-switch-when="COORDINATE">
                                         <d2-map id="{{de.id}}" 
                                                 d2-object="currentEvent" 
-                                                d2-required="prStDes[de.id].compulsory"
+                                                d2-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                 d2-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                 d2-coordinate-format="'TEXT'">                                                    
                                         </d2-map>                                        
@@ -607,7 +607,7 @@
                                                 selected-org-unit-id="{{selectedOrgUnit.id}}"
                                                 id="{{de.id}}"
                                                 d2-value="currentEvent[de.id]"
-                                                d2-required="prStDes[de.id].compulsory"
+                                                d2-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                 d2-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                 d2-object="currentEvent"
                                                 d2-function="saveDataValue()"
@@ -623,7 +623,7 @@
                                                selected-program-id={{selectedProgram.id}}
                                                ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                ng-blur="saveDatavalue()"
-                                               ng-required="prStDes[de.id].compulsory"/>
+                                               ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"/>
                                     </div>
                                     <div ng-switch-when="URL">
                                         <div class="hideInPrint">
@@ -633,7 +633,7 @@
                                                    class="form-control"
                                                    ng-pattern="/^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}(:[0-9]{1,5})?(\/.*)?$/"
                                                    ng-model="currentEvent[de.id]"
-                                                   ng-required="prStDes[de.id].compulsory"
+                                                   ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
                                                    ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
                                                    ng-blur="saveDatavalue()"
                                                    name="foo"/>

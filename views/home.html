@@ -124,8 +124,8 @@
         <!-- event grid ends -->
 
         <!-- event update in full / registration begins-->
-        <form name="outerForm" novalidate>
-            <div ng-if="editingEventInFull || eventRegistration">
+        <form name="forms.outerForm" novalidate ng-if="editingEventInFull || eventRegistration">
+            <div>
                 <h3>
                     <span ng-if="editingEventInFull">{{'event_details'| translate}}</span>
                     <span ng-if="eventRegistration">{{'new_event'| translate}}</span>
