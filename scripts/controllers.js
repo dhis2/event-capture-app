@@ -43,6 +43,7 @@ eventCapture.controller('MainController',
     $rootScope.ruleeffects = {};
     $scope.hiddenFields = [];
     $scope.assignedFields = [];
+    $scope.mandatoryFields = [];
     
     $scope.calendarSetting = CalendarService.getSetting();
     
@@ -1650,6 +1651,7 @@ eventCapture.controller('MainController',
         $scope.hiddenFields = [];
         $scope.assignedFields = [];
         $scope.displayTextEffects = [];
+        $scope.mandatoryFields = [];
 
         if($rootScope.ruleeffects[args.event]) {
             //Establish which event was affected:
@@ -1738,6 +1740,9 @@ eventCapture.controller('MainController',
                     }
                     else if(effect.action === "DISPLAYTEXT") {
                         $scope.displayTextEffects.push({text:effect.data + effect.content});
+                    }
+                    else if(effect.action === "SETMANDATORYFIELD"){
+                        $scope.mandatoryFields[effect.dataElement.id] = effect.ineffect;
                     }
                 }
             });
