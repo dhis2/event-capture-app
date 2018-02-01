@@ -60,7 +60,7 @@
 
             <!-- grid begins -->
             <div class="small-vertical-spacing">
-                <form name="forms.outerForm" novalidate>
+                <ng-form name="outerListForm" novalidate>
 
                     <table class="listTable dhis2-table-striped-border dhis2-table-hover">
                         <thead>                        
@@ -197,7 +197,7 @@
                                 <!-- Visible when event is under editing in grid -->
                                 <td ng-if="editingEventInGrid && (currentEvent.event === dhis2Event.event) && (eventGridColumn.id !== 'comment')" ng-repeat="eventGridColumn in eventGridColumns | filter: {show: true}">
                                     <div  style="cursor:default;">
-                                        <ng-form name="innerForm">
+                                        <ng-form name="innerListForm">
                                             <div ng-if="eventGridColumn.id === 'uid'">
                                                 <input type="text"
                                                         ng-model="currentEvent[eventGridColumn.id]"                                                                    
@@ -506,7 +506,7 @@
                                                             {{'unsupported_value_type' | translate}}:  {{eventGridColumn.valueType}}
                                                         </div>                                          
                                                     </div>                                                    
-                                                    <div ng-messages="innerForm.foo.$error" ng-if="interacted(innerForm.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">
+                                                    <div ng-messages="innerListForm.foo.$error" ng-if="interacted(innerListForm.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">
                                                     </div>
                                                 </div>
                                             </div>                                                                         

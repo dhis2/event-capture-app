@@ -82,11 +82,6 @@ module.exports = {
                 'core/event-capture.js',
                 '../main.js',
             ]),
-        }),
-        new HTMLWebpackPlugin({
-            inject: false,
-            template: 'event-capture.appcache.ejs',
-            filename: 'event-capture.appcache',
         })
     ],
     devtool: ['sourcemap'],

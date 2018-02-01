@@ -118,55 +118,56 @@
             </div>
         </div>        
         <!-- selection ends -->        
+        <form name="outerForm">
+            <!-- event grid begins -->
+            <div ng-include="'views/eventList.html'"></div>
+            <!-- event grid ends -->
 
-        <!-- event grid begins -->
-        <div ng-include="'views/eventList.html'"></div>
-        <!-- event grid ends -->
-
-        <!-- event update in full / registration begins-->
-        <form name="forms.outerForm" novalidate ng-if="editingEventInFull || eventRegistration">
-            <div>
-                <h3>
-                    <span ng-if="editingEventInFull">{{'event_details'| translate}}</span>
-                    <span ng-if="eventRegistration">{{'new_event'| translate}}</span>
-                    <span ng-if="currentEvent.event && currentEvent.event !== 'SINGLE_EVENT'" class="horizontal-spacing">
-                        <d2-audit style="font-size: 15px" name-id-map="prStDes" event-id="{{currentEvent.event}}" data-type="dataElement">
-                        </d2-audit>
-                    </span>
-                </h3>
-                <div class="col-sm-6">
-                    <script type="text/ng-template" id="dataelement-details.html">
-                        <table class="table table-bordered">
-                            <tr>
-                                <td class="bold">{{'description' | translate}}</td>
-                                <td>{{content.description ? content.description : 'not_available' | translate}}</td>
-                            </tr>
-                            <tr>
-                                <td class="bold">{{'url' | translate}}</td>
-                                <td>
-                                    <span ng-if="content.url">
-                                        <a href="{{content.url}}" target="_blank">{{content.url}}</a>
-                                    </span>
-                                    <span ng-if="!content.url">
-                                        {{'not_available' | translate}}
-                                    </span>
-                                </td>
-                            </tr>
-                        </table>
-                    </script>                 
-                    <div class="bordered-div">
-                        <div ng-if="displayCustomForm" ng-include="'views/ec-custom-form.html'"></div>  
-                        <div ng-if="!displayCustomForm" ng-include="'views/defaultForm.html'"></div>
-                        <div ng-if="currentEvent.eventDate" ng-include="'views/status.html'"></div>
-                        <div ng-include="'views/comments-section.html'" ng-if="currentEvent.eventDate"></div>
-                        <div ng-include="'views/buttons-section.html'"></div>
-                    </div>                    
-                </div>
-                <div class="col-sm-4" ng-if="warningMessages.length > 0 || displayTextEffects.length > 0">
-                    <div class="bordered-div">
-                        <div ng-if="displayTextEffects.length > 0" ng-include="'views/indicators.html'"></div>
-                        <div ng-if="warningMessages.length > 0" ng-include="'views/warnings.html'"></div>
-                    </div>                    
+            <!-- event update in full / registration begins-->
+            <div ng-if="editingEventInFull || eventRegistration">
+                <div>
+                    <h3>
+                        <span ng-if="editingEventInFull">{{'event_details'| translate}}</span>
+                        <span ng-if="eventRegistration">{{'new_event'| translate}}</span>
+                        <span ng-if="currentEvent.event && currentEvent.event !== 'SINGLE_EVENT'" class="horizontal-spacing">
+                            <d2-audit style="font-size: 15px" name-id-map="prStDes" event-id="{{currentEvent.event}}" data-type="dataElement">
+                            </d2-audit>
+                        </span>
+                    </h3>
+                    <div class="col-sm-6">
+                        <script type="text/ng-template" id="dataelement-details.html">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="bold">{{'description' | translate}}</td>
+                                    <td>{{content.description ? content.description : 'not_available' | translate}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="bold">{{'url' | translate}}</td>
+                                    <td>
+                                        <span ng-if="content.url">
+                                            <a href="{{content.url}}" target="_blank">{{content.url}}</a>
+                                        </span>
+                                        <span ng-if="!content.url">
+                                            {{'not_available' | translate}}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </script>                 
+                        <div class="bordered-div">
+                            <div ng-if="displayCustomForm" ng-include="'views/ec-custom-form.html'"></div>  
+                            <div ng-if="!displayCustomForm" ng-include="'views/defaultForm.html'"></div>
+                            <div ng-if="currentEvent.eventDate" ng-include="'views/status.html'"></div>
+                            <div ng-include="'views/comments-section.html'" ng-if="currentEvent.eventDate"></div>
+                            <div ng-include="'views/buttons-section.html'"></div>
+                        </div>                    
+                    </div>
+                    <div class="col-sm-4" ng-if="warningMessages.length > 0 || displayTextEffects.length > 0">
+                        <div class="bordered-div">
+                            <div ng-if="displayTextEffects.length > 0" ng-include="'views/indicators.html'"></div>
+                            <div ng-if="warningMessages.length > 0" ng-include="'views/warnings.html'"></div>
+                        </div>                    
+                    </div>
                 </div>
             </div>
         </form>

@@ -806,15 +806,15 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);        
     };
     
-    $scope.showEventRegistration = function(){        
+    $scope.showEventRegistration = function(){      
         $scope.displayCustomForm = $scope.customDataEntryForm ? true : false;
         $scope.currentEvent = {};
         $scope.fileNames['SINGLE_EVENT'] = {};
         $scope.currentFileNames = {};
         $scope.eventRegistration = !$scope.eventRegistration;          
         $scope.currentEvent = angular.copy($scope.newDhis2Event); 
-        if($scope.forms.outerForm){
-            $scope.forms.outerForm.submitted = false;
+        if($scope.outerForm){
+            $scope.outerForm.submitted = false;
         }
         $scope.note = {};
         $scope.displayTextEffects = [];
@@ -837,7 +837,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         if(!$scope.currentEvent.coordinate) $scope.currentEvent.coordinate = {};
         $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
         $scope.editingEventInGrid = !$scope.editingEventInGrid;
-        $scope.forms.outerForm.$valid = true;
+        $scope.outerForm.$valid = true;
         checkEventEditingStatus();
         $scope.executeRules("eventGridEdit");
     };
@@ -992,8 +992,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.addEvent = function(addingAnotherEvent){
         
         //check for form validity
-        $scope.forms.outerForm.submitted = true;        
-        if( $scope.forms.outerForm.$invalid ){
+        $scope.outerForm.submitted = true;        
+        if( $scope.outerForm.$invalid ){
             $scope.selectedSection.id = 'ALL';
             angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
                 section.open = true;
@@ -1110,8 +1110,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
                     $scope.note = {};
                     $scope.displayTextEffects = [];
-                    $scope.forms.outerForm.submitted = false;
-                    $scope.forms.outerForm.$setPristine();
+                    $scope.outerForm.submitted = false;
+                    $scope.outerForm.$setPristine();
                     
                     //decide whether to stay in the current screen or not.
                     if(addingAnotherEvent){
@@ -1138,8 +1138,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         resetUrl();
         var def = $q.defer();
         //check for form validity
-        $scope.forms.outerForm.submitted = true;
-        if( $scope.forms.outerForm.$invalid ){
+        $scope.outerForm.submitted = true;
+        if( $scope.outerForm.$invalid ){
             $scope.selectedSection.id = 'ALL';
             angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
                 section.open = true;
@@ -1196,7 +1196,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
             return DHIS2EventFactory.update(updatedEvent).then(function(data){            
                 //reflect the change in the gird
-                $scope.forms.outerForm.submitted = false;            
+                $scope.outerForm.submitted = false;            
                 $scope.editingEventInFull = false;
                 //$scope.currentEvent = {};
                 $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);                
@@ -1291,7 +1291,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
         }
         //check for form validity
-        if($scope.forms.outerForm.$invalid){
+        if($scope.outerForm.$invalid){
             $scope.currentElement.updated = false;
             
             //reset value back to original
@@ -1670,25 +1670,24 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
     
     $scope.isFormInvalid = function(){
-        
-        if($scope.forms.outerForm.submitted){
-            return $scope.forms.outerForm.$invalid;
+        if($scope.outerForm.submitted){
+            return $scope.outerForm.$invalid;
         }
 
         if($scope.model.invalidDate) {
             return true;
         }
         
-        if(!$scope.forms.outerForm.$dirty){
+        if(!$scope.outerForm.$dirty){
             return false;
         }
         
         var formIsInvalid = false;
-        for(var k in $scope.forms.outerForm.$error){            
-            if(angular.isObject($scope.forms.outerForm.$error[k])){
+        for(var k in $scope.outerForm.$error){            
+            if(angular.isObject($scope.outerForm.$error[k])){
                 
-                for(var i=0; i<$scope.forms.outerForm.$error[k].length && !formIsInvalid; i++){
-                    if($scope.forms.outerForm.$error[k][i].$dirty && $scope.forms.outerForm.$error[k][i].$invalid){
+                for(var i=0; i<$scope.outerForm.$error[k].length && !formIsInvalid; i++){
+                    if($scope.outerForm.$error[k][i].$dirty && $scope.outerForm.$error[k][i].$invalid){
                         formIsInvalid = true;
                     }
                 }
@@ -1726,7 +1725,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.interacted = function(field) {
         var status = false;
         if(field){            
-            status = $scope.forms.outerForm.submitted || field.$dirty;
+            status = $scope.outerForm.submitted || field.$dirty;
         }
         return status;
     };

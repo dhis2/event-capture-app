@@ -29,7 +29,7 @@
                     <span ng-if="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]" class="required">*</span>                    
                 </td>                
                 <td>
-                    <ng-form name="innerForm">
+                    <ng-form name="innerFullForm">
                         <div ng-if="prStDes[eventGridColumn.id].dataElement.optionSetValue">
                             <div ng-if="!prStDes[eventGridColumn.id].renderOptionsAsRadio || optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options.length >= 7">
                                 <ui-select ng-model="currentEvent[eventGridColumn.id]"
@@ -323,7 +323,7 @@
                                 </div>
                             </div>
                         </div>                        
-                        <div ng-messages="innerForm.foo.$error" ng-if="interacted(innerForm.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">                                         
+                        <div ng-messages="innerFullForm.foo.$error" ng-if="interacted(innerFullForm.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">                                         
                         </div>
                     </ng-form>
                 </td>
@@ -371,7 +371,7 @@
                             <span ng-if="prStDes[de.id].compulsory || mandatoryFields[de.id]" class="required">*</span>
                         </td>
                         <td>
-                            <ng-form name="innerForm">
+                            <ng-form name="innerFullForm">
                                 <div ng-if="prStDes[de.id].dataElement.optionSetValue">
                                     <span ng-if="!prStDes[de.id].renderOptionsAsRadio || optionSets[prStDes[de.id].dataElement.optionSet.id].options.length >= 7">
                                         <d2-option-list d2-model="currentEvent"
@@ -645,7 +645,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div ng-messages="innerForm.foo.$error" ng-if="interacted(innerForm.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">
+                                <div ng-messages="innerFullForm.foo.$error" ng-if="interacted(innerFullForm.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">
                                     <!-- URL error message is temporarily placed here. Should be placed with the other error messages in the core. -->
                                     <span ng-message="urlValidator">{{'url_error' | translate}}</span>
                                 </div>
