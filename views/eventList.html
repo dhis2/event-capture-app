@@ -364,18 +364,31 @@
                                                                name="foo"/>
                                                     </div>
                                                     <div ng-switch-when="DATETIME">
-                                                        <input type="text" 
-                                                               placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
-                                                               d2-date
-                                                               max-date="prStDes[eventGridColumn.id].allowFutureDate ? '' : 0" 
-                                                               d2-date-validator
-                                                               ng-model="currentEvent[eventGridColumn.id]"
-                                                               blur-or-change="updateEventDataValue(eventGridColumn.id)" 
-                                                               ng-required={{eventGridColumn.compulsory}}
-                                                               input-field-id={{eventGridColumn.id}}                                                            
-                                                               ng-class="getInputNotifcationClass(eventGridColumn.id,false)"
-                                                               ng-disabled="model.editingDisabled"
-                                                               name="foo"/>
+                                                        <d2-date-time datetime-model="currentEvent"
+                                                                      datetime-model-id="eventGridColumn.id"
+                                                                      datetime-date-placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
+                                                                      datetime-max-date="prStDes[de.id].allowFutureDate ? '' : 0"
+                                                                      datetime-required="eventGridColumn.compulsory"
+                                                                      datetime-save-methode="updateEventDataValue"
+                                                                      datetime-save-methode-parameter1="eventGridColumn.id"
+                                                                      datetime-field="eventGridColumn.id"
+                                                                      datetime-element="currentElement"
+                                                                      datetime-disable-popup="true"
+                                                                      datetime-use-notification="true"
+                                                                      datetime-disabled="model.editingDisabled"
+                                                                      datetime-outerform="outerDataEntryForm">
+                                                        </d2-date-time>
+                                                    </div>
+                                                    <div ng-switch-when="TIME">
+                                                        <d2-time time-model="currentEvent"
+                                                                 time-model-id="eventGridColumn.id"
+                                                                 time-required="eventGridColumn.compulsory"
+                                                                 time-save-methode="updateEventDataValue"
+                                                                 time-save-methode-parameter1="eventGridColumn.id"
+                                                                 time-element="currentElement"
+                                                                 time-use-notification="true"
+                                                                 time-disabled="model.editingDisabled">
+                                                        </d2-time>
                                                     </div>
                                                     <div ng-switch-when="TRUE_ONLY">
                                                         <input type="checkbox"
