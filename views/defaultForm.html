@@ -537,18 +537,29 @@
                                                class="form-control"/>
                                     </div>
                                     <div ng-switch-when="DATETIME">
-                                        <input type="text"
-                                               placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
-                                               d2-date
-                                               max-date="prStDes[de.id].allowFutureDate ? '' : 0"
-                                               d2-date-validator
-                                               ng-model="currentEvent[de.id]"
-                                               ng-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
-                                               ng-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
-                                               name="foo"
-                                               input-field-id={{de.id}}
-                                               blur-or-change="saveDatavalue()"
-                                               class="form-control"/>
+                                        <d2-date-time datetime-model="currentEvent"
+                                                      datetime-model-id="de.id"
+                                                      datetime-date-placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
+                                                      datetime-max-date="prStDes[de.id].allowFutureDate ? '' : 0"
+                                                      datetime-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
+                                                      datetime-save-methode="saveDatavalue"
+                                                      datetime-field="de.id"
+                                                      datetime-element="currentElement"
+                                                      datetime-disable-popup="true"
+                                                      datetime-use-notification="true"
+                                                      datetime-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
+                                                      datetime-outerform="outerDataEntryForm">
+                                        </d2-date-time> 
+                                    </div>
+                                    <div ng-switch-when="TIME">
+                                        <d2-time time-model="currentEvent"
+                                                 time-model-id="de.id"
+                                                 time-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
+                                                 time-save-methode="saveDatavalue"
+                                                 time-element="currentElement"
+                                                 time-use-notification="true"
+                                                 time-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()">
+                                        </d2-time>
                                     </div>
                                     <div ng-switch-when="TRUE_ONLY">
                                         <input type="checkbox"
