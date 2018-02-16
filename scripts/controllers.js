@@ -45,6 +45,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.assignedFields = [];
     $scope.mandatoryFields = [];
     $scope.calendarSetting = CalendarService.getSetting();
+    $scope.timeFormat = "24h";
     
     //Paging
     $scope.pager = {pageSize: 50, page: 1, toolBarDisplay: 5};

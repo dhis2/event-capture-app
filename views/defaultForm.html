@@ -215,7 +215,8 @@
                                          time-required="eventGridColumn.compulsory"
                                          time-save-methode="saveDatavalue"
                                          time-use-notification="true"
-                                         time-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()">
+                                         time-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
+                                         time-format="timeFormat">
                                 </d2-time>
                             </div>
                             <div ng-switch-when="USERNAME">
@@ -558,7 +559,8 @@
                                                  time-save-methode="saveDatavalue"
                                                  time-element="currentElement"
                                                  time-use-notification="true"
-                                                 time-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()">
+                                                 time-disabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()"
+                                                 time-format="timeFormat">
                                         </d2-time>
                                     </div>
                                     <div ng-switch-when="TRUE_ONLY">
