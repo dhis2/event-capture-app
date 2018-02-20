@@ -153,7 +153,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
                     ECStorageService.currentStore.getAll('programs').done(function(prs){
                         var programs = [];
                         angular.forEach(prs, function(pr){                            
-                            if(pr.organisationUnits.hasOwnProperty( ou.id ) && CommonUtils.userHasValidRole(pr, 'programs', userRoles) && access && access.programsById[pr.id] && access.programsById[pr.id].data.read){
+                            if(pr.organisationUnits.hasOwnProperty( ou.id ) && access && access.programsById[pr.id] && access.programsById[pr.id].data.read){
                                 pr.access = access.programsById[pr.id];
                                 programs.push(pr);
                                 var accessibleStages = [];
