@@ -144,6 +144,13 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
     });
 
+    $scope.dataElementEditable = function(de) {
+        if($scope.assignedFields[de.id] || $scope.model.editingDisabled || !$scope.hasDataWrite()) {
+            return false;
+        }
+        return true;
+    }
+
     $scope.verifyExpiryDate = function() {
         if (!DateUtils.verifyExpiryDate($scope.currentEvent.eventDate, $scope.selectedProgram.expiryPeriodType,
                 $scope.selectedProgram.expiryDays)) {
