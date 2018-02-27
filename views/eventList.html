@@ -172,6 +172,10 @@
                                             <span ng-switch-when="FILE_RESOURCE">
                                                 <a href ng-click="downloadFile(dhis2Event.event, eventGridColumn.id, $event)">{{fileNames[dhis2Event.event][eventGridColumn.id]}}</a>
                                             </span>
+                                            <span ng-switch-when="IMAGE">
+                                                <d2-image-in-list d2-event-id="dhis2Event.event" d2-de-id="eventGridColumn.id">
+                                                </d2-image-in-list>
+                                            </span>
                                             <span ng-switch-when="ORGANISATION_UNIT">
                                                 {{orgUnitNames[dhis2Event[eventGridColumn.id]]}}
                                             </span>
@@ -462,6 +466,10 @@
                                                                 </span>
                                                             </span>                
                                                         </div>
+                                                    </div>
+                                                    <div ng-switch-when="IMAGE">
+                                                        <d2-image-in-list d2-event-id="currentEvent.event" d2-de-id="eventGridColumn.id">
+                                                        </d2-image-in-list>
                                                     </div>
                                                     <div ng-switch-when="COORDINATE">
                                                         <d2-map id="{{eventGridColumn.id}}"

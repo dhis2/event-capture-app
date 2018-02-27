@@ -1970,7 +1970,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
     };
     
-    $scope.deleteFile = function(dataElement){
+    $scope.deleteFile = function(event, dataElement){
         
         if( !dataElement ){            
             var dialogOptions = {

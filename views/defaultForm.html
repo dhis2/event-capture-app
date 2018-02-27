@@ -245,7 +245,7 @@
                                         <a ng-if="currentEvent.event && currentEvent.event !=='SINGLE_EVENT'" href ng-click="downloadFile(currentEvent.event, eventGridColumn.id)" title="{{fileNames[currentEvent.event][eventGridColumn.id]}}">{{fileNames[currentEvent.event][eventGridColumn.id].length > 20 ? fileNames[currentEvent.event][eventGridColumn.id].substr(0,20).contact('...') : fileNames[currentEvent.event][eventGridColumn.id]}}</a>                                        
                                     </div>
                                     <span class="input-group-btn">
-                                        <span class="btn btn-grp btn-file" ng-if="currentEvent[eventGridColumn.id]" ng-click="deleteFile(eventGridColumn.id)">
+                                        <span class="btn btn-grp btn-file" ng-if="currentEvent[eventGridColumn.id]" ng-click="deleteFile(null, eventGridColumn.id)">
                                             <span
                                                   title="{{'delete' | translate}}" 
                                                   d2-file-input-name="fileNames[currentEvent.event][eventGridColumn.id]" 
@@ -268,6 +268,26 @@
                                             </span>                                                
                                         </span>
                                     </span>                
+                                </div>
+                                <div class="not-for-screen">
+                                    <input type="text" class="form-control" value="{{currentEvent[eventGridColumn.id] || currentEvent[eventGridColumn.id] !== '' ? fileNames[currentEvent.event][eventGridColumn.id] : 'file_not_chosen'| translate}}">
+                                </div>
+                            </div>
+                            <div ng-switch-when="IMAGE">
+                                <div class="hideInPrint">
+                                    <d2-image d2-display-open="true"
+                                              d2-can-edit="true"
+                                              d2-hide-image="editingEventInFull ? false : true"
+                                              d2-event="currentEvent"
+                                              d2-data-element-id="eventGridColumn.id"
+                                              d2-file-names="fileNames"
+                                              d2-current-image-name="currentFileNames"
+                                              d2-ps="currentStage"
+                                              d2-delete-methode="deleteFile"
+                                              d2-download-methode="downloadFile"
+                                              d2-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
+                                              d2-diabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()">
+                                    </d2-image>
                                 </div>
                                 <div class="not-for-screen">
                                     <input type="text" class="form-control" value="{{currentEvent[eventGridColumn.id] || currentEvent[eventGridColumn.id] !== '' ? fileNames[currentEvent.event][eventGridColumn.id] : 'file_not_chosen'| translate}}">
@@ -589,7 +609,7 @@
                                                 <a ng-if="currentEvent.event && currentEvent.event !=='SINGLE_EVENT'" href ng-click="downloadFile(currentEvent.event, de.id)">{{fileNames[currentEvent.event][de.id]}}</a>
                                             </div>
                                             <span class="input-group-btn">
-                                                <span class="btn btn-grp btn-file"  ng-if="currentEvent[de.id]" ng-click="deleteFile(de.id)">
+                                                <span class="btn btn-grp btn-file"  ng-if="currentEvent[de.id]" ng-click="deleteFile(null, de.id)">
                                                     <span
                                                           title="{{'delete' | translate}}"
                                                           d2-file-input-name="fileNames[currentEvent.event][de.id]"
@@ -615,6 +635,26 @@
                                         </div>
                                         <div class="not-for-screen">
                                             <input type="text" class="form-control" value="{{currentEvent[de.id] || currentEvent[de.id] !== '' ? fileNames[currentEvent.event][de.id]: 'file_not_chosen'| translate}}">                                            
+                                        </div>
+                                    </div>
+                                    <div ng-switch-when="IMAGE">
+                                        <div class="hideInPrint">
+                                            <d2-image d2-display-open="true"
+                                                      d2-can-edit="true"
+                                                      d2-hide-image="editingEventInFull ? false : true"
+                                                      d2-event="currentEvent"
+                                                      d2-data-element-id="de.id"
+                                                      d2-file-names="fileNames"
+                                                      d2-current-image-name="currentFileNames"
+                                                      d2-ps="currentStage"
+                                                      d2-delete-methode="deleteFile"
+                                                      d2-download-methode="downloadFile"
+                                                      d2-required="prStDes[de.id].compulsory || mandatoryFields[de.id]"
+                                                      d2-diabled="assignedFields[de.id] || model.editingDisabled || !hasDataWrite()">
+                                            </d2-image>
+                                        </div>
+                                        <div class="not-for-screen">
+                                            <input type="text" class="form-control" value="{{currentEvent[de.id] || currentEvent[de.id] !== '' ? fileNames[currentEvent.event][de.id]: 'file_not_chosen'| translate}}">
                                         </div>
                                     </div>
                                     <div ng-switch-when="COORDINATE">
