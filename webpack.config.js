@@ -69,7 +69,12 @@ module.exports = {
                 test: /\.css$/,
                 loader: 'style-loader!css-loader',
             },
+            {
+                test: /\.(gif|png|jpg)$/,
+                loader: 'file-loader'
+            },
         ],
+        noParse: /node_modules\/leaflet-control-geocoder\/dist\/Control.Geocoder.js/,
     },
     plugins: [
         new webpack.optimize.DedupePlugin(),

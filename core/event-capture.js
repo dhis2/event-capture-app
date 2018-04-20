@@ -178,7 +178,7 @@ function getSystemSetting()
        return; 
     }
     
-    return dhis2.tracker.getTrackerObject(null, 'SYSTEM_SETTING', DHIS2URL + '/systemSettings.json', 'key=keyGoogleMapsApiKey&key=keyMapzenSearchApiKey&key=keyCalendar&key=keyDateFormat', 'localStorage', dhis2.ec.store);
+    return dhis2.tracker.getTrackerObject(null, 'SYSTEM_SETTING', DHIS2URL + '/systemSettings.json', 'key=keyGoogleMapsApiKey&key=keyCalendar&key=keyDateFormat', 'localStorage', dhis2.ec.store);
 }
 
 function getUserSetting()
