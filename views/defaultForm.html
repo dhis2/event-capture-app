@@ -169,15 +169,16 @@
                                     </textarea>
                             </div>
                             <div ng-switch-when="BOOLEAN">
-                                <div class="form-control hideInPrint">
-                                <d2-radio id="eventGridColumn.id" 
-                                    d2-name="foo" 
-                                    d2-object="currentEvent" 
-                                    d2-options="optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options"
-                                    d2-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
-                                    d2-function="saveDatavalue()"
-                                    d2-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled">
-                                </d2-radio>
+                                    <div class="form-control hideInPrint">
+                                    <d2-radio-button
+                                        dh-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
+                                        dh-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
+                                        dh-value="currentEvent[eventGridColumn.id]"
+                                        dh-name="foo"
+                                        dh-event="currentEvent.event"
+                                        dh-click="saveDatavalueRadio(eventGridColumn, currentEvent, value)"
+                                        dh-id="eventGridColumn.id">
+                                    </d2-radio-button>
                                 </div>
                                 <div class="not-for-screen">
                                     <label class="radio-inline"><input type="radio" value="true" ng-model="currentEvent[eventGridColumn.id]">{{'yes' | translate}}</label>
@@ -480,14 +481,15 @@
                                     </div>
                                     <div ng-switch-when="BOOLEAN">
                                         <div class="form-control hideInPrint">
-                                            <d2-radio id="de.dataElement.id"
-                                                d2-name="foo" 
-                                                d2-object="currentEvent" 
-                                                d2-options="optionSets[prStDes[de.dataElement.id].dataElement.optionSet.id].options"
-                                                d2-required="prStDes[de.dataElement.id].compulsory || mandatoryFields[de.dataElement.id]"
-                                                d2-function="saveDatavalue()"
-                                                d2-disabled="assignedFields[de.dataElement.id] || model.editingDisabled">
-                                            </d2-radio>
+                                            <d2-radio-button
+                                                dh-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
+                                                dh-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled"
+                                                dh-value="currentEvent[eventGridColumn.id]"
+                                                dh-name="foo"
+                                                dh-event="currentEvent.event"
+                                                dh-click="saveDatavalueRadio(eventGridColumn, currentEvent, value)"
+                                                dh-id="eventGridColumn.id">
+                                            </d2-radio-button>
                                         </div>
                                         <div class="not-for-screen">
                                             <label class="radio-inline"><input type="radio" value="true" ng-model="currentEvent[de.dataElement.id]">{{'yes' | translate}}</label>
