@@ -560,7 +560,7 @@ function getProgramAccess(){
 
         return dhis2.tracker.getTrackerObjects('programStageAccess','programStages', DHIS2URL+'/programStages.json', 'paging=false&fields=id,program,access[data[read,write]]','temp', dhis2.ec.store).then(function(programStageAccesses){
             _.each(_.values(programStageAccesses), function(programStageAccess){
-                if(programAccessesById[programStageAccess.program.id]){
+                if(programStageAccess.program && programAccessesById[programStageAccess.program.id]){
                     if(hasAllAccess) programStageAccess.access.data = {read : true, write: true};
                     programAccessesById[programStageAccess.program.id].programStages.push(programStageAccess);
                 }
