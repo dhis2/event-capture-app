@@ -1399,9 +1399,9 @@ csso@~2.3.1:
     clap "^1.0.9"
     source-map "^0.5.3"
 
-d2-tracker@29.0.33:
-  version "29.0.33"
-  resolved "https://registry.yarnpkg.com/d2-tracker/-/d2-tracker-29.0.33.tgz#f3e7935bd09130517fb73ba3ee1a76eb62bc2ae2"
+d2-tracker@30.0.2:
+  version "30.0.2"
+  resolved "https://registry.yarnpkg.com/d2-tracker/-/d2-tracker-30.0.2.tgz#c35e5fb323265b06402d3c46c1728c3168b11b3f"
   dependencies:
     gulp "^3.9.1"
     gulp-angular-templatecache "^2.0.0"
