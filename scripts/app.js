@@ -1,4 +1,5 @@
 // Tracker core
+import 'd2-tracker/lib/dhis2.tracker-metadata.js';
 import 'd2-tracker/lib/dhis2.angular.services.js';
 import 'd2-tracker/lib/dhis2.angular.directives.js';
 import 'd2-tracker/lib/dhis2.angular.validations.js';
