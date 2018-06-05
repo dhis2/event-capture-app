@@ -163,77 +163,15 @@ function downloadMetaData(){
     promise = promise.then( getPrograms );
     promise = promise.then( getOptionSetsForDataElements );
     promise = promise.then( getOptionSets );
-    promise = promise.then( getCategoryOptions );
     promise = promise.then( getProgramAccess);
     promise.done( function() {
-        var SessionStorageService = angular.element('body').injector().get('SessionStorageService');
-        var NotificationService = angular.element('body').injector().get('NotificationService');
-        var categoryOptions = SessionStorageService.get('eventCaptureCategoryOptions');
-        var mappedOptions = {};
-        if( categoryOptions && categoryOptions.length > 0 ){
-            angular.forEach(categoryOptions, function( co ){
-                var mappedOrganisationUnits = [];
-                if( co.organisationUnits && co.organisationUnits.length > 0 ){                                
-                    mappedOrganisationUnits = $.map(co.organisationUnits, function(ou){return ou.id;});
-                }                                
-                co.organisationUnits = mappedOrganisationUnits;
-                mappedOptions[co.id] = co;
-            });
-        
-            var getSharingSetting = function( mappedObjs, id ){
-                var o = null;                
-                if( mappedObjs && 
-                    id && 
-                    mappedObjs[id] && 
-                    mappedObjs[id].access && 
-                    mappedObjs[id].access.read === true ){
-                    o = mappedObjs[id];
-                }
-                return o;
-            }
+        //Enable ou selection after meta-data has downloaded
+        $( "#orgUnitTree" ).removeClass( "disable-clicks" );
+        console.log( 'Finished loading meta-data' );         
+        dhis2.availability.startAvailabilityCheck();
+        console.log( 'Started availability check' );        
+        selection.responseReceived();
 
-            dhis2.ec.store.getAll('programs').done(function(programs){            
-                angular.forEach(programs, function(program){                
-                    if( program.categoryCombo && program.categoryCombo.categories ){
-                        if( programCategoryOptions[program.id] && programCategoryOptions[program.id][program.categoryCombo.id] ){                            
-                            angular.forEach(program.categoryCombo.categories, function(ca){
-                                var filteredOpts = programCategoryOptions[program.id][program.categoryCombo.id][ca.id];
-                                if( filteredOpts ){                                
-                                    var opts = [];
-                                    angular.forEach(filteredOpts, function(opId){
-                                        var o = getSharingSetting( mappedOptions, opId );
-                                        if( o ){
-                                            opts.push( o );
-                                        }
-                                    });
-                                    ca.categoryOptions = opts;
-                                }
-                                else{
-                                    NotificationService.showNotifcationDialog('Error', 'Not able to fetch sharing settings for category options');
-                                }
-                            });
-                        }
-                        else{
-                            NotificationService.showNotifcationDialog('Error', 'Not able to fetch sharing settings for category options');
-                        }                        
-                    }
-                });
-
-                dhis2.ec.store.removeAll('programs').done(function(){                    
-                    dhis2.ec.store.setAll('programs', programs).done(function(){                        
-                        //Enable ou selection after meta-data has downloaded
-                        $( "#orgUnitTree" ).removeClass( "disable-clicks" );
-                        console.log( 'Finished loading meta-data' );         
-                        dhis2.availability.startAvailabilityCheck();
-                        console.log( 'Started availability check' );        
-                        selection.responseReceived();
-                    });
-                });
-            });
-        }
-        else{            
-            NotificationService.showNotifcationDialog('Error', 'Not able to fetch sharing settings for category options');
-        }
     });
 
     def.resolve();
@@ -404,15 +342,31 @@ function getBatchPrograms( programs, batch )
     $.ajax( {
         url: DHIS2URL + '/programs.json',
         type: 'GET',
-        data: 'fields=*,categoryCombo[id,displayName,isDefault,categories[id,displayName,categoryOptions[id]]],organisationUnits[id,displayName],programStages[*,dataEntryForm[*],programStageSections[id,displayName,description,sortOrder,dataElements[id]],programStageDataElements[*,dataElement[*,optionSet[id]]]]&paging=false&filter=id:in:' + ids
+        data: 'fields=*,categoryCombo[id,displayName,isDefault,categories[id,displayName,categoryOptions[id,displayName,access,organisationUnits[id]]]],organisationUnits[id,displayName],programStages[*,dataEntryForm[*],programStageSections[id,displayName,description,sortOrder,dataElements[id]],programStageDataElements[*,dataElement[*,optionSet[id]]]]&paging=false&filter=id:in:' + ids
     }).done( function( response ){
 
         if(response.programs){
             _.each(_.values( response.programs), function(program){
                 var ou = {};
-                _.each(_.values( program.organisationUnits), function(o){
-                    ou[o.id] = o.displayName;
-                });
+                if(program.organisationUnits){
+                    program.organisationUnits.forEach(o => {
+                        ou[o.id] = o.displayName;
+                    })
+                }
+
+                if(program.categoryCombo && program.categoryCombo.categories){
+                    program.categoryCombo.categories.forEach(category => {
+                        if(category.categoryOptions){
+                            category.categoryOptions.forEach(categoryOption => {
+                                if(categoryOption.organisationUnits){
+                                    var cou = categoryOption.organisationUnits.map(co => co.id);
+                                    categoryOption.organisationUnits = cou;
+                                }
+                            });
+                        }
+                    });
+                }
+
                 program.organisationUnits = ou;                
                 dhis2.ec.store.set( 'programs', program );
             });
@@ -522,15 +476,6 @@ function getProgramRuleVariables( data )
 {
     var ids = getObjectIds(data);
     return dhis2.tracker.getBatches(ids, batchSize, data.programs, 'programRuleVariables','programRuleVariables',DHIS2URL + '/programRuleVariables', 'fields=id,displayName,programRuleVariableSourceType,program[id],programStage[id],dataElement[id],useCodeForOptionSet','idb', dhis2.ec.store);
-}
-
-function getCategoryOptions()
-{
-    var SessionStorageService = angular.element('body').injector().get('SessionStorageService');    
-    if( SessionStorageService.get('eventCaptureCategoryOptions') ){
-       return; 
-    }
-    return dhis2.tracker.getBatches( categoryOptionIds, batchSize, null, 'eventCaptureCategoryOptions', 'categoryOptions', DHIS2URL + '/categoryOptions.json', 'paging=false&fields=id,displayName,organisationUnits[id],access', 'sessionStorage', dhis2.ec.store );    
 }
 
 function uploadLocalData()
