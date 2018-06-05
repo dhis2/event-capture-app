@@ -2013,6 +2013,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.hasDataWrite = function(){
         return $scope.selectedProgramStage && $scope.selectedProgramStage.access && $scope.selectedProgramStage.access.data.write;
     }
+    
+    $scope.accessFilter = function(categoryOption){
+        return categoryOption.access && categoryOption.access.read;
+    }
 })
 
 .controller('NotesController', function($scope, $modalInstance, dhis2Event){
