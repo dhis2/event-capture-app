@@ -1910,6 +1910,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.filterTextExist = function(){        
         return angular.equals($scope.filterText, $scope.emptyFilterText);
     };
+
+    $scope.accessFilter = function(categoryOption){
+        return categoryOption.access && categoryOption.access.read;
+    }
 })
 
 .controller('NotesController', function($scope, $modalInstance, dhis2Event){
