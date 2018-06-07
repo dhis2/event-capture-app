@@ -211,26 +211,16 @@
                                             </div>
                                             <div ng-if="eventGridColumn.id !== 'uid'">
                                                 <div ng-if="prStDes[eventGridColumn.id].dataElement.optionSetValue">
-                                                    <ui-select ng-model="currentEvent[eventGridColumn.id]" 
-                                                               theme="select2" 
-                                                               ng-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
-                                                               ng-disabled="model.editingDisabled || hiddenFields[eventGridColumn.id]"
-                                                               name="foo" 
-                                                               d2-option-validator
-                                                               on-select="updateEventDataValue(eventGridColumn.id, currentEvent)" 
-                                                               on-remove="validateOptionOnRemove(eventGridColumn.compulsory)"
-                                                               input-field-id={{eventGridColumn.id}}                                                               
-                                                               style="width:100%;">
-                                                        <ui-select-match allow-clear="true" 
-                                                                         class="form-control-ui-select" 
-                                                                         ng-class="getInputNotifcationClass(eventGridColumn.id, true)" 
-                                                                         placeholder="{{'select_or_search' | translate}}">
-                                                            {{$select.selected.displayName || $select.selected}}
-                                                        </ui-select-match>
-                                                        <ui-select-choices  repeat="option.displayName as option in optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options | filter: $select.search | limitTo:maxOptionSize">
-                                                            <span ng-bind-html="option.displayName | highlight: $select.search"></span>
-                                                        </ui-select-choices>
-                                                    </ui-select>
+                                                    <d2-option-list 
+                                                        d2-model="currentEvent"
+                                                        d2-model-id="eventGridColumn.id"
+                                                        d2-required="eventGridColumn.compulsory || mandatoryFields[eventGridColumn.id]"
+                                                        d2-disabled="assignedFields[eventGridColumn.id] || model.editingDisabled || !hasDataWrite()"
+                                                        d2-change="updateEventDataValue(eventGridColumn.id, currentEvent)"
+                                                        d2-max-option-size="maxOptionSize"
+                                                        d2-option-filter="optionVisibility"
+                                                        d2-all-options="optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options">
+                                                    </d2-option-list>
                                                 </div>
                                                 <div ng-if="!prStDes[eventGridColumn.id].dataElement.optionSetValue" ng-switch="eventGridColumn.valueType">                                            
                                                     <div ng-switch-when="NUMBER">

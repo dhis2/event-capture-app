@@ -11,6 +11,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $anchorScroll,
                 $window,
                 $q,
+                $log,
                 $filter,
                 $timeout,
                 $location,
@@ -68,6 +69,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.displayCustomForm = false;
     $scope.currentElement = {id: '', update: false};
     $scope.optionSets = [];
+    $scope.optionGroupsById = null;
     $scope.proceedSelection = true;
     $scope.formUnsaved = false;
     $scope.fileNames = {};
@@ -116,33 +118,51 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             SessionStorageService.set('SELECTED_OU', $scope.selectedOrgUnit);
 
             $scope.userAuthority = AuthorityService.getUserAuthorities(SessionStorageService.get('USER_PROFILE'));
-            GridColumnService.get("eventCaptureGridColumns").then(function (gridColumns) {
-                if (gridColumns && gridColumns.status !== "ERROR") {
-                    $scope.gridColumnsInUserStore = gridColumns;
-                }
-                //get ouLevels
-                ECStorageService.currentStore.open().done(function () {
-                    ECStorageService.currentStore.getAll('ouLevels').done(function (response) {
-                        var ouLevels = angular.isObject(response) ? orderByFilter(response, '-level').reverse() : [];
-                        CurrentSelection.setOuLevels(orderByFilter(ouLevels, '-level').reverse());
-                    });
-                });
-
-                if ($scope.optionSets.length < 1) {
-                    $scope.optionSets = [];
-                    MetaDataFactory.getAll('optionSets').then(function (optionSets) {
-                        angular.forEach(optionSets, function (optionSet) {
-                            $scope.optionSets[optionSet.id] = optionSet;
+            loadOptionGroups().then(function(){
+                GridColumnService.get("eventCaptureGridColumns").then(function (gridColumns) {
+                    if (gridColumns && gridColumns.status !== "ERROR") {
+                        $scope.gridColumnsInUserStore = gridColumns;
+                    }
+                    //get ouLevels
+                    ECStorageService.currentStore.open().done(function () {
+                        ECStorageService.currentStore.getAll('ouLevels').done(function (response) {
+                            var ouLevels = angular.isObject(response) ? orderByFilter(response, '-level').reverse() : [];
+                            CurrentSelection.setOuLevels(orderByFilter(ouLevels, '-level').reverse());
                         });
-                        $scope.loadPrograms();
                     });
-                }
-                else {
-                    $scope.loadPrograms();
-                }
+                    if ($scope.optionSets.length < 1) {
+                        $scope.optionSets = [];
+    
+                        MetaDataFactory.getAll('optionSets').then(function (optionSets) {
+                            angular.forEach(optionSets, function (optionSet) {
+                                $scope.optionSets[optionSet.id] = optionSet;
+                            });
+                            $scope.loadPrograms();
+                        });
+                    }
+                    else {
+                        $scope.loadPrograms();
+                    }
+                });
             });
         }
     });
+
+    var loadOptionGroups = function(){
+        if($scope.optionGroupsById){
+            var def = $q.defer();
+            def.resolve();
+            return def.promise;
+        }
+        return MetaDataFactory.getAll('optionGroups').then(function(optionGroups){
+            if(optionGroups){
+                $scope.optionGroupsById = optionGroups.toHashMap('id', (map,obj,key) => {obj.optionsById = obj.options.toHashMap('id');});
+            }else{
+                $scope.optionGroupsById = {};
+            }
+            
+        });
+    }
 
     $scope.dataElementEditable = function(de) {
         if($scope.assignedFields[de.id] || $scope.model.editingDisabled || !$scope.hasDataWrite()) {
@@ -1748,9 +1768,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.assignedFields = [];
         $scope.mandatoryFields = [];
         $scope.displayTextEffects = [];
+        $scope.optionVisibility = {};
 
         var isGridEdit = result.callerId === "eventGridEdit";
-
+        var dataElementOptionsChanged = [];
         if($rootScope.ruleeffects[result.event]) {
             //Establish which event was affected:
             var affectedEvent = $scope.currentEvent;
@@ -1844,13 +1865,61 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     }
                     else if(effect.action === "DISPLAYTEXT") {
                         $scope.displayTextEffects.push({text:effect.data + effect.content});
-                    }else if(effect.action === "SETMANDATORYFIELD"){
+                    }
+                    else if(effect.action === "SETMANDATORYFIELD"){
                         $scope.mandatoryFields[effect.dataElement.id] = effect.ineffect;
+                    }
+                    else if(effect.action === "HIDEOPTION"){
+                        if(effect.ineffect && effect.dataElement && effect.option){
+                            if(!$scope.optionVisibility[effect.dataElement.id]) $scope.optionVisibility[effect.dataElement.id] = { hidden: {}};
+                            if(!$scope.optionVisibility[effect.dataElement.id].hidden) $scope.optionVisibility[effect.dataElement.id].hidden = {};
+                            $scope.optionVisibility[effect.dataElement.id].hidden[effect.option.id] = effect.ineffect;
+                            if(dataElementOptionsChanged.indexOf(effect.dataElement.id) === -1) dataElementOptionsChanged.push(effect.dataElement.id);
+                        }
+                    }
+                    else if(effect.action === "SHOWOPTIONGROUP"){
+                        if(effect.ineffect && effect.dataElement && effect.optionGroup){
+                            if(!$scope.optionVisibility[effect.dataElement.id]) $scope.optionVisibility[effect.dataElement.id] = { hidden: {}};
+                            var optionGroup = $scope.optionGroupsById[effect.optionGroup.id];
+                            if(optionGroup){
+                                if(!$scope.optionVisibility[effect.dataElement.id].showOnly) $scope.optionVisibility[effect.dataElement.id].showOnly = {};
+                                angular.extend($scope.optionVisibility[effect.dataElement.id].showOnly, optionGroup.optionsById);
+                                if(dataElementOptionsChanged.indexOf(effect.dataElement.id) === -1) dataElementOptionsChanged.push(effect.dataElement.id);
+                            }else{
+                                $log.warn("OptionGroup "+effect.optionGroup.id+" was not found");
+                            }
+
+                        }
                     }
                 }
             });
+            clearDataElementValueForShowHideOptionActions(dataElementOptionsChanged, affectedEvent);
         }
     };
+
+    var clearDataElementValueForShowHideOptionActions = function(dataElements, affectedEvent){
+        dataElements.forEach(de => {
+            var value = affectedEvent[de];
+            //Only process if has selected value
+            if(angular.isDefined(value) && value !== "") {
+                var optionSet = $scope.optionSets[$scope.prStDes[de].dataElement.optionSet.id];
+                //Find selectedOption by displayName
+                var selectedOption = optionSet.options.find(o => o.displayName === value);
+                var shouldClear = !selectedOption;
+                
+                //If has selected option and a option is not in showOnly or is in hidden, field should be cleared.
+                if(selectedOption){
+                    shouldClear = ($scope.optionVisibility[de].showOnly && !$scope.optionVisibility[de].showOnly[selectedOption.id]) || $scope.optionVisibility[de].hidden[selectedOption.id];
+                }
+    
+                if(shouldClear){
+                    var message = ($scope.prStDes[de].dataElement.displayName + ' was blanked out because the option "'+value+'" got hidden by your last action');
+                    alert(message);
+                    affectedEvent[de] = "";
+                }
+            }
+        });
+    }
     
     $scope.executeRules = function(callerId) {
         $scope.currentEvent.event = !$scope.currentEvent.event ? 'SINGLE_EVENT' : $scope.currentEvent.event;

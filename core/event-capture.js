@@ -39,7 +39,7 @@ if( dhis2.ec.memoryOnly ) {
 dhis2.ec.store = new dhis2.storage.Store({
     name: 'dhis2ec',
     adapters: [dhis2.storage.IndexedDBAdapter, dhis2.storage.DomSessionStorageAdapter, dhis2.storage.InMemoryAdapter],
-    objectStores: ['programs', 'optionSets', 'events', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants','programAccess']
+    objectStores: ['programs', 'optionSets', 'events', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants','programAccess','optionGroups']
 });
 
 (function($) {
@@ -164,6 +164,7 @@ function downloadMetaData(){
     promise = promise.then( getOptionSetsForDataElements );
     promise = promise.then( getOptionSets );
     promise = promise.then( getProgramAccess);
+    promise = promise.then( getOptionGroups)
     promise.done( function() {
         //Enable ou selection after meta-data has downloaded
         $( "#orgUnitTree" ).removeClass( "disable-clicks" );
@@ -522,4 +523,7 @@ function getProgramAccess(){
         });
 
     });
+}
+function getOptionGroups(){
+    return dhis2.tracker.getTrackerObjects('optionGroups','optionGroups', DHIS2URL+'/optionGroups.json', 'paging=false&fields=id,name,shortName,displayName,options[id]','idb',dhis2.ec.store);
 }

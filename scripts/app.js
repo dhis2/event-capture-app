@@ -75,4 +75,17 @@ const eventCapture = angular.module('eventCapture',
     $translateProvider.useLoader('i18nLoader');
 
     $logProvider.debugEnabled(false);
+})
+.run(function(){
+    Array.prototype.toHashMap = function(key, objFunc){
+        var hashmap = this.reduce((map, obj)  => {
+            if(objFunc) objFunc(map,obj,key);
+            if(obj[key] ==='jYDntjPUD5C'){
+                var g = 1;
+            }
+            map[obj[key]] = obj;
+            return map;
+        },{});
+        return hashmap;
+    }
 });
