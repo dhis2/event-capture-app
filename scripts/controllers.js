@@ -1751,7 +1751,7 @@ eventCapture.controller('MainController',
     
     $scope.executeRules = function() {
         $scope.currentEvent.event = !$scope.currentEvent.event ? 'SINGLE_EVENT' : $scope.currentEvent.event;
-        var flags = {debug: true, verbose: false};
+        var flags = {debug: true, verbose: $location.search().verbose ? true : false};
         TrackerRulesExecutionService.loadAndExecuteRulesScope($scope.currentEvent,$scope.selectedProgram.id,$scope.selectedProgramStage.id,$scope.prStDes,null,$scope.optionSets,$scope.selectedOrgUnit.id,flags);
     };
        
