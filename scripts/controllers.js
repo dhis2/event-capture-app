@@ -1854,7 +1854,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     $scope.executeRules = function(callerId) {
         $scope.currentEvent.event = !$scope.currentEvent.event ? 'SINGLE_EVENT' : $scope.currentEvent.event;
-        var flags = {debug: true, verbose: false, callerId: callerId};
+        var flags = {debug: true, verbose: $location.search().verbose ? true : false, callerId: callerId};
         return TrackerRulesExecutionService.loadAndExecuteRulesScope($scope.currentEvent,$scope.selectedProgram.id,$scope.selectedProgramStage.id,$scope.prStDes,null,$scope.optionSets,$scope.selectedOrgUnit.id,flags).then(function(result)
         {
             ruleEffectsUpdated(result);
