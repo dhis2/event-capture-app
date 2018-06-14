@@ -30,12 +30,18 @@
                 </div>
             </td>
         </tr>
-        <tr ng-if="selectedProgramStage.captureCoordinates">
+        <tr ng-if="selectedProgramStage.featureType && selectedProgramStage.featureType !== 'NONE'">
             <td>
-                {{'coordinate' | translate}}
+                {{'geometry' | translate}}
             </td>
             <td>
-                <d2-map d2-object="currentEvent" d2-disabled="model.editingDisabled || !hasDataWrite()" d2-coordinate-format="'COORDINATE'"></d2-map>
+                <d2-geometry
+                    d2-object-id="geometry"
+                    d2-object="currentEvent"
+                    d2-disabled="model.editingDisabled || !hasDataWrite()"
+                    d2-geometry-type="selectedProgramStage.featureType"
+                    >
+                </d2-geometry>
             </td>            
         </tr>
     </tbody>

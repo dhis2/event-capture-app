@@ -806,3 +806,11 @@ tbody#list>tr>td>div.row-margin {
 .loading-audit-data {
     margin-left: 43%;
 }
+.geometry-polygon-indicator{
+    height: 34px!important;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+    border-radius: 4px 0px 0px 4px;
+    text-align: center;
+    line-height: 34px;
+}
