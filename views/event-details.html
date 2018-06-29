@@ -14,7 +14,7 @@
             </td>
             <td>
                 <input type="text"
-                       ng-disabled="model.editingDisabled || !hasDataWrite()"
+                       ng-disabled="model.editingDisabled || !hasDataWrite() || !notExpiredOrCanEdit()"
                        placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
                        d2-date
                        max-date='model.maxDate'
@@ -38,7 +38,7 @@
                 <d2-geometry
                     d2-object-id="geometry"
                     d2-object="currentEvent"
-                    d2-disabled="model.editingDisabled || !hasDataWrite()"
+                    d2-disabled="model.editingDisabled || !hasDataWrite() || !notExpiredOrCanEdit()"
                     d2-geometry-type="selectedProgramStage.featureType"
                     >
                 </d2-geometry>

@@ -271,7 +271,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
 })
 
 /* factory for handling events */
-.factory('DHIS2EventFactory', function($http, $q, ECStorageService, $rootScope) {
+.factory('DHIS2EventFactory', function($http, $q, ECStorageService, $rootScope,DateUtils) {
     var internalGetByFilters = function(orgUnit, attributeCategoryUrl, pager, paging, ordering, filterings, format, filterParam, sortParam) {
         var url;
            if (format === "csv") {
@@ -470,6 +470,17 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
                 dhis2.ec.store.set('events', fullEvent);
             });
             return promise;
+        },
+        isExpired: function(program, event){
+            var expired = !DateUtils.verifyExpiryDate(event.eventDate, program.expiryPeriodType, program.expiryDays, false);
+            if(expired) return true;
+
+            if(event.status === 'COMPLETED' && program.completeEventsExpiryDays && program.completeEventsExpiryDays > 0){
+                var expiryDate = moment(event.completedDate).add(program.completeEventsExpiryDays, 'days');
+                var now = moment();
+                if(expiryDate < now) return true;
+            }
+            return false;
         }
     };    
 });

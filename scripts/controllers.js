@@ -48,6 +48,12 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.calendarSetting = CalendarService.getSetting();
     $scope.timeFormat = "24h";
     
+    var setCurrentEvent = function(ev){
+        $scope.currentEvent = ev;
+        if($scope.currentEvent && $scope.currentEvent.event){
+            $scope.currentEventExpired = DHIS2EventFactory.isExpired($scope.selectedProgram, $scope.currentEvent);
+        }
+    }
     //Paging
     $scope.pager = {pageSize: 50, page: 1, toolBarDisplay: 5};
     
@@ -64,7 +70,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.updateSuccess = false;
     $scope.currentGridColumnId = '';  
     $scope.dhis2Events = [];
-    $scope.currentEvent = {};
+    setCurrentEvent({});
     $scope.currentEventOriginialValue = {}; 
     $scope.displayCustomForm = false;
     $scope.currentElement = {id: '', update: false};
@@ -165,14 +171,16 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     }
 
     $scope.dataElementEditable = function(de) {
+
         if($scope.assignedFields[de.id] || $scope.model.editingDisabled || !$scope.hasDataWrite()) {
             return false;
         }
+        if($scope.currentEventExpired && !$scope.userAuthority.canEditExpiredStuff) return false;
         return true;
     }
 
     $scope.verifyExpiryDate = function() {
-        if (!DateUtils.verifyExpiryDate($scope.currentEvent.eventDate, $scope.selectedProgram.expiryPeriodType,
+        if (!$scope.userAuthority.canEditExpiredStuff && !DateUtils.verifyExpiryDate($scope.currentEvent.eventDate, $scope.selectedProgram.expiryPeriodType,
                 $scope.selectedProgram.expiryDays)) {
             $scope.currentEvent.eventDate = null;
         }
@@ -191,7 +199,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.currentStage = null;
         $scope.allProgramRules = [];
         $scope.dhis2Events = [];
-        $scope.currentEvent = {};
+        setCurrentEvent({});
         $scope.currentEventOriginialValue = {};
         $scope.fileNames = {};        
         $scope.currentFileNames = {};
@@ -229,7 +237,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                         $scope.getProgramDetails( $scope.selectedProgram );                        
                         if( $scope.selectedProgram.programStages[0].id === event.programStage ){
                             $scope.formatEvent(event);
-                            $scope.currentEvent = angular.copy(event);
+                            setCurrentEvent(angular.copy(event));
                             $scope.editingEventInFull = false;
                             $scope.showEditEventInFull();
                         }
@@ -239,6 +247,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
         });
     };
+
+    
    
     function setCommonEventProps( event ){
         event.uid = event.event;
@@ -801,7 +811,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
                 
                 resetView();
-                $scope.currentEvent = {};
+                setCurrentEvent({});
                 if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
                     
                     $scope.loadEvents();
@@ -813,7 +823,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
         else{
             resetView();
-            $scope.currentEvent = {};
+            setCurrentEvent({});
             if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
                 $scope.loadEvents();
             }
@@ -828,7 +838,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         ContextMenuSelectedItem.setSelectedItem(dhis2Event);
         resetView();
         $scope.currentElement.updated = false;
-        $scope.currentEvent = {};
+        setCurrentEvent({});
         $scope.fileNames['SINGLE_EVENT'] = {};
         $scope.currentElement = {};
         $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);        
@@ -836,11 +846,11 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     $scope.showEventRegistration = function(){      
         $scope.displayCustomForm = $scope.customDataEntryForm ? true : false;
-        $scope.currentEvent = {};
+        setCurrentEvent({});
         $scope.fileNames['SINGLE_EVENT'] = {};
         $scope.currentFileNames = {};
         $scope.eventRegistration = !$scope.eventRegistration;          
-        $scope.currentEvent = angular.copy($scope.newDhis2Event); 
+        setCurrentEvent(angular.copy($scope.newDhis2Event)); 
         if($scope.outerForm){
             $scope.outerForm.submitted = false;
         }
@@ -861,7 +871,13 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
 
     $scope.showEditEventInGrid = function(){
-        $scope.currentEvent = ContextMenuSelectedItem.getSelectedItem();
+        var prevEvent = $scope.currentEvent || {};
+        setCurrentEvent(ContextMenuSelectedItem.getSelectedItem());
+        if(!$scope.notExpiredOrCanEdit()){
+            NotificationService.showNotifcationDialog($translate.instant("event_expired"), $translate.instant("cannot_edit_in_grid_expired"));
+            setCurrentEvent(prevEvent);
+            return;
+        }
         if(!$scope.currentEvent.coordinate) $scope.currentEvent.coordinate = {};
         $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
         $scope.editingEventInGrid = !$scope.editingEventInGrid;
@@ -894,7 +910,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         
         DHIS2EventFactory.get(event.event, event).then(function( event ){            
             $scope.formatEvent( event );
-            $scope.currentEvent = event;
+            setCurrentEvent(event);
             loadOptions();
             /*
               When the user goes directly to the event edit page for an event with category options,
@@ -949,6 +965,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 });
             }
         }
+    }
+
+    $scope.notExpiredOrCanEdit = function(){
+        return (!$scope.currentEventExpired || $scope.userAuthority.canEditExpiredStuff);
     }
     
     $scope.switchDataEntryForm = function(){
@@ -1133,8 +1153,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     resetView(); 
 
                     //reset form              
-                    $scope.currentEvent = {};
-                    $scope.currentEvent = angular.copy($scope.newDhis2Event); 
+                    setCurrentEvent({});
+                    setCurrentEvent(angular.copy($scope.dhis2Event));
                     $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
                     $scope.fileNames['SINGLE_EVENT'] = {};
 
@@ -1241,7 +1261,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     $scope.updateFileNames();
                 }
                 if(!editInGrid){
-                    $scope.currentEvent = {};
+                    setCurrentEvent({});
                 }
                            
             });
@@ -1415,7 +1435,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.removeEvent = function(){
         
         var dhis2Event = ContextMenuSelectedItem.getSelectedItem();
-        
         var modalOptions = {
             closeButtonText: 'cancel',
             actionButtonText: 'remove',
@@ -1438,7 +1457,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     }
                 }
                 $scope.dhis2Events.splice(index,1);                
-                $scope.currentEvent = {}; 
+                setCurrentEvent({}); 
                 $scope.fileNames['SINGLE_EVENT'] = {};
             }, function(error){
 
