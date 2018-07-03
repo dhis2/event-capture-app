@@ -39,7 +39,7 @@ if( dhis2.ec.memoryOnly ) {
 dhis2.ec.store = new dhis2.storage.Store({
     name: 'dhis2ec',
     adapters: [dhis2.storage.IndexedDBAdapter, dhis2.storage.DomSessionStorageAdapter, dhis2.storage.InMemoryAdapter],
-    objectStores: ['programs', 'optionSets', 'events', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants','programAccess']
+    objectStores: ['programs', 'optionSets', 'events', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants','programAccess','optionGroups']
 });
 
 (function($) {
@@ -163,77 +163,16 @@ function downloadMetaData(){
     promise = promise.then( getPrograms );
     promise = promise.then( getOptionSetsForDataElements );
     promise = promise.then( getOptionSets );
-    promise = promise.then( getCategoryOptions );
     promise = promise.then( getProgramAccess);
+    promise = promise.then( getOptionGroups)
     promise.done( function() {
-        var SessionStorageService = angular.element('body').injector().get('SessionStorageService');
-        var NotificationService = angular.element('body').injector().get('NotificationService');
-        var categoryOptions = SessionStorageService.get('eventCaptureCategoryOptions');
-        var mappedOptions = {};
-        if( categoryOptions && categoryOptions.length > 0 ){
-            angular.forEach(categoryOptions, function( co ){
-                var mappedOrganisationUnits = [];
-                if( co.organisationUnits && co.organisationUnits.length > 0 ){                                
-                    mappedOrganisationUnits = $.map(co.organisationUnits, function(ou){return ou.id;});
-                }                                
-                co.organisationUnits = mappedOrganisationUnits;
-                mappedOptions[co.id] = co;
-            });
-        
-            var getSharingSetting = function( mappedObjs, id ){
-                var o = null;                
-                if( mappedObjs && 
-                    id && 
-                    mappedObjs[id] && 
-                    mappedObjs[id].access && 
-                    mappedObjs[id].access.read === true ){
-                    o = mappedObjs[id];
-                }
-                return o;
-            }
+        //Enable ou selection after meta-data has downloaded
+        $( "#orgUnitTree" ).removeClass( "disable-clicks" );
+        console.log( 'Finished loading meta-data' );         
+        dhis2.availability.startAvailabilityCheck();
+        console.log( 'Started availability check' );        
+        selection.responseReceived();
 
-            dhis2.ec.store.getAll('programs').done(function(programs){            
-                angular.forEach(programs, function(program){                
-                    if( program.categoryCombo && program.categoryCombo.categories ){
-                        if( programCategoryOptions[program.id] && programCategoryOptions[program.id][program.categoryCombo.id] ){                            
-                            angular.forEach(program.categoryCombo.categories, function(ca){
-                                var filteredOpts = programCategoryOptions[program.id][program.categoryCombo.id][ca.id];
-                                if( filteredOpts ){                                
-                                    var opts = [];
-                                    angular.forEach(filteredOpts, function(opId){
-                                        var o = getSharingSetting( mappedOptions, opId );
-                                        if( o ){
-                                            opts.push( o );
-                                        }
-                                    });
-                                    ca.categoryOptions = opts;
-                                }
-                                else{
-                                    NotificationService.showNotifcationDialog('Error', 'Not able to fetch sharing settings for category options');
-                                }
-                            });
-                        }
-                        else{
-                            NotificationService.showNotifcationDialog('Error', 'Not able to fetch sharing settings for category options');
-                        }                        
-                    }
-                });
-
-                dhis2.ec.store.removeAll('programs').done(function(){                    
-                    dhis2.ec.store.setAll('programs', programs).done(function(){                        
-                        //Enable ou selection after meta-data has downloaded
-                        $( "#orgUnitTree" ).removeClass( "disable-clicks" );
-                        console.log( 'Finished loading meta-data' );         
-                        dhis2.availability.startAvailabilityCheck();
-                        console.log( 'Started availability check' );        
-                        selection.responseReceived();
-                    });
-                });
-            });
-        }
-        else{            
-            NotificationService.showNotifcationDialog('Error', 'Not able to fetch sharing settings for category options');
-        }
     });
 
     def.resolve();
@@ -260,10 +199,7 @@ function getUserSetting()
 
 function getUserProfile()
 {
-    var SessionStorageService = angular.element('body').injector().get('SessionStorageService');    
-    if( SessionStorageService.get('USER_PROFILE') ){
-       return; 
-    }
+    var SessionStorageService = angular.element('body').injector().get('SessionStorageService');
     
     return dhis2.tracker.getTrackerObject(null, 'USER_PROFILE', DHIS2URL + '/me.json', 'fields=id,displayName,userCredentials[username,userRoles[id,programs,authorities]],organisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]],dataViewOrganisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]],teiSearchOrganisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]]', 'sessionStorage', dhis2.ec.store);
 }
@@ -404,15 +340,31 @@ function getBatchPrograms( programs, batch )
     $.ajax( {
         url: DHIS2URL + '/programs.json',
         type: 'GET',
-        data: 'fields=*,categoryCombo[id,displayName,isDefault,categories[id,displayName,categoryOptions[id]]],organisationUnits[id,displayName],programStages[*,dataEntryForm[*],programStageSections[id,displayName,description,sortOrder,dataElements[id]],programStageDataElements[*,dataElement[*,optionSet[id]]]]&paging=false&filter=id:in:' + ids
+        data: 'fields=*,categoryCombo[id,displayName,isDefault,categories[id,displayName,categoryOptions[id,displayName,access,organisationUnits[id]]]],organisationUnits[id,displayName],programStages[*,dataEntryForm[*],programStageSections[id,displayName,description,sortOrder,dataElements[id]],programStageDataElements[*,dataElement[*,optionSet[id]]]]&paging=false&filter=id:in:' + ids
     }).done( function( response ){
 
         if(response.programs){
             _.each(_.values( response.programs), function(program){
                 var ou = {};
-                _.each(_.values( program.organisationUnits), function(o){
-                    ou[o.id] = o.displayName;
-                });
+                if(program.organisationUnits){
+                    program.organisationUnits.forEach(o => {
+                        ou[o.id] = o.displayName;
+                    })
+                }
+
+                if(program.categoryCombo && program.categoryCombo.categories){
+                    program.categoryCombo.categories.forEach(category => {
+                        if(category.categoryOptions){
+                            category.categoryOptions.forEach(categoryOption => {
+                                if(categoryOption.organisationUnits){
+                                    var cou = categoryOption.organisationUnits.map(co => co.id);
+                                    categoryOption.organisationUnits = cou;
+                                }
+                            });
+                        }
+                    });
+                }
+
                 program.organisationUnits = ou;                
                 dhis2.ec.store.set( 'programs', program );
             });
@@ -486,15 +438,20 @@ function getOptionSets()
     return dhis2.tracker.getBatches( optionSetIds, batchSize, null, 'optionSets', 'optionSets', DHIS2URL + '/optionSets.json', 'paging=false&fields=id,displayName,version,options[id,displayName,code]', 'idb', dhis2.ec.store );
 }
 
+function getObjectIds(data){
+    return data && Array.isArray(data.self) ? data.self.map(obj => obj.id) : [];
+}
+
 function getMetaProgramIndicators( programs, programIds )
 {   
     programs.programIds = programIds;
     return dhis2.tracker.getTrackerMetaObjects(programs, 'programIndicators', DHIS2URL + '/programIndicators.json', 'paging=false&fields=id&filter=program.id:in:');
 }
 
-function getProgramIndicators( programIndicators )
+function getProgramIndicators( data )
 {
-    return dhis2.tracker.checkAndGetTrackerObjects( programIndicators, 'programIndicators', DHIS2URL + '/programIndicators', 'fields=id,displayName,code,shortName,displayInForm,expression,displayDescription,description,filter,program[id]', dhis2.ec.store);
+    var ids = getObjectIds(data);
+    return dhis2.tracker.getBatches(ids, batchSize, data.programs, 'programIndicators','programIndicators',DHIS2URL + '/programIndicators', 'fields=id,displayName,code,shortName,displayInForm,expression,displayDescription,description,filter,program[id]','idb', dhis2.ec.store);
 }
 
 function getMetaProgramRules( programs )
@@ -502,9 +459,10 @@ function getMetaProgramRules( programs )
     return dhis2.tracker.getTrackerMetaObjects(programs, 'programRules', DHIS2URL + '/programRules.json', 'paging=false&fields=id&filter=program.id:in:');
 }
 
-function getProgramRules( programRules )
+function getProgramRules( data )
 {
-    return dhis2.tracker.checkAndGetTrackerObjects( programRules, 'programRules', DHIS2URL + '/programRules', 'fields=id,displayName,condition,description,program[id],programStage[id],priority,programRuleActions[id,content,location,data,programRuleActionType,programStageSection[id],dataElement[id],trackedEntityAttribute[id],programIndicator[id],programStage[id]]', dhis2.ec.store);
+    var ids = getObjectIds(data);
+    return dhis2.tracker.getBatches(ids, batchSize, data.programs, 'programRules','programRules',DHIS2URL + '/programRules', 'fields=id,displayName,condition,description,program[id],programStage[id],priority,programRuleActions[id,content,location,data,programRuleActionType,programStageSection[id],dataElement[id],trackedEntityAttribute[id],programIndicator[id],programStage[id]]','idb', dhis2.ec.store);
 }
 
 function getMetaProgramRuleVariables( programs )
@@ -512,18 +470,10 @@ function getMetaProgramRuleVariables( programs )
     return dhis2.tracker.getTrackerMetaObjects(programs, 'programRuleVariables', DHIS2URL + '/programRuleVariables.json', 'paging=false&fields=id&filter=program.id:in:');
 }
 
-function getProgramRuleVariables( programRuleVariables )
+function getProgramRuleVariables( data )
 {
-    return dhis2.tracker.checkAndGetTrackerObjects( programRuleVariables, 'programRuleVariables', DHIS2URL + '/programRuleVariables', 'fields=id,displayName,programRuleVariableSourceType,program[id],programStage[id],dataElement[id],useCodeForOptionSet', dhis2.ec.store);
-}
-
-function getCategoryOptions()
-{
-    var SessionStorageService = angular.element('body').injector().get('SessionStorageService');    
-    if( SessionStorageService.get('eventCaptureCategoryOptions') ){
-       return; 
-    }
-    return dhis2.tracker.getBatches( categoryOptionIds, batchSize, null, 'eventCaptureCategoryOptions', 'categoryOptions', DHIS2URL + '/categoryOptions.json', 'paging=false&fields=id,displayName,organisationUnits[id],access', 'sessionStorage', dhis2.ec.store );    
+    var ids = getObjectIds(data);
+    return dhis2.tracker.getBatches(ids, batchSize, data.programs, 'programRuleVariables','programRuleVariables',DHIS2URL + '/programRuleVariables', 'fields=id,displayName,programRuleVariableSourceType,program[id],programStage[id],dataElement[id],useCodeForOptionSet','idb', dhis2.ec.store);
 }
 
 function uploadLocalData()
@@ -570,4 +520,7 @@ function getProgramAccess(){
         });
 
     });
+}
+function getOptionGroups(){
+    return dhis2.tracker.getTrackerObjects('optionGroups','optionGroups', DHIS2URL+'/optionGroups.json', 'paging=false&fields=id,name,shortName,displayName,options[id]','idb',dhis2.ec.store);
 }

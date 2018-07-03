@@ -5,7 +5,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
     var store = new dhis2.storage.Store({
         name: 'dhis2ec',
         adapters: [dhis2.storage.IndexedDBAdapter, dhis2.storage.DomSessionStorageAdapter, dhis2.storage.InMemoryAdapter],
-        objectStores: ['programs', 'optionSets', 'events', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants', 'dataElements','programAccess']
+        objectStores: ['programs', 'optionSets', 'events', 'programRules', 'programRuleVariables', 'programIndicators', 'ouLevels', 'constants', 'dataElements','programAccess','optionGroups']
     });
     return{
         currentStore: store
@@ -271,7 +271,7 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
 })
 
 /* factory for handling events */
-.factory('DHIS2EventFactory', function($http, $q, ECStorageService, $rootScope) {
+.factory('DHIS2EventFactory', function($http, $q, ECStorageService, $rootScope,DateUtils) {
     var internalGetByFilters = function(orgUnit, attributeCategoryUrl, pager, paging, ordering, filterings, format, filterParam, sortParam) {
         var url;
            if (format === "csv") {
@@ -470,6 +470,17 @@ var eventCaptureServices = angular.module('eventCaptureServices', ['ngResource']
                 dhis2.ec.store.set('events', fullEvent);
             });
             return promise;
+        },
+        isExpired: function(program, event){
+            var expired = !DateUtils.verifyExpiryDate(event.eventDate, program.expiryPeriodType, program.expiryDays, false);
+            if(expired) return true;
+
+            if(event.status === 'COMPLETED' && program.completeEventsExpiryDays && program.completeEventsExpiryDays > 0){
+                var expiryDate = moment(event.completedDate).add(program.completeEventsExpiryDays, 'days');
+                var now = moment();
+                if(expiryDate < now) return true;
+            }
+            return false;
         }
     };    
 });

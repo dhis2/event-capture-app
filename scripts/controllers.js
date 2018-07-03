@@ -11,6 +11,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 $anchorScroll,
                 $window,
                 $q,
+                $log,
                 $filter,
                 $timeout,
                 $location,
@@ -47,6 +48,12 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.calendarSetting = CalendarService.getSetting();
     $scope.timeFormat = "24h";
     
+    var setCurrentEvent = function(ev){
+        $scope.currentEvent = ev;
+        if($scope.currentEvent && $scope.currentEvent.event){
+            $scope.currentEventExpired = DHIS2EventFactory.isExpired($scope.selectedProgram, $scope.currentEvent);
+        }
+    }
     //Paging
     $scope.pager = {pageSize: 50, page: 1, toolBarDisplay: 5};
     
@@ -63,11 +70,12 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.updateSuccess = false;
     $scope.currentGridColumnId = '';  
     $scope.dhis2Events = [];
-    $scope.currentEvent = {};
+    setCurrentEvent({});
     $scope.currentEventOriginialValue = {}; 
     $scope.displayCustomForm = false;
     $scope.currentElement = {id: '', update: false};
     $scope.optionSets = [];
+    $scope.optionGroupsById = null;
     $scope.proceedSelection = true;
     $scope.formUnsaved = false;
     $scope.fileNames = {};
@@ -116,43 +124,63 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             SessionStorageService.set('SELECTED_OU', $scope.selectedOrgUnit);
 
             $scope.userAuthority = AuthorityService.getUserAuthorities(SessionStorageService.get('USER_PROFILE'));
-            GridColumnService.get("eventCaptureGridColumns").then(function (gridColumns) {
-                if (gridColumns && gridColumns.status !== "ERROR") {
-                    $scope.gridColumnsInUserStore = gridColumns;
-                }
-                //get ouLevels
-                ECStorageService.currentStore.open().done(function () {
-                    ECStorageService.currentStore.getAll('ouLevels').done(function (response) {
-                        var ouLevels = angular.isObject(response) ? orderByFilter(response, '-level').reverse() : [];
-                        CurrentSelection.setOuLevels(orderByFilter(ouLevels, '-level').reverse());
-                    });
-                });
-
-                if ($scope.optionSets.length < 1) {
-                    $scope.optionSets = [];
-                    MetaDataFactory.getAll('optionSets').then(function (optionSets) {
-                        angular.forEach(optionSets, function (optionSet) {
-                            $scope.optionSets[optionSet.id] = optionSet;
+            loadOptionGroups().then(function(){
+                GridColumnService.get("eventCaptureGridColumns").then(function (gridColumns) {
+                    if (gridColumns && gridColumns.status !== "ERROR") {
+                        $scope.gridColumnsInUserStore = gridColumns;
+                    }
+                    //get ouLevels
+                    ECStorageService.currentStore.open().done(function () {
+                        ECStorageService.currentStore.getAll('ouLevels').done(function (response) {
+                            var ouLevels = angular.isObject(response) ? orderByFilter(response, '-level').reverse() : [];
+                            CurrentSelection.setOuLevels(orderByFilter(ouLevels, '-level').reverse());
                         });
-                        $scope.loadPrograms();
                     });
-                }
-                else {
-                    $scope.loadPrograms();
-                }
+                    if ($scope.optionSets.length < 1) {
+                        $scope.optionSets = [];
+    
+                        MetaDataFactory.getAll('optionSets').then(function (optionSets) {
+                            angular.forEach(optionSets, function (optionSet) {
+                                $scope.optionSets[optionSet.id] = optionSet;
+                            });
+                            $scope.loadPrograms();
+                        });
+                    }
+                    else {
+                        $scope.loadPrograms();
+                    }
+                });
             });
         }
     });
 
+    var loadOptionGroups = function(){
+        if($scope.optionGroupsById){
+            var def = $q.defer();
+            def.resolve();
+            return def.promise;
+        }
+        return MetaDataFactory.getAll('optionGroups').then(function(optionGroups){
+            if(optionGroups){
+                $scope.optionGroupsById = optionGroups.toHashMap('id', (map,obj,key) => {obj.optionsById = obj.options.toHashMap('id');});
+            }else{
+                $scope.optionGroupsById = {};
+            }
+            
+        });
+    }
+
     $scope.dataElementEditable = function(de) {
+
         if($scope.assignedFields[de.id] || $scope.model.editingDisabled || !$scope.hasDataWrite()) {
             return false;
         }
+        if($scope.currentEventExpired && !$scope.userAuthority.canEditExpiredStuff) return false;
         return true;
     }
 
     $scope.verifyExpiryDate = function() {
-        if (!DateUtils.verifyExpiryDate($scope.currentEvent.eventDate, $scope.selectedProgram.expiryPeriodType,
+        if (!$scope.userAuthority.canEditExpiredStuff && !DateUtils.verifyExpiryDate($scope.currentEvent.eventDate, $scope.selectedProgram.expiryPeriodType,
                 $scope.selectedProgram.expiryDays)) {
             $scope.currentEvent.eventDate = null;
         }
@@ -171,7 +199,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.currentStage = null;
         $scope.allProgramRules = [];
         $scope.dhis2Events = [];
-        $scope.currentEvent = {};
+        setCurrentEvent({});
         $scope.currentEventOriginialValue = {};
         $scope.fileNames = {};        
         $scope.currentFileNames = {};
@@ -209,7 +237,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                         $scope.getProgramDetails( $scope.selectedProgram );                        
                         if( $scope.selectedProgram.programStages[0].id === event.programStage ){
                             $scope.formatEvent(event);
-                            $scope.currentEvent = angular.copy(event);
+                            setCurrentEvent(angular.copy(event));
                             $scope.editingEventInFull = false;
                             $scope.showEditEventInFull();
                         }
@@ -219,6 +247,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             }
         });
     };
+
+    
    
     function setCommonEventProps( event ){
         event.uid = event.event;
@@ -781,7 +811,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 }
                 
                 resetView();
-                $scope.currentEvent = {};
+                setCurrentEvent({});
                 if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
                     
                     $scope.loadEvents();
@@ -793,7 +823,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
         else{
             resetView();
-            $scope.currentEvent = {};
+            setCurrentEvent({});
             if( !angular.equals($scope.selectedOptionsOriginal, $scope.selectedOptions) ) {
                 $scope.loadEvents();
             }
@@ -808,7 +838,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         ContextMenuSelectedItem.setSelectedItem(dhis2Event);
         resetView();
         $scope.currentElement.updated = false;
-        $scope.currentEvent = {};
+        setCurrentEvent({});
         $scope.fileNames['SINGLE_EVENT'] = {};
         $scope.currentElement = {};
         $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);        
@@ -816,11 +846,11 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     
     $scope.showEventRegistration = function(){      
         $scope.displayCustomForm = $scope.customDataEntryForm ? true : false;
-        $scope.currentEvent = {};
+        setCurrentEvent({});
         $scope.fileNames['SINGLE_EVENT'] = {};
         $scope.currentFileNames = {};
         $scope.eventRegistration = !$scope.eventRegistration;          
-        $scope.currentEvent = angular.copy($scope.newDhis2Event); 
+        setCurrentEvent(angular.copy($scope.newDhis2Event)); 
         if($scope.outerForm){
             $scope.outerForm.submitted = false;
         }
@@ -841,7 +871,13 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
 
     $scope.showEditEventInGrid = function(){
-        $scope.currentEvent = ContextMenuSelectedItem.getSelectedItem();
+        var prevEvent = $scope.currentEvent || {};
+        setCurrentEvent(ContextMenuSelectedItem.getSelectedItem());
+        if(!$scope.notExpiredOrCanEdit()){
+            NotificationService.showNotifcationDialog($translate.instant("event_expired"), $translate.instant("cannot_edit_in_grid_expired"));
+            setCurrentEvent(prevEvent);
+            return;
+        }
         if(!$scope.currentEvent.coordinate) $scope.currentEvent.coordinate = {};
         $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
         $scope.editingEventInGrid = !$scope.editingEventInGrid;
@@ -874,7 +910,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         
         DHIS2EventFactory.get(event.event, event).then(function( event ){            
             $scope.formatEvent( event );
-            $scope.currentEvent = event;
+            setCurrentEvent(event);
             loadOptions();
             /*
               When the user goes directly to the event edit page for an event with category options,
@@ -929,6 +965,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                 });
             }
         }
+    }
+
+    $scope.notExpiredOrCanEdit = function(){
+        return (!$scope.currentEventExpired || $scope.userAuthority.canEditExpiredStuff);
     }
     
     $scope.switchDataEntryForm = function(){
@@ -1014,10 +1054,12 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             //but there could be a case where all dataelements are non-mandatory and
             //the event form comes empty, in this case enforce at least one value
             var dataValues = [];        
-            for(var dataElement in $scope.prStDes){            
-                var val = $scope.currentEvent[dataElement];
-                val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataElement].dataElement, $scope.optionSets, 'API');
-                dataValues.push({dataElement: dataElement, value: val});
+            for(var dataElement in $scope.prStDes){
+                if($scope.prStDes.hasOwnProperty(dataElement)){
+                    var val = $scope.currentEvent[dataElement];
+                    val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataElement].dataElement, $scope.optionSets, 'API');
+                    dataValues.push({dataElement: dataElement, value: val});
+                }
             }
 
             if(!dataValues.length || dataValues.length === 0){
@@ -1111,8 +1153,8 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     resetView(); 
 
                     //reset form              
-                    $scope.currentEvent = {};
-                    $scope.currentEvent = angular.copy($scope.newDhis2Event); 
+                    setCurrentEvent({});
+                    setCurrentEvent(angular.copy($scope.dhis2Event));
                     $scope.currentEventOriginialValue = angular.copy($scope.currentEvent);
                     $scope.fileNames['SINGLE_EVENT'] = {};
 
@@ -1160,9 +1202,11 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             //the form is valid, get the values
             var dataValues = [];        
             for(var dataElement in $scope.prStDes){
-                var val = $scope.currentEvent[dataElement];            
-                val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataElement].dataElement, $scope.optionSets, 'API');            
-                dataValues.push({dataElement: dataElement, value: val});
+                if($scope.prStDes.hasOwnProperty(dataElement)){
+                    var val = $scope.currentEvent[dataElement];            
+                    val = CommonUtils.formatDataValue(null, val, $scope.prStDes[dataElement].dataElement, $scope.optionSets, 'API');            
+                    dataValues.push({dataElement: dataElement, value: val});
+                }
             }
 
             var updatedEvent = {
@@ -1217,7 +1261,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     $scope.updateFileNames();
                 }
                 if(!editInGrid){
-                    $scope.currentEvent = {};
+                    setCurrentEvent({});
                 }
                            
             });
@@ -1391,7 +1435,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     $scope.removeEvent = function(){
         
         var dhis2Event = ContextMenuSelectedItem.getSelectedItem();
-        
         var modalOptions = {
             closeButtonText: 'cancel',
             actionButtonText: 'remove',
@@ -1414,7 +1457,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     }
                 }
                 $scope.dhis2Events.splice(index,1);                
-                $scope.currentEvent = {}; 
+                setCurrentEvent({}); 
                 $scope.fileNames['SINGLE_EVENT'] = {};
             }, function(error){
 
@@ -1748,9 +1791,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         $scope.assignedFields = [];
         $scope.mandatoryFields = [];
         $scope.displayTextEffects = [];
+        $scope.optionVisibility = {};
 
         var isGridEdit = result.callerId === "eventGridEdit";
-
+        var dataElementOptionsChanged = [];
         if($rootScope.ruleeffects[result.event]) {
             //Establish which event was affected:
             var affectedEvent = $scope.currentEvent;
@@ -1844,17 +1888,65 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                     }
                     else if(effect.action === "DISPLAYTEXT") {
                         $scope.displayTextEffects.push({text:effect.data + effect.content});
-                    }else if(effect.action === "SETMANDATORYFIELD"){
+                    }
+                    else if(effect.action === "SETMANDATORYFIELD"){
                         $scope.mandatoryFields[effect.dataElement.id] = effect.ineffect;
+                    }
+                    else if(effect.action === "HIDEOPTION"){
+                        if(effect.ineffect && effect.dataElement && effect.option){
+                            if(!$scope.optionVisibility[effect.dataElement.id]) $scope.optionVisibility[effect.dataElement.id] = { hidden: {}};
+                            if(!$scope.optionVisibility[effect.dataElement.id].hidden) $scope.optionVisibility[effect.dataElement.id].hidden = {};
+                            $scope.optionVisibility[effect.dataElement.id].hidden[effect.option.id] = effect.ineffect;
+                            if(dataElementOptionsChanged.indexOf(effect.dataElement.id) === -1) dataElementOptionsChanged.push(effect.dataElement.id);
+                        }
+                    }
+                    else if(effect.action === "SHOWOPTIONGROUP"){
+                        if(effect.ineffect && effect.dataElement && effect.optionGroup){
+                            if(!$scope.optionVisibility[effect.dataElement.id]) $scope.optionVisibility[effect.dataElement.id] = { hidden: {}};
+                            var optionGroup = $scope.optionGroupsById[effect.optionGroup.id];
+                            if(optionGroup){
+                                if(!$scope.optionVisibility[effect.dataElement.id].showOnly) $scope.optionVisibility[effect.dataElement.id].showOnly = {};
+                                angular.extend($scope.optionVisibility[effect.dataElement.id].showOnly, optionGroup.optionsById);
+                                if(dataElementOptionsChanged.indexOf(effect.dataElement.id) === -1) dataElementOptionsChanged.push(effect.dataElement.id);
+                            }else{
+                                $log.warn("OptionGroup "+effect.optionGroup.id+" was not found");
+                            }
+
+                        }
                     }
                 }
             });
+            clearDataElementValueForShowHideOptionActions(dataElementOptionsChanged, affectedEvent);
         }
     };
+
+    var clearDataElementValueForShowHideOptionActions = function(dataElements, affectedEvent){
+        dataElements.forEach(de => {
+            var value = affectedEvent[de];
+            //Only process if has selected value
+            if(angular.isDefined(value) && value !== "") {
+                var optionSet = $scope.optionSets[$scope.prStDes[de].dataElement.optionSet.id];
+                //Find selectedOption by displayName
+                var selectedOption = optionSet.options.find(o => o.displayName === value);
+                var shouldClear = !selectedOption;
+                
+                //If has selected option and a option is not in showOnly or is in hidden, field should be cleared.
+                if(selectedOption){
+                    shouldClear = ($scope.optionVisibility[de].showOnly && !$scope.optionVisibility[de].showOnly[selectedOption.id]) || $scope.optionVisibility[de].hidden[selectedOption.id];
+                }
+    
+                if(shouldClear){
+                    var message = ($scope.prStDes[de].dataElement.displayName + ' was blanked out because the option "'+value+'" got hidden by your last action');
+                    alert(message);
+                    affectedEvent[de] = "";
+                }
+            }
+        });
+    }
     
     $scope.executeRules = function(callerId) {
         $scope.currentEvent.event = !$scope.currentEvent.event ? 'SINGLE_EVENT' : $scope.currentEvent.event;
-        var flags = {debug: true, verbose: false, callerId: callerId};
+        var flags = {debug: true, verbose: $location.search().verbose ? true : false, callerId: callerId};
         return TrackerRulesExecutionService.loadAndExecuteRulesScope($scope.currentEvent,$scope.selectedProgram.id,$scope.selectedProgramStage.id,$scope.prStDes,null,$scope.optionSets,$scope.selectedOrgUnit.id,flags).then(function(result)
         {
             ruleEffectsUpdated(result);
@@ -2012,6 +2104,10 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
     $scope.hasDataWrite = function(){
         return $scope.selectedProgramStage && $scope.selectedProgramStage.access && $scope.selectedProgramStage.access.data.write;
+    }
+    
+    $scope.accessFilter = function(categoryOption){
+        return categoryOption.access && categoryOption.access.read;
     }
 })
 
