@@ -1,5 +1,5 @@
 <span id="showLeftBar" class="hideInPrint">
-    <a href="javascript:dhis2.leftBar.showAnimated()" title="$i18n.getString('show_menu' )"><i class="fa fa-arrow-right leftBarIcon"></i></a>
+    <a href="javascript:dhis2.leftBar.showAnimated()" ng-attr-title="$i18n.getString('show_menu' )"><i class="fa fa-arrow-right leftBarIcon"></i></a>
 </span>
 
 <div id="leftBar">
@@ -46,7 +46,7 @@
                     </div>
                     <div class="col-sm-8">
                         <input type="text" class="form-control" selected-org-unit ng-model="selectedOrgUnit.displayName"
-                               value="{{selectedOrgUnit.displayName|| pleaseSelectLabel}}" disabled="">
+                               ng-attr-value="{{selectedOrgUnit.displayName|| pleaseSelectLabel}}" disabled="">
                     </div>
                 </div>
                 <div class="row small-vertical-spacing">
@@ -61,7 +61,7 @@
                                 ng-options="program as program.displayName for program in programs | orderBy: 'name'" 
                                 ng-change="getProgramDetails()"
                                 ng-disabled="eventRegistration || editingEventInFull || editingEventInGrid">
-                            <option value="">{{pleaseSelectLabel}}</option>
+                            <option ng-attr-value="">{{pleaseSelectLabel}}</option>
                         </select>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
                                 ng-model="category.selectedOption"
                                 ng-options="option as option.displayName for option in category.categoryOptions"
                                 ng-change="getCategoryOptions()">
-                            <option value="">{{pleaseSelectLabel}}</option>
+                            <option ng-attr-value="">{{pleaseSelectLabel}}</option>
                         </select>
                     </div>
                 </div>
@@ -87,8 +87,8 @@
                         <select class="form-control"
                                 name="section"                             
                                 ng-model="selectedSection.id">
-                            <option value="ALL">{{'show_all'| translate}}</option>
-                            <option ng-if="!hiddenSections[section.id]" ng-repeat="section in selectedProgramStage.programStageSections" value={{section.id}}>{{section.displayName}}</option>
+                            <option ng-attr-value="ALL">{{'show_all'| translate}}</option>
+                            <option ng-if="!hiddenSections[section.id]" ng-repeat="section in selectedProgramStage.programStageSections" ng-attr-value={{section.id}}>{{section.displayName}}</option>
                         </select>
                     </div>
                 </div>
