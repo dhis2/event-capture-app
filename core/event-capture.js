@@ -349,17 +349,17 @@ function getBatchPrograms( programs, batch )
             _.each(_.values( response.programs), function(program){
                 var ou = {};
                 if(program.organisationUnits){
-                    program.organisationUnits.forEach(o => {
+                    program.organisationUnits.forEach(function(o) {
                         ou[o.id] = o.displayName;
                     })
                 }
 
                 if(program.categoryCombo && program.categoryCombo.categories){
-                    program.categoryCombo.categories.forEach(category => {
+                    program.categoryCombo.categories.forEach(function(category) {
                         if(category.categoryOptions){
-                            category.categoryOptions.forEach(categoryOption => {
+                            category.categoryOptions.forEach(function(categoryOption) {
                                 if(categoryOption.organisationUnits){
-                                    var cou = categoryOption.organisationUnits.map(co => co.id);
+                                    var cou = categoryOption.organisationUnits.map(function(co) { return co.id });
                                     categoryOption.organisationUnits = cou;
                                 }
                             });
@@ -441,7 +441,7 @@ function getOptionSets()
 }
 
 function getObjectIds(data){
-    return data && Array.isArray(data.self) ? data.self.map(obj => obj.id) : [];
+    return data && Array.isArray(data.self) ? data.self.map(function(obj) { return obj.id }) : [];
 }
 
 function getMetaProgramIndicators( programs, programIds )

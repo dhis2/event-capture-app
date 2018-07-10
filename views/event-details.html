@@ -15,7 +15,7 @@
             <td>
                 <input type="text"
                        ng-disabled="model.editingDisabled || !hasDataWrite()"
-                       placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
+                       ng-attr-placeholder="{{dhis2CalendarFormat.keyDateFormat}}"
                        d2-date
                        max-date='model.maxDate'
                        min-date='model.minDate'
