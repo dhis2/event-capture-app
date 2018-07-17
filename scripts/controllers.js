@@ -664,16 +664,15 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         });
     };
     
-    $scope.filterEvents = function(gridColumn, applyFilter){
+    $scope.filterEvents = function(gridColumn, applyFilter, stayOpen){
         $scope.filterParam = '';
         $scope.selectedEventId = null;        
 
         angular.forEach($scope.eventGridColumns, function(col){            
             if( gridColumn ){
-                if( col.id === gridColumn.id ){
+                if( col.id === gridColumn.id && !stayOpen){
                     col.showFilter = !col.showFilter;
-                }
-                else{
+                } else if(!stayOpen) {
                     col.showFilter = false;
                 }
             }            
