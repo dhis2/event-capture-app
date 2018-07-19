@@ -78,7 +78,7 @@
                                     <!-- sort icon ends -->
 
                                     <!-- filter icon begins -->
-                                    <span class='pull-right hideInPrint' ng-attr-title="{{searchLabel}}" ng-click="filterEvents(eventGridColumn, !eventGridColumn.showFilter ? false:true)">
+                                    <span class='pull-right hideInPrint' ng-attr-title="{{searchLabel}}" ng-click="filterEvents(eventGridColumn, false, false)">
                                         <span ng-if="!eventGridColumn.filterWithRange" >
                                             <span ng-class="{true: 'filter-without-content', false: 'filter-with-content'} [filterText[eventGridColumn.id] == undefined || filterText[eventGridColumn.id] == '']"><i class="fa fa-search"></i></span>
                                         </span>
@@ -92,31 +92,31 @@
                                     <span ng-show="eventGridColumn.showFilter">
                                         <span ng-switch="eventGridColumn.valueType">                                            
                                             <span ng-switch-when="NUMBER">
-                                                <input style="width: 45%;" ng-attr-placeholder="{{'lower_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].start">
-                                                <input style="width: 45%;" ng-attr-placeholder="{{'upper_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].end">
+                                                <input style="width: 45%;" ng-attr-placeholder="{{'lower_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].start" ng-blur="filterEvents(eventGridColumn, true, true)">
+                                                <input style="width: 45%;" ng-attr-placeholder="{{'upper_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].end" ng-blur="filterEvents(eventGridColumn, true, true)">
                                             </span>
                                             <span ng-switch-when="INTEGER">
-                                                <input style="width: 45%;" ng-attr-placeholder="{{'lower_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].start">
-                                                <input style="width: 45%;" ng-attr-placeholder="{{'upper_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].end">
+                                                <input style="width: 45%;" ng-attr-placeholder="{{'lower_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].start" ng-blur="filterEvents(eventGridColumn, true, true)">
+                                                <input style="width: 45%;" ng-attr-placeholder="{{'upper_limit' | translate}}" type="number" ng-model="filterText[eventGridColumn.id].end" ng-blur="filterEvents(eventGridColumn, true, true)">
                                             </span>
                                             <span ng-switch-when="INTEGER_POSITIVE">
-                                                <input style="width: 45%;" ng-attr-placeholder="{{'lower_limit' | translate}}" type="number" min="1" ng-model="filterText[eventGridColumn.id].start">
-                                                <input style="width: 45%;" ng-attr-placeholder="{{'upper_limit' | translate}}" type="number" min="1" ng-model="filterText[eventGridColumn.id].end">
+                                                <input style="width: 45%;" ng-attr-placeholder="{{'lower_limit' | translate}}" type="number" min="1" ng-model="filterText[eventGridColumn.id].start" ng-blur="filterEvents(eventGridColumn, true, true)">
+                                                <input style="width: 45%;" ng-attr-placeholder="{{'upper_limit' | translate}}" type="number" min="1" ng-model="filterText[eventGridColumn.id].end" ng-blur="filterEvents(eventGridColumn, true, true)">
                                             </span>
                                             <span ng-switch-when="INTEGER_NEGATIVE">
-                                                <input style="width: 45%;" ng-attr-placeholder="{{'lower_limit' | translate}}" type="number" max="-1" ng-model="filterText[eventGridColumn.id].start">
-                                                <input style="width: 45%;" ng-attr-placeholder="{{'upper_limit' | translate}}" type="number" max="-1" ng-model="filterText[eventGridColumn.id].end">
+                                                <input style="width: 45%;" ng-attr-placeholder="{{'lower_limit' | translate}}" type="number" max="-1" ng-model="filterText[eventGridColumn.id].start" ng-blur="filterEvents(eventGridColumn, true, true)">
+                                                <input style="width: 45%;" ng-attr-placeholder="{{'upper_limit' | translate}}" type="number" max="-1" ng-model="filterText[eventGridColumn.id].end" ng-blur="filterEvents(eventGridColumn, true, true)">
                                             </span>
                                             <span ng-switch-when="INTEGER_ZERO_OR_POSITIVE">
-                                                <input style="width: 45%;" ng-attr-placeholder="{{'lower_limit' | translate}}" type="number" min="0" ng-model="filterText[eventGridColumn.id].start">
-                                                <input style="width: 45%;" ng-attr-placeholder="{{'upper_limit' | translate}}" type="number" min="0" ng-model="filterText[eventGridColumn.id].end">
+                                                <input style="width: 45%;" ng-attr-placeholder="{{'lower_limit' | translate}}" type="number" min="0" ng-model="filterText[eventGridColumn.id].start" ng-blur="filterEvents(eventGridColumn, true, true)">
+                                                <input style="width: 45%;" ng-attr-placeholder="{{'upper_limit' | translate}}" type="number" min="0" ng-model="filterText[eventGridColumn.id].end" ng-blur="filterEvents(eventGridColumn, true, true)">
                                             </span>
                                             <span ng-switch-when="DATE">
-                                                <input style="width: 70%;" ng-attr-placeholder="{{'start_date' | translate}}" type="text" ng-model="filterText[eventGridColumn.id].start" d2-date readonly="readonly">
+                                                <input style="width: 70%;" ng-attr-placeholder="{{'start_date' | translate}}" type="text" ng-model="filterText[eventGridColumn.id].start" d2-date readonly="readonly" ng-blur="filterEvents(eventGridColumn, true, true)">
                                                 <span ng-hide="!filterText[eventGridColumn.id].start || filterText[eventGridColumn.id].start == undefined || filterText[eventGridColumn.id].start == ''">
                                                     <a href ng-click='removeStartFilterText(eventGridColumn.id)'><span class='black'><i class="fa fa-trash-o"></i></span></a>                                                        
                                                 </span>
-                                                <input style="width: 70%;" ng-attr-placeholder="{{'end_date' | translate}}" type="text" ng-model="filterText[eventGridColumn.id].end" d2-date readonly="readonly">
+                                                <input style="width: 70%;" ng-attr-placeholder="{{'end_date' | translate}}" type="text" ng-model="filterText[eventGridColumn.id].end" d2-date readonly="readonly" ng-blur="filterEvents(eventGridColumn, true, true)">
                                                 <span ng-hide="!filterText[eventGridColumn.id].end || filterText[eventGridColumn.id].end == undefined || filterText[eventGridColumn.id].end == ''">
                                                     <a href ng-click='removeEndFilterText(eventGridColumn.id)'><span class='black'><i class="fa fa-trash-o"></i></span></a>                                                        
                                                 </span> 
@@ -126,6 +126,7 @@
                                                     
                                                     <ui-select multiple
                                                                 ng-model="filterText[eventGridColumn.id]"
+                                                                ng-click="filterEvents(eventGridColumn, true, true)"
                                                                 theme="bootstrap" style="width:90%;">
                                                         <ui-select-match allow-clear="true" ng-attr-placeholder="{{'select_or_search'| translate}}">{{$item.displayName}}</ui-select-match>
                                                         <ui-select-choices repeat="option in optionSets[prStDes[eventGridColumn.id].dataElement.optionSet.id].options | filter: $select.search | limitTo:maxOptionSize">
@@ -136,11 +137,11 @@
                                                 </span>
                                                 
                                                 <span ng-if="!prStDes[eventGridColumn.id] || !prStDes[eventGridColumn.id].dataElement.optionSetValue">                                                
-                                                    <input type="text" style="width: 90%;" ng-model="filterText[eventGridColumn.id]" ng-blur="searchInGrid(eventGridColumn)">
+                                                    <input type="text" style="width: 90%;" ng-model="filterText[eventGridColumn.id]" ng-blur="filterEvents(eventGridColumn, true, true)">
                                                 </span>                                                
                                             </span>
                                             <span ng-switch-default>
-                                                <input type="text" style="width: 90%;" ng-model="filterText[eventGridColumn.id]" ng-blur="searchInGrid(eventGridColumn)">
+                                                <input type="text" style="width: 90%;" ng-model="filterText[eventGridColumn.id]" ng-blur="filterEvents(eventGridColumn, true, true)">
                                             </span> 
                                         </span>
                                         <span ng-if="eventGridColumn.id !== 'uid'">{{eventGridColumn.displayName}}</span>
