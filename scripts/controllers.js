@@ -162,7 +162,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
         return MetaDataFactory.getAll('optionGroups').then(function(optionGroups){
             if(optionGroups){
-                $scope.optionGroupsById = optionGroups.toHashMap('id', (map,obj,key) => {obj.optionsById = obj.options.toHashMap('id');});
+                $scope.optionGroupsById = optionGroups.toHashMap('id', function(map,obj,key) {obj.optionsById = obj.options.toHashMap('id');});
             }else{
                 $scope.optionGroupsById = {};
             }
@@ -1514,7 +1514,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                         /* rowArray has one row of values for the event fields */
                         if (angular.isObject(rowArray)) {
                             csvRow = [];
-                            csvFieldsIndices.forEach((idx) => {
+                            csvFieldsIndices.forEach(function(idx) {
                                 processedData = getProcessedValue(headerArray[idx].name, rowArray[idx]);
                                 csvRow.push(processedData.value);
                             });
@@ -1550,7 +1550,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                             if (format === "JSON") {
                                 eventJSON = {};
                                 dataValues = [];
-                                headerArray.forEach((key, idx) => {
+                                headerArray.forEach(function(key, idx) {
                                     if (rowArray[idx]) {
                                         processedData =   getProcessedValue(headerArray[idx].name, rowArray[idx]);
                                         if (processedData.isDataValue) {
@@ -1567,7 +1567,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                             } else if (format === "XML") {
                                 eventsXML += "<event>";
                                 dataValues = [];
-                                headerArray.forEach((key, idx) => {
+                                headerArray.forEach(function(key, idx) {
                                     if (rowArray[idx]) {
                                         processedData = getProcessedValue(headerArray[idx].name, rowArray[idx]);
                                         if(processedData.isDataValue) {
@@ -1920,13 +1920,13 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
 
     var clearDataElementValueForShowHideOptionActions = function(dataElements, affectedEvent){
-        dataElements.forEach(de => {
+        dataElements.forEach(function(de) {
             var value = affectedEvent[de];
             //Only process if has selected value
             if(angular.isDefined(value) && value !== "") {
                 var optionSet = $scope.optionSets[$scope.prStDes[de].dataElement.optionSet.id];
                 //Find selectedOption by displayName
-                var selectedOption = optionSet.options.find(o => o.displayName === value);
+                var selectedOption = optionSet.options.find(function(o) { return o.displayName === value });
                 var shouldClear = !selectedOption;
                 
                 //If has selected option and a option is not in showOnly or is in hidden, field should be cleared.
