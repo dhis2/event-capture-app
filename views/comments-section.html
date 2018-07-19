@@ -2,7 +2,7 @@
     <div class="vertical-spacing section-label">
         {{'comments'| translate}}
     </div>
-    <textarea class="form-control" rows="3" ng-model="note.value" placeholder="{{'add_your_comment_here'| translate}}" style="width:100%;"></textarea>
+    <textarea class="form-control" rows="3" ng-model="note.value" ng-attr-placeholder="{{'add_your_comment_here'| translate}}" style="width:100%;"></textarea>
     <div ng-if="currentEvent.notes">
         <table class="listTable dhis2-list-table-striped">
             <thead>
