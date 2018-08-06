@@ -385,7 +385,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             });
 
             $scope.eventGridColumns.push({
-                displayName: $scope.selectedProgramStage.reportDateDescription ? $scope.selectedProgramStage.reportDateDescription : $translate.instant('incident_date'),
+                displayName: $scope.selectedProgramStage.executionDateLabel ? $scope.selectedProgramStage.executionDateLabel : $translate.instant('incident_date'),
                 id: 'eventDate',
                 valueType: 'DATE',
                 filterWithRange: true,
