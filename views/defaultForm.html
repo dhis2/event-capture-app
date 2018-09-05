@@ -342,7 +342,7 @@
                                 </div>
                             </div>
                         </div>                        
-                        <div ng-messages="innerFullForm.foo.$error" ng-if="interacted(innerFullForm.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">                                         
+                        <div ng-messages="innerFullForm.foo.$error" ng-if="interacted(innerFullForm.foo) && selectedValidationType === 'ON_UPDATE_AND_INSERT' || completeClicked && selectedValidationType === 'ON_COMPLETE'" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">                                         
                         </div>
                     </ng-form>
                 </td>
@@ -708,7 +708,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div ng-messages="innerFullForm.foo.$error" ng-if="interacted(innerFullForm.foo)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">
+                                <div ng-messages="innerFullForm.foo.$error" ng-if="interacted(innerFullForm.foo) && selectedValidationType === 'ON_UPDATE_AND_INSERT' || completeClicked && selectedValidationType === 'ON_COMPLETE'" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">
                                     <!-- URL error message is temporarily placed here. Should be placed with the other error messages in the core. -->
                                     <span ng-message="urlValidator">{{'url_error' | translate}}</span>
                                 </div>
