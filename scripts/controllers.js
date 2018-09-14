@@ -93,9 +93,6 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     var storedBy = CommonUtils.getUsername();    
     var orgUnitFromUrl = ($location.search()).ou;
     var eventIdFromUrl = ($location.search()).event;
-
-    var validationTypes = ["NONE", "ON_UPDATE_AND_INSERT", "ON_COMPLETE"];
-    $scope.selectedValidationType = validationTypes[0];
     
     $scope.completeClicked = false;
 
@@ -1045,7 +1042,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         //check for form validity
         $scope.outerForm.submitted = true;
         $scope.completeClicked = true;        
-        if( $scope.outerForm.$invalid && $scope.selectedValidationType !== "NONE"){
+        if( $scope.outerForm.$invalid && $scope.currentStage.validationStrategy !== "NONE"){
             $scope.selectedSection.id = 'ALL';
             angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
                 section.open = true;
