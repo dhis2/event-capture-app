@@ -1042,7 +1042,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         //check for form validity
         $scope.outerForm.submitted = true;
         $scope.completeClicked = true;        
-        if( $scope.outerForm.$invalid && $scope.currentStage.validationStrategy !== "NONE"){
+        if( $scope.outerForm.$invalid){
             $scope.selectedSection.id = 'ALL';
             angular.forEach($scope.selectedProgramStage.programStageSections, function(section){
                 section.open = true;
