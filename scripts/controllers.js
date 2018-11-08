@@ -1798,6 +1798,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
         var isGridEdit = result.callerId === "eventGridEdit";
         var dataElementOptionsChanged = [];
+        var shouldValidate = $scope.currentStage.validationStrategy === 'ON_UPDATE_AND_INSERT' ? true : $scope.completeClicked;
         if($rootScope.ruleeffects[result.event]) {
             //Establish which event was affected:
             var affectedEvent = $scope.currentEvent;
@@ -1846,7 +1847,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                         
                         var message = effect.content + (effect.data ? effect.data : "");
                         
-                        if(effect.dataElement && effect.dataElement.id && effect.action==="SHOWERROR") {
+                        if(effect.dataElement && effect.dataElement.id && effect.action==="SHOWERROR" && shouldValidate) {
                             message = $scope.prStDes[effect.dataElement.id].dataElement.displayFormName
                             + ": " + message;
                             $scope.currentEvent[effect.dataElement.id] = $scope.currentEventOriginialValue[effect.dataElement.id];
