@@ -24,6 +24,7 @@
                        d2-date-validator
                        name="eventDate"
                        ng-change="verifyExpiryDate()"
+                       ng-focus="setDateOnFocus(currentEvent.eventDate)"
                        input-field-id='eventDate'
                        class="form-control">
                 <div ng-messages="outerForm.eventDate.$error" ng-if="interacted(outerForm.eventDate)" class="required" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">                                         

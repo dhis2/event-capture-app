@@ -186,6 +186,12 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
     };
 
+    $scope.setDateOnFocus = function(currentValue) {
+        if(!currentValue) {
+            $scope.currentEvent.eventDate = DateUtils.getToday();
+        }
+    };
+
     $scope.completeEnrollment = function() {
         $scope.currentEvent.status = !$scope.currentEvent.status;
     };
