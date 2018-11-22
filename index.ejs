@@ -91,7 +91,7 @@
         <script src="../dhis-web-core-resource/dhis/dhis2-contextmenu-67ed866cc1.js"></script>
         <script src="../dhis-web-core-resource/dhis/dhis2-appcache-fa924a92f7.js"></script>
 
-        <!-- needs version --><script type="text/javascript" src="../dhis-web-commons/ouwt/ouwt.js"></script>
+        <!-- needs version, adding webpack hash for now --><script type="text/javascript" src="../dhis-web-commons/ouwt/ouwt.js?_=<%= webpack.hash %>"></script>
         
         <script src="../dhis-web-core-resource/angular-plugins/angularLocalStorage-12a21d2dab.js"></script>
         <script src="../dhis-web-core-resource/angular.translate/2.7.0/angular-translate.min.js"></script>
@@ -121,7 +121,6 @@
     <body>
         <div id="header"></div>
         <div id="headerMessage"></div>
-
         <div ng-view></div>
 
     </body>
