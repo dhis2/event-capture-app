@@ -63,6 +63,10 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
+angular-vs-repeat@^2.0.9:
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/angular-vs-repeat/-/angular-vs-repeat-2.0.9.tgz#fc2713f14223c8dccf37e7b900b2dadb932c2b0b"
+
 ansi-gray@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/ansi-gray/-/ansi-gray-0.1.1.tgz#2962cf54ec9792c48510a3deb524436861ef7251"
@@ -1399,10 +1403,11 @@ csso@~2.3.1:
     clap "^1.0.9"
     source-map "^0.5.3"
 
-d2-tracker@31.0.5:
-  version "31.0.5"
-  resolved "https://registry.yarnpkg.com/d2-tracker/-/d2-tracker-31.0.5.tgz#121729f4e1f6ee963f028527ffefae9fecf941d0"
+d2-tracker@31.0.8:
+  version "31.0.8"
+  resolved "https://registry.yarnpkg.com/d2-tracker/-/d2-tracker-31.0.8.tgz#b34b458850670e9401bd22a04e94aa6c9c8e8f83"
   dependencies:
+    angular-vs-repeat "^2.0.9"
     gulp "^3.9.1"
     gulp-angular-templatecache "^2.0.0"
     leaflet-draw "^1.0.2"
