@@ -5,6 +5,12 @@ html, body {
     font-size: 9pt;
 }
 
+#header #headerBanner {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 .not-for-screen {
     display: none;
 }
