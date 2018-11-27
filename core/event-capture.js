@@ -23,7 +23,7 @@ var programCategoryOptions = {};
 
 var batchSize = 50;
 var programBatchSize = 50;
-var DHIS2URL = '../api/28';
+var DHIS2URL = '../api/31';
 var hasAllAccess = false;
 
 dhis2.ec.isOffline = false;
