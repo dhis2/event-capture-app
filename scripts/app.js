@@ -59,7 +59,7 @@ const eventCapture = angular.module('eventCapture',
                     'leaflet-directive',
                     ])
 
-.value('DHIS2URL', '../api/28')
+.value('DHIS2URL', '../api/31')
 
 .value('DHIS2COORDINATESIZE', 6)
 
