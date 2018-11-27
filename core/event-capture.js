@@ -147,7 +147,7 @@ function ajax_login()
 
 function downloadMetaData(){    
     
-    console.log('Loading required meta-data');  
+    console.log('Loading required meta-data');
     var def = $.Deferred();
     var promise = def.promise();
     
