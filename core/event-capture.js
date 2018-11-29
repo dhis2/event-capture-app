@@ -169,7 +169,12 @@ function downloadMetaData(){
         $( "#orgUnitTree" ).removeClass( "disable-clicks" );
         console.log( 'Finished loading meta-data' );         
         dhis2.availability.startAvailabilityCheck();
-        console.log( 'Started availability check' );        
+        console.log( 'Started availability check' );
+
+        var SessionStorageService = angular.element('body').injector().get('SessionStorageService');
+        var userSettings = SessionStorageService.get('USER_SETTING');
+        var useShortName = userSettings.keyAnalysisDisplayProperty === 'shortName';
+        selection.setDisplayShortNames(useShortName);
         selection.responseReceived();
 
     });
@@ -183,24 +188,26 @@ function getSystemSetting()
        return; 
     }
     
-    return dhis2.tracker.getTrackerObject(null, 'SYSTEM_SETTING', DHIS2URL + '/systemSettings.json', 'key=keyGoogleMapsApiKey&key=keyCalendar&key=keyDateFormat', 'localStorage', dhis2.ec.store);
+    return dhis2.tracker.getTrackerObject(null, 'SYSTEM_SETTING', DHIS2URL + '/systemSettings.json', 'key=keyGoogleMapsApiKey&key=keyCalendar&key=keyDateFormat&key=keyAnalysisDisplayProperty', 'localStorage', dhis2.ec.store);
 }
 
 function getUserSetting()
 {   
-    var SessionStorageService = angular.element('body').injector().get('SessionStorageService');    
-    if( SessionStorageService.get('USER_SETTING') ){
-       return; 
+    var SessionStorageService = angular.element('body').injector().get('SessionStorageService');
+    
+    //only use the cached version if we're offline, otherwise fetch the settings if they have changed since last time.
+    if( dhis2.ec.isOffline && SessionStorageService.get('USER_SETTING') ){
+        return;
     }
     
-    return dhis2.tracker.getTrackerObject(null, 'USER_SETTING', DHIS2URL + '/userSettings.json', 'key=keyDbLocale&key=keyUiLocale&key=keyCurrentStyle&key=keyStyle', 'sessionStorage', dhis2.ec.store);
+    return dhis2.tracker.getTrackerObject(null, 'USER_SETTING', DHIS2URL + '/userSettings.json', 'key=keyDbLocale&key=keyUiLocale&key=keyCurrentStyle&key=keyStyle&key=keyAnalysisDisplayProperty', 'sessionStorage', dhis2.ec.store);
 }
 
 function getUserProfile()
 {
-    var SessionStorageService = angular.element('body').injector().get('SessionStorageService');    
+    var SessionStorageService = angular.element('body').injector().get('SessionStorageService');
     if( SessionStorageService.get('USER_PROFILE') ){
-       return; 
+        return; 
     }
     
     return dhis2.tracker.getTrackerObject(null, 'USER_PROFILE', DHIS2URL + '/me.json', 'fields=id,displayName,userCredentials[username,userRoles[id,programs,authorities]],organisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]],dataViewOrganisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]],teiSearchOrganisationUnits[id,displayName,level,path,children[id,displayName,level,children[id]]]', 'sessionStorage', dhis2.ec.store);
