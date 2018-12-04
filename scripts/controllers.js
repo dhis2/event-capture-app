@@ -2112,7 +2112,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
     };
 
     $scope.hasDataWrite = function(){
-        return $scope.selectedProgramStage && $scope.selectedProgramStage.access && $scope.selectedProgramStage.access.data.write;
+        return $scope.selectedProgram && $scope.selectedProgram.access && $scope.selectedProgram.access.data.write;
     }
     
     $scope.accessFilter = function(categoryOption){
