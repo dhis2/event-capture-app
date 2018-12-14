@@ -6,6 +6,7 @@ import 'd2-tracker/lib/dhis2.angular.validations.js';
 import 'd2-tracker/lib/dhis2.angular.filters.js';
 import 'd2-tracker/lib/dhis2.angular.controllers.js';
 import 'd2-tracker/lib/dhis2.angular.templates.js';
+import 'd2-tracker/src/styles/style.css';
 
 import L from 'leaflet';
 delete L.Icon.Default.prototype._getIconUrl;
@@ -35,6 +36,7 @@ import './directives.js';
 import './controllers.js';
 import './filters.js';
 import './ng-csv.js';
+import 'angular-vs-repeat';
 
 /* App Module */
 
@@ -57,6 +59,7 @@ const eventCapture = angular.module('eventCapture',
                     'angularLocalStorage',
                     'pascalprecht.translate',
                     'leaflet-directive',
+                    'vs-repeat',
                     ])
 
 .value('DHIS2URL', '../api/31')
