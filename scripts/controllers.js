@@ -479,7 +479,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
 
             $scope.emptyFilterText = angular.copy( $scope.filterText );
 
-            $scope.customDataEntryForm = CustomFormService.getForProgramStage($scope.selectedProgramStage, $scope.prStDes);
+            $scope.customDataEntryForm = CustomFormService.getForProgramStage($scope.selectedProgramStage, $scope.prStDes, true);
 
             if($scope.selectedProgramStage.captureCoordinates){
                 $scope.newDhis2Event.coordinate = {};
