@@ -84,7 +84,6 @@ module.exports = {
                 ['styles/style.css'],
             ]),
             scripts: makeScriptTags([
-                'core/event-capture.js',
                 '../main.js',
             ]),
         })

@@ -110,6 +110,7 @@
             jQuery(function () {
                 Dhis2HeaderBar.initHeaderBar(document.querySelector('#header'), '../api', { noLoadingIndicator: true });
             });
+            var downloadMetaData, ajax_login, DHIS2URL; // included core/event-capture.js in bundle, but these variables needs to be global for time being. They are set in index.js
         </script>
 
         <%= htmlWebpackPlugin.options.scripts(webpack.hash) %>
