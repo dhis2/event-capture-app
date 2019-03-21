@@ -23,7 +23,7 @@ var programCategoryOptions = {};
 
 var batchSize = 50;
 var programBatchSize = 50;
-var DHIS2URL = '../api/29';
+export var DHIS2URL = '../api/29';
 var hasAllAccess = false;
 
 dhis2.ec.isOffline = false;
@@ -123,7 +123,7 @@ $(document).bind('dhis2.offline', function()
     }
 });
     
-function ajax_login()
+export function ajax_login()
 {
     $('#login_button').bind('click', function()
     {
@@ -145,7 +145,7 @@ function ajax_login()
     });
 }
 
-function downloadMetaData(){    
+export function downloadMetaData(){    
     
     console.log('Loading required meta-data');
     var def = $.Deferred();
@@ -160,7 +160,10 @@ function downloadMetaData(){
     promise = promise.then( getOrgUnitLevels );    
     promise = promise.then( getMetaPrograms );
     promise = promise.then( filterMissingPrograms );
-    promise = promise.then( getPrograms );
+    promise = promise
+        .then( getPrograms )
+        .then( getCategories )
+        .then( cachePrograms );
     promise = promise.then( getOptionSetsForDataElements );
     promise = promise.then( getOptionSets );
     promise = promise.then( getProgramAccess);
@@ -315,8 +318,18 @@ function getPrograms( programs, ids )
     var builder = $.Deferred();
     var build = builder.promise();
     
+    var metaCategories = []; // extract category ids from programs and retrieve category options based on this in a separate request
+    var cachePrograms = [];
+
     _.each( _.values( batches ), function ( batch ) {        
         promise = getBatchPrograms( programs, batch );
+        promise = promise.then(function(pr, b, batchCategories, batchCachePrograms) {
+            metaCategories = metaCategories.concat(batchCategories);
+            cachePrograms = cachePrograms.concat(batchCachePrograms);
+            var categoryDef = $.Deferred();
+            categoryDef.resolve(pr, b);
+            return categoryDef.promise();
+        });
         promise = promise.then( getMetaProgramIndicators );
         promise = promise.then( getProgramIndicators );
         promise = promise.then( getMetaProgramRules );
@@ -328,7 +341,7 @@ function getPrograms( programs, ids )
     build.done(function() {
         def.resolve();
         promise = promise.done( function () {            
-            mainDef.resolve( programs, ids );
+            mainDef.resolve( programs, ids, metaCategories, cachePrograms );
         } );        
         
     }).fail(function(){
@@ -340,7 +353,7 @@ function getPrograms( programs, ids )
     return mainPromise;
 }
 
-function getBatchPrograms( programs, batch )
+function getBatchPrograms( metaPrograms, batch )
 {   
     var ids = '[' + batch.toString() + ']';
     
@@ -349,9 +362,10 @@ function getBatchPrograms( programs, batch )
     $.ajax( {
         url: DHIS2URL + '/programs.json',
         type: 'GET',
-        data: 'fields=*,categoryCombo[id,displayName,isDefault,categories[id,displayName,categoryOptions[id,displayName,access,organisationUnits[id]]]],organisationUnits[id,displayName],programStages[*,dataEntryForm[*],programStageSections[id,displayName,description,sortOrder,dataElements[id]],programStageDataElements[*,dataElement[*,optionSet[id]]]]&paging=false&filter=id:in:' + ids
+        data: 'fields=*,categoryCombo[id,displayName,isDefault,categories[id,displayName]],organisationUnits[id,displayName],programStages[*,dataEntryForm[*],programStageSections[id,displayName,description,sortOrder,dataElements[id]],programStageDataElements[*,dataElement[*,optionSet[id]]]]&paging=false&filter=id:in:' + ids
     }).done( function( response ){
-
+        var metaCategories = [];
+        var cachePrograms = [];
         if(response.programs){
             _.each(_.values( response.programs), function(program){
                 var ou = {};
@@ -363,30 +377,174 @@ function getBatchPrograms( programs, batch )
 
                 if(program.categoryCombo && program.categoryCombo.categories){
                     program.categoryCombo.categories.forEach(function(category) {
-                        if(category.categoryOptions){
-                            category.categoryOptions.forEach(function(categoryOption) {
-                                if(categoryOption.organisationUnits){
-                                    var cou = categoryOption.organisationUnits.map(function(co) { return co.id });
-                                    categoryOption.organisationUnits = cou;
-                                }
-                            });
-                        }
+                        metaCategories.push({
+                            id: category.id,
+                            displayName: category.displayName,
+                        });  
                     });
                 }
 
                 program.organisationUnits = ou;                
-                dhis2.ec.store.set( 'programs', program );
+                // var x = dhis2.ec.store.set( 'programs', program );
+                cachePrograms.push(program);
             });
         }
         
-        def.resolve( programs, batch );
+        def.resolve( metaPrograms, batch, metaCategories, cachePrograms );
     });
 
     return def.promise();
 }
 
+// I would have liked to restructure this, moving stuff into different files etc, but the app is soon to be deprecated so will stick all categories functions in here
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+function getUniqeCategories(categories) {
+    var seen = {};
+    return categories
+        .filter(function(category) {
+            var key = category.id;
+            return seen.hasOwnProperty(key) ? false : (seen[key] = true);
+        });
+}
+
+function requestCategoryOptions(ajaxRequest, pageNr, pageSize) {
+    var ajaxRequestPage = {
+        url: ajaxRequest.url,
+        type: ajaxRequest.type,
+        data: ajaxRequest.data + '&page=' + pageNr + '&pageSize=' + pageSize,
+    };
+
+    return $.ajax(ajaxRequestPage)
+            .then(function(categoryOptionsContainer) {
+                var categoryOptions = categoryOptionsContainer.categoryOptions;
+                if (categoryOptions && categoryOptions.length === pageSize) {
+                    return requestCategoryOptions(ajaxRequest, pageNr += 1, pageSize)
+                        .then(function(categoryOptionsFromPageHierarchy) {
+                            return categoryOptions.concat(categoryOptionsFromPageHierarchy);
+                        });
+                }
+                return categoryOptions || [];
+            });
+}
+
+function getCategoryOptions(ids) {
+    var ajaxRequest = {
+        url: DHIS2URL + '/categoryOptions.json',
+        type: 'GET',
+        data: 'fields=id,displayName,categories, organisationUnits, access[*]&paging=true&filter=categories.id:in:[' + ids.toString() + ']&filter=access.data.read:in:[true]&totalPages=false'
+    };
+
+    return requestCategoryOptions(ajaxRequest, 1, 10000)
+        .then(function(categoryOptions) {
+           return categoryOptions;
+        });
+}
+
+function getOptionsByCategory(categoryOptionsBatches) {
+    return categoryOptionsBatches.reduce((accOptionsByCategory, batchArray) =>
+        batchArray.reduce((accOptionsByCategoryForBatch, option) => {
+            const categories = option.categories;
+            accOptionsByCategoryForBatch = categories.reduce((accOptionsByCategoryForBatchInProgress, category) => {
+                const organisationUnits = option.organisationUnits;
+                const currentOptionsForCategory = accOptionsByCategoryForBatchInProgress[category.id] || {};
+                currentOptionsForCategory[option.id] = {
+                    id: option.id,
+                    displayName: option.displayName,
+                    access: option.access,
+                    organisationUnits: organisationUnits && organisationUnits.length > 0 ?
+                        organisationUnits.map(ou => ou.id) :
+                        null,
+                };
+                accOptionsByCategoryForBatchInProgress[category.id] = currentOptionsForCategory;
+                return accOptionsByCategoryForBatchInProgress;
+            }, accOptionsByCategoryForBatch);
+            return accOptionsByCategoryForBatch;
+        }, accOptionsByCategory), {});
+}
+
+function buildCacheCategories(
+    uniqueCategories,
+    optionsByCategory,
+) {
+    const categoriesToStore = uniqueCategories
+        .reduce((accCategoriesToStore, category) => {
+            accCategoriesToStore[category.id] = {
+                id: category.id,
+                displayName: category.displayName,
+                categoryOptions: optionsByCategory[category.id] ?
+                    Object
+                        .keys(optionsByCategory[category.id])
+                        .map(optionKey => optionsByCategory[category.id][optionKey]) :
+                    [],
+            };
+            return accCategoriesToStore;
+        }, {});
+    return categoriesToStore;
+}
+
+function updateProgramsWithCategories(categoriesToStore, cachePrograms) {
+    return cachePrograms
+        .map(function(program) {
+            if (program.categoryCombo && program.categoryCombo.categories) {
+                var programCategories = program.categoryCombo.categories;
+                program.categoryCombo.categories = programCategories
+                    .map(function(c) {
+                        return categoriesToStore[c.id];
+                    });
+            }
+            return program;
+        });
+}
+
+function getCategories(programs, batch, metaCategories, cachePrograms) {
+    if (!metaCategories || metaCategories.length === 0) {
+        var def = $.Deferred();
+        def.resolve(programs, batch, cachePrograms);
+        return def.promise();            
+    }
+
+    var uniqueCategories = getUniqeCategories(metaCategories);
+    var uniqueCateogryIds = uniqueCategories.map(uc => uc.id);
+    var categoryIdBatches = dhis2.tracker.chunk(uniqueCateogryIds, 50);
+
+    var def = $.Deferred();
+
+    $.when(
+            ...categoryIdBatches
+                .map(function(batch) {
+                    return getCategoryOptions(batch);
+                })
+        )
+        .then((...categoryOptionsBatches) => getOptionsByCategory(categoryOptionsBatches))
+        .then(optionsByCategory => buildCacheCategories(uniqueCategories, optionsByCategory))
+        .then(categoriesToStore => {
+            var updatedCachePrograms = updateProgramsWithCategories(categoriesToStore, cachePrograms);
+            def.resolve(programs, batch, cachePrograms);
+        });
+    
+    return def.promise();
+}
+
+function cachePrograms(programs, batch, cachePrograms) {
+    var def = $.Deferred();
+
+    if (!cachePrograms || cachePrograms.length === 0) {
+        def.resolve(programs, batch);
+        
+    } else {
+        dhis2.ec.store
+            .setAll( 'programs', cachePrograms )
+            .done(function() {
+                def.resolve(programs, batch);
+            });
+    }
+    
+    return def.promise();
+}
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 function getOptionSetsForDataElements( programs )
-{   
+{
     if( !programs ){
         return;
     }
