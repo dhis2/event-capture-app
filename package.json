@@ -1,12 +1,12 @@
 {
   "name": "event-capture-app",
-  "version": "31.0.11",
+  "version": "31.0.12",
   "description": "DHIS2 event capture app",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prebuild": "(rm -r build && mkdir build) || mkdir build",
-    "build": "webpack && cp -r i18n build/i18n && cp -r core build/core && cp -r views build/views && cp -r styles build/styles",
+    "build": "webpack && cp -r i18n build/i18n && cp -r views build/views && cp -r styles build/styles",
     "start": "webpack-dev-server"
   },
   "repository": {
