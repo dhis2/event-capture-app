@@ -1217,7 +1217,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
                                 eventDate: DateUtils.formatFromUserToApi($scope.currentEvent.eventDate),
                                 event: $scope.currentEvent.event, 
                                 dataValues: dataValues,
-                                geometry: $scope.currentEvent.geometry,
+                                geometry: $scope.currentEvent.geometry === '' ? undefined : $scope.currentEvent.geometry,
                             };
 
             if(!angular.isUndefined($scope.note.value) && $scope.note.value !== ''){
@@ -2071,8 +2071,7 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
         }
     };
     
-    $scope.deleteFile = function(event, dataElement){
-        
+    $scope.deleteFileFromGrid = function(event, dataElement){
         if( !dataElement ){            
             var dialogOptions = {
                 headerText: 'error',
@@ -2093,6 +2092,30 @@ var eventCaptureControllers = angular.module('eventCaptureControllers', ['ngCsv'
             delete $scope.fileNames[$scope.currentEvent.event][dataElement];
             $scope.currentEvent[dataElement] = null;
             $scope.updateEventDataValue(dataElement, $scope.currentEvent);
+        });
+    };
+
+    $scope.deleteFile = function(event, dataElement){
+        if( !dataElement ){            
+            var dialogOptions = {
+                headerText: 'error',
+                bodyText: 'missing_file_identifier'
+            };
+            DialogService.showDialog({}, dialogOptions);
+            return;
+        }
+        
+        var modalOptions = {
+            closeButtonText: 'cancel',
+            actionButtonText: 'remove',
+            headerText: 'remove',
+            bodyText: 'are_you_sure_to_remove'
+        };
+
+        ModalService.showModal({}, modalOptions).then(function(result){
+            delete $scope.fileNames[$scope.currentEvent.event][dataElement];
+            $scope.currentEvent[dataElement] = null;
+            $scope.executeRules();
         });
     };
     
