@@ -1403,9 +1403,9 @@ csso@~2.3.1:
     clap "^1.0.9"
     source-map "^0.5.3"
 
-d2-tracker@30.0.42:
-  version "30.0.42"
-  resolved "https://registry.yarnpkg.com/d2-tracker/-/d2-tracker-30.0.42.tgz#37580bddb8d878dd55720fdf4b08946747b40050"
+d2-tracker@30.0.43:
+  version "30.0.43"
+  resolved "https://registry.yarnpkg.com/d2-tracker/-/d2-tracker-30.0.43.tgz#b68735c9698ae37dadd1b56f161361a331648f6d"
   dependencies:
     angular-vs-repeat "^2.0.9"
     gulp "^3.9.1"
